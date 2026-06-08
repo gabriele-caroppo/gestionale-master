@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gestionale Master</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface2: #1c1c1c;
+    --surface3: #212121;
+    --border: #282828;
+    --text: #f2f2f2;
+    --muted: #5a5a5a;
+    --done: #4ade80;
+    --inprogress: #f4c85a;
+    --todo: #888;
+    --incomplete: #f49632;
+    --missingfiles: #a78bfa;
+    --company-color: #c0392b;
+    --company-dim: rgba(192,57,43,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
+
+  /* LOADING */
+  #loading { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; gap:1rem; }
+  .loader { width:36px; height:36px; border:2px solid var(--border); border-top-color:#c0392b; border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  #loading p { font-size:0.72rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
+
+  /* HEADER */
+  header { padding:1.5rem 2rem 1.2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .header-left h1 { font-weight:700; font-size:clamp(1.3rem,3vw,2rem); letter-spacing:-0.02em; }
+  .header-left h1 span { color:var(--company-color); transition:color 0.3s; }
+  .header-sub { font-size:0.68rem; color:var(--muted); margin-top:0.3rem; letter-spacing:0.06em; text-transform:uppercase; }
+  .status-dot { width:7px; height:7px; border-radius:50%; background:var(--done); display:inline-block; margin-right:6px; animation:pulse 2.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.2} }
+  .header-right { display:flex; align-items:center; gap:0.6rem; }
+  #conn-status { font-size:0.65rem; color:var(--muted); padding:0.4rem 0.8rem; border:1px solid var(--border); border-radius:20px; white-space:nowrap; font-weight:500; }
+  #conn-status.connected { color:var(--done); border-color:rgba(74,222,128,0.3); }
+  #lock-btn { width:36px; height:36px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--muted); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  #lock-btn:hover { border-color:var(--company-color); color:var(--company-color); }
+  body:not(.readonly) #lock-btn { border-color:var(--company-color); color:var(--company-color); background:var(--company-dim); }
+
+  /* EDIT BANNER */
+  #edit-banner { display:none; background:var(--company-dim); border-bottom:1px solid var(--company-color); padding:0.4rem 2rem; font-size:0.7rem; font-weight:600; color:var(--company-color); letter-spacing:0.05em; text-transform:uppercase; text-align:center; }
+  body:not(.readonly) #edit-banner { display:block; }
+
+  /* GESTIONALE TABS (livello 1) */
+  .g-tabs { display:flex; padding:0 2rem; border-bottom:2px solid var(--border); overflow-x:auto; scrollbar-width:none; background:var(--surface); }
+  .g-tabs::-webkit-scrollbar { display:none; }
+  .g-tab { background:none; border:none; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.8rem; letter-spacing:0.04em; text-transform:uppercase; padding:1rem 1.6rem; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; transition:all 0.2s; white-space:nowrap; }
+  .g-tab:hover { color:var(--text); }
+  .g-tab.active { color:var(--company-color); border-bottom-color:var(--company-color); }
+  .g-tab-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:7px; vertical-align:middle; }
+
+  /* COMPANY TABS (livello 2) */
+  .c-tabs { display:flex; padding:0 2rem; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
+  .c-tabs::-webkit-scrollbar { display:none; }
+  .c-tab { background:none; border:none; color:var(--muted); font-family:'DM Sans',sans-serif; font-weight:600; font-size:0.78rem; padding:0.8rem 1.2rem; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; }
+  .c-tab:hover { color:var(--text); }
+  .c-tab.active { color:var(--company-color); border-bottom-color:var(--company-color); }
+  .c-tab-count { font-size:0.58rem; font-weight:700; background:var(--surface2); border-radius:10px; padding:1px 5px; margin-left:4px; color:var(--muted); }
+  .c-tab.active .c-tab-count { background:var(--company-color); color:#fff; }
+
+  /* MAIN */
+  main { padding:1.6rem 2rem; max-width:1100px; }
+
+  /* PANELS */
+  .g-panel { display:none; }
+  .g-panel.active { display:block; animation:fadeIn 0.2s ease; }
+  .c-panel { display:none; }
+  .c-panel.active { display:block; animation:fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+  /* STATS */
+  .stats-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:0.8rem; margin-bottom:1.6rem; }
+  .stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1rem; display:flex; flex-direction:column; gap:0.3rem; }
+  .stat-label { font-size:0.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; font-weight:600; }
+  .stat-num { font-weight:700; font-size:1.5rem; line-height:1; }
+  .stat-num.hl { color:var(--company-color); }
+  .stat-bar-inner { height:2px; border-radius:2px; background:var(--border); margin-top:0.4rem; overflow:hidden; }
+  .stat-bar-fill { height:100%; border-radius:2px; background:var(--company-color); transition:width 0.5s; }
+
+  /* ADD SECTION */
+  .add-section { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1.1rem; margin-bottom:1.4rem; display:flex; gap:0.7rem; align-items:center; }
+  .add-section input { flex:1; min-width:0; background:transparent; border:none; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.88rem; padding:0.2rem 0; outline:none; }
+  .add-section input::placeholder { color:var(--muted); }
+  .btn-add { font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.73rem; border:none; border-radius:6px; padding:0.5rem 1rem; cursor:pointer; background:var(--company-color); color:#fff; white-space:nowrap; flex-shrink:0; transition:opacity 0.15s; }
+  .btn-add:hover { opacity:0.85; }
+
+  /* TASKS */
+  .tasks-list { display:flex; flex-direction:column; gap:0.5rem; }
+  .task-wrapper { display:flex; flex-direction:column; }
+  .task-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:0.85rem 1.05rem; display:flex; align-items:center; gap:0.7rem; transition:background 0.15s; position:relative; }
+  .task-wrapper.has-subtasks-open > .task-item { border-bottom-left-radius:0; border-bottom-right-radius:0; border-bottom-color:transparent; }
+  .task-item:hover { background:var(--surface2); }
+  .task-item.status-todo        { border-left:3px solid var(--border); }
+  .task-item.status-inprogress  { border-left:3px solid var(--inprogress); }
+  .task-item.status-done        { border-left:3px solid var(--done); }
+  .task-item.status-incomplete  { border-left:3px solid var(--incomplete); }
+  .task-item.status-missingfiles{ border-left:3px solid var(--missingfiles); }
+  .task-item.status-done .task-name { text-decoration:line-through; color:var(--muted); }
+
+  .expand-btn { background:none; border:none; cursor:pointer; color:var(--muted); font-size:0.62rem; padding:0.2rem 0.3rem; border-radius:4px; transition:color 0.15s; flex-shrink:0; display:flex; align-items:center; gap:3px; white-space:nowrap; }
+  .expand-btn:hover { color:var(--text); }
+  .expand-btn .arrow { display:inline-block; transition:transform 0.2s; }
+  .expand-btn.open .arrow { transform:rotate(90deg); }
+  .expand-btn .sub-count { font-size:0.58rem; font-weight:700; background:var(--surface2); border-radius:8px; padding:1px 5px; min-width:16px; text-align:center; }
+  .expand-btn.has-incomplete .sub-count { background:rgba(244,200,90,0.2); color:var(--inprogress); }
+  .expand-btn.all-done .sub-count { background:rgba(74,222,128,0.15); color:var(--done); }
+
+  .task-name { flex:1; min-width:0; font-size:0.88rem; font-weight:500; line-height:1.4; word-break:break-word; overflow-wrap:anywhere; }
+  .task-name-edit { flex:1; background:var(--surface2); border:1px solid var(--company-color); border-radius:6px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.88rem; padding:0.3rem 0.65rem; outline:none; min-width:0; }
+  .task-meta { display:flex; align-items:center; gap:0.3rem; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
+
+  .status-select { font-family:'DM Sans',sans-serif; font-size:0.66rem; font-weight:600; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:0.25rem 0.45rem; cursor:pointer; outline:none; max-width:125px; }
+  .status-select option { background:var(--surface2); }
+
+  .status-badge { font-size:0.58rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:0.18rem 0.45rem; border-radius:20px; white-space:nowrap; }
+  .badge-todo        { background:rgba(136,136,136,0.15); color:#888; }
+  .badge-inprogress  { background:rgba(244,200,90,0.15); color:var(--inprogress); }
+  .badge-done        { background:rgba(74,222,128,0.15); color:var(--done); }
+  .badge-incomplete  { background:rgba(244,150,50,0.15); color:var(--incomplete); }
+  .badge-missingfiles{ background:rgba(167,139,250,0.15); color:var(--missingfiles); }
+
+  .icon-btn { background:none; border:none; cursor:pointer; color:var(--muted); font-size:0.8rem; padding:0.2rem; border-radius:4px; transition:color 0.15s; line-height:1; flex-shrink:0; }
+  .icon-btn:hover { color:var(--text); }
+  .icon-btn.delete:hover { color:#f87171; }
+  .task-date { font-size:0.58rem; color:var(--muted); white-space:nowrap; }
+
+  /* SUBTASKS */
+  .subtasks-panel { background:var(--surface2); border:1px solid var(--border); border-top:none; border-bottom-left-radius:10px; border-bottom-right-radius:10px; overflow:hidden; max-height:0; transition:max-height 0.3s ease, padding 0.3s ease; }
+  .subtasks-panel.open { max-height:1200px; padding:0.7rem 0.9rem 0.8rem 2rem; }
+  .subtasks-list { display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.6rem; }
+  .subtask-item { background:var(--surface3); border:1px solid #252525; border-radius:8px; padding:0.5rem 0.8rem; display:flex; align-items:center; flex-wrap:wrap; gap:0.4rem; font-size:0.82rem; }
+  .subtask-item.status-todo        { border-left:2px solid #333; }
+  .subtask-item.status-inprogress  { border-left:2px solid var(--inprogress); }
+  .subtask-item.status-done        { border-left:2px solid var(--done); }
+  .subtask-item.status-incomplete  { border-left:2px solid var(--incomplete); }
+  .subtask-item.status-missingfiles{ border-left:2px solid var(--missingfiles); }
+  .subtask-item.status-done .subtask-name { text-decoration:line-through; color:var(--muted); }
+  .subtask-arrow { color:var(--muted); font-size:0.62rem; flex-shrink:0; }
+  .subtask-name { flex:1; min-width:0; word-break:break-word; overflow-wrap:anywhere; font-weight:400; }
+  .subtask-name-edit { flex:1; background:var(--surface2); border:1px solid var(--company-color); border-radius:5px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.82rem; padding:0.22rem 0.5rem; outline:none; min-width:0; }
+  .add-subtask-row { display:flex; gap:0.5rem; align-items:center; }
+  .add-subtask-row input { flex:1; min-width:0; background:var(--surface3); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.78rem; padding:0.4rem 0.7rem; outline:none; }
+  .add-subtask-row input:focus { border-color:var(--company-color); }
+  .add-subtask-row input::placeholder { color:var(--muted); }
+  .btn-sub { font-family:'DM Sans',sans-serif; font-weight:700; font-size:0.66rem; border:1px solid var(--border); border-radius:6px; padding:0.4rem 0.8rem; cursor:pointer; background:var(--surface); color:var(--muted); transition:all 0.15s; white-space:nowrap; flex-shrink:0; }
+  .btn-sub:hover { color:var(--text); border-color:var(--company-color); }
+
+  /* READONLY */
+  body.readonly .edit-only { display:none !important; }
+  body.readonly .status-select { display:none !important; }
+  body.readonly .expand-btn.no-sub { visibility:hidden; pointer-events:none; }
+
+  /* EMPTY */
+  .empty-state { text-align:center; padding:2rem; color:var(--muted); font-size:0.8rem; border:1px dashed var(--border); border-radius:10px; }
+
+  /* TOAST */
+  #toast { position:fixed; bottom:1.5rem; right:1.5rem; background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:0.76rem; font-weight:500; padding:0.7rem 1.1rem; border-radius:8px; opacity:0; transform:translateY(8px); transition:all 0.2s; z-index:200; pointer-events:none; }
+  #toast.show { opacity:1; transform:translateY(0); }
+
+  @media (max-width:600px) {
+    header, .g-tabs, .c-tabs, main { padding-left:1rem; padding-right:1rem; }
+    .task-item { flex-wrap:wrap; }
+    .task-meta { width:100%; justify-content:flex-end; margin-top:0.3rem; }
+    .subtasks-panel.open { padding-left:0.7rem; }
+    .subtask-item { flex-wrap:wrap; }
+    .subtask-name { width:100%; }
+    .add-subtask-row { flex-wrap:wrap; }
+    .add-subtask-row input { width:100%; }
+    .stats-bar { grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body class="readonly">
+
+<div id="loading"><div class="loader"></div><p>Caricamento…</p></div>
+<div id="toast"></div>
+
+<div id="app" style="display:none">
+  <div id="edit-banner">✏️ Modalità modifica attiva</div>
+  <header>
+    <div class="header-left">
+      <h1>Gestionale <span id="master-title">Master</span></h1>
+      <div class="header-sub"><span class="status-dot"></span>Dashboard master · 4 progetti</div>
+    </div>
+    <div class="header-right">
+      <div id="conn-status">● Connessione…</div>
+      <button id="lock-btn" title="Modalità modifica" onclick="window._toggleEdit()">🔒</button>
+    </div>
+  </header>
+
+  <!-- LIVELLO 1: Gestionali -->
+  <div class="g-tabs" id="g-tabs"></div>
+
+  <!-- LIVELLO 2: Company tabs (cambiano per ogni gestionale) -->
+  <div class="c-tabs" id="c-tabs"></div>
+
+  <main id="main-content"></main>
+</div>
+
+<script type="module">
+  // ── Config ──────────────────────────────────────────────────
+  const GESTIONALI = [
+    {
+      id: 'antonio', name: 'Antonio', color: '#c0392b', dim: 'rgba(192,57,43,0.12)',
+      companies: [
+        { id: 'focacciamo', name: 'Focacciamo',      color: '#c0392b', dim: 'rgba(192,57,43,0.12)' },
+        { id: 'lamancha',   name: 'Mancha',           color: '#ff7b00', dim: 'rgba(255,123,0,0.12)' },
+        { id: 'futuri',     name: 'Futuri Campioni',  color: '#39d353', dim: 'rgba(57,211,83,0.12)' },
+      ]
+    },
+    {
+      id: 'slabhub', name: 'SlabHub', color: '#2d6fa3', dim: 'rgba(45,111,163,0.12)',
+      companies: [
+        { id: 'slabhub_gabriele', name: 'Gabriele', color: '#2d6fa3', dim: 'rgba(45,111,163,0.12)' },
+        { id: 'slabhub_davide',   name: 'Davide',   color: '#1a5276', dim: 'rgba(26,82,118,0.12)' },
+        { id: 'slabhub_valerio',  name: 'Valerio',  color: '#1f618d', dim: 'rgba(31,97,141,0.12)' },
+      ]
+    },
+    {
+      id: 'kissene', name: 'Kissene', color: '#7d3c98', dim: 'rgba(125,60,152,0.12)',
+      companies: [
+        { id: 'kissene_giulio',    name: 'Giulio',   color: '#7d3c98', dim: 'rgba(125,60,152,0.12)' },
+        { id: 'kissene_gabriele2', name: 'Gabriele', color: '#6c3483', dim: 'rgba(108,52,131,0.12)' },
+        { id: 'kissene_flavio',    name: 'Flavio',   color: '#8e44ad', dim: 'rgba(142,68,173,0.12)' },
+        { id: 'kissene_calogero',  name: 'Calogero', color: '#76448a', dim: 'rgba(118,68,138,0.12)' },
+        { id: 'kissene_bruna',     name: 'Bruna',    color: '#9b59b6', dim: 'rgba(155,89,182,0.12)' },
+      ]
+    },
+    {
+      id: 'luigi', name: 'Luigi Stips', color: '#d4a017', dim: 'rgba(212,160,23,0.12)',
+      companies: [
+        { id: 'luigi_luigi', name: 'Luigi Stips', color: '#d4a017', dim: 'rgba(212,160,23,0.12)' },
+      ]
+    },
+  ];
+
+  let db = null;
+  let allTasks = {};
+  let activeG = GESTIONALI[0].id;
+  let activeC = {};  // { gestionale_id: company_id }
+  let editingId = null;
+  let openAccordions = new Set();
+  let isEditMode = false;
+
+  // Init activeC
+  GESTIONALI.forEach(g => { activeC[g.id] = g.companies[0].id; });
+
+  // ── Edit toggle ─────────────────────────────────────────────
+  window._toggleEdit = function() {
+    isEditMode = !isEditMode;
+    document.body.classList.toggle('readonly', !isEditMode);
+    document.getElementById('lock-btn').textContent = isEditMode ? '🔓' : '🔒';
+    toast(isEditMode ? '✏️ Modifica abilitata' : '🔒 Sola lettura');
+  };
+
+  // ── Color apply ─────────────────────────────────────────────
+  function applyColor(color, dim) {
+    document.documentElement.style.setProperty('--company-color', color);
+    document.documentElement.style.setProperty('--company-dim', dim);
+  }
+
+  // ── Firebase ────────────────────────────────────────────────
+  async function initFirebase() {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+    const { getDatabase, ref, onValue, set, remove, push }
+      = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+
+    const app = initializeApp({
+      apiKey: "AIzaSyAfy8G_pHz8DftywbYi4YX1k71EyrmOgxQ",
+      authDomain: "gestionale-gabriele.firebaseapp.com",
+      databaseURL: "https://gestionale-gabriele-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "gestionale-gabriele",
+    });
+    db = getDatabase(app);
+
+    const el = document.getElementById('conn-status');
+    el.className = 'connected'; el.textContent = '● Live';
+
+    // Listen to all company paths
+    const allCompanies = GESTIONALI.flatMap(g => g.companies);
+    allCompanies.forEach(c => {
+      onValue(ref(db, `tasks/${c.id}`), snap => {
+        allTasks[c.id] = snap.val() || {};
+        updateCTabCount(c.id);
+        const g = GESTIONALI.find(g => g.companies.some(x => x.id === c.id));
+        if (g && activeG === g.id && activeC[g.id] === c.id) renderTasks(c.id);
+      });
+    });
+
+    window._fbSet    = (path, val) => set(ref(db, path), val);
+    window._fbRemove = (path)      => remove(ref(db, path));
+    window._fbPush   = (path, val) => push(ref(db, path), val);
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    buildUI();
+  }
+
+  // ── Build UI ────────────────────────────────────────────────
+  function buildUI() {
+    // G-TABS
+    document.getElementById('g-tabs').innerHTML = GESTIONALI.map(g =>
+      `<button class="g-tab" id="gtab-${g.id}" onclick="window._switchG('${g.id}')">
+        <span class="g-tab-dot" style="background:${g.color}"></span>${g.name}
+      </button>`
+    ).join('');
+
+    // Panels per gestionale
+    document.getElementById('main-content').innerHTML = GESTIONALI.map(g =>
+      `<div class="g-panel" id="gpanel-${g.id}">
+        ${g.companies.map(c =>
+          `<div class="c-panel" id="cpanel-${c.id}">
+            <div class="stats-bar" id="stats-${c.id}"></div>
+            <div class="add-section edit-only">
+              <input type="text" id="input-${c.id}" placeholder="Nuova task…"
+                     onkeydown="if(event.key==='Enter') window._addTask('${c.id}')"/>
+              <button class="btn-add" onclick="window._addTask('${c.id}')">+ Aggiungi</button>
+            </div>
+            <div class="tasks-list" id="list-${c.id}"></div>
+          </div>`
+        ).join('')}
+      </div>`
+    ).join('');
+
+    switchG(GESTIONALI[0].id);
+  }
+
+  function switchG(gid) {
+    activeG = gid;
+    const g = GESTIONALI.find(x => x.id === gid);
+    applyColor(g.color, g.dim);
+    document.getElementById('master-title').textContent = g.name;
+
+    GESTIONALI.forEach(x => {
+      document.getElementById(`gtab-${x.id}`)?.classList.toggle('active', x.id === gid);
+      document.getElementById(`gpanel-${x.id}`)?.classList.toggle('active', x.id === gid);
+    });
+
+    // Build c-tabs for this gestionale
+    document.getElementById('c-tabs').innerHTML = g.companies.map(c =>
+      `<button class="c-tab" id="ctab-${c.id}" onclick="window._switchC('${gid}','${c.id}')">
+        ${c.name} <span class="c-tab-count" id="ccnt-${c.id}">0</span>
+      </button>`
+    ).join('');
+
+    switchC(gid, activeC[gid] || g.companies[0].id);
+  }
+  window._switchG = switchG;
+
+  function switchC(gid, cid) {
+    activeC[gid] = cid;
+    const g = GESTIONALI.find(x => x.id === gid);
+    const c = g.companies.find(x => x.id === cid);
+    applyColor(c.color, c.dim);
+
+    g.companies.forEach(x => {
+      document.getElementById(`ctab-${x.id}`)?.classList.toggle('active', x.id === cid);
+      document.getElementById(`cpanel-${x.id}`)?.classList.toggle('active', x.id === cid);
+    });
+
+    renderTasks(cid);
+  }
+  window._switchC = switchC;
+
+  function updateCTabCount(cid) {
+    const el = document.getElementById(`ccnt-${cid}`);
+    if (el) el.textContent = Object.keys(allTasks[cid] || {}).length;
+  }
+
+  // ── Stats & Render ──────────────────────────────────────────
+  function calcStats(cid) {
+    const arr = Object.values(allTasks[cid] || {});
+    let totalTasks = arr.length, doneTasks = 0, totalSubs = 0, doneSubs = 0;
+    arr.forEach(t => {
+      if (t.status === 'done') doneTasks++;
+      const subs = t.subtasks ? Object.values(t.subtasks) : [];
+      totalSubs += subs.length;
+      doneSubs  += subs.filter(s => s.status === 'done').length;
+    });
+    return { totalTasks, doneTasks, totalSubs, doneSubs };
+  }
+
+  function renderTasks(cid) {
+    const tasks = allTasks[cid] || {};
+    const statusOrder = { inprogress:0, todo:1, incomplete:2, missingfiles:3, done:4 };
+    const arr = Object.entries(tasks).sort((a,b) => {
+      const so = (statusOrder[a[1].status]??1) - (statusOrder[b[1].status]??1);
+      return so !== 0 ? so : (a[1].createdAt||0) - (b[1].createdAt||0);
+    });
+
+    const { totalTasks, doneTasks, totalSubs, doneSubs } = calcStats(cid);
+    const totalItems = totalTasks + totalSubs;
+    const doneItems  = doneTasks  + doneSubs;
+    const pct = totalItems > 0 ? Math.round(doneItems / totalItems * 100) : 0;
+
+    const statsEl = document.getElementById(`stats-${cid}`);
+    if (statsEl) statsEl.innerHTML = `
+      <div class="stat"><div class="stat-label">Task</div><div class="stat-num">${totalTasks}</div></div>
+      <div class="stat"><div class="stat-label">Sub-task</div><div class="stat-num">${totalSubs}</div></div>
+      <div class="stat"><div class="stat-label">Completate</div><div class="stat-num hl">${doneItems}</div></div>
+      <div class="stat"><div class="stat-label">Progresso</div><div class="stat-num hl">${pct}%</div>
+        <div class="stat-bar-inner"><div class="stat-bar-fill" style="width:${pct}%"></div></div></div>`;
+
+    const listEl = document.getElementById(`list-${cid}`);
+    if (!listEl) return;
+
+    if (arr.length === 0) {
+      listEl.innerHTML = `<div class="empty-state">📋 Nessuna task ancora.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = arr.map(([tid, task]) => renderTaskWrapper(cid, tid, task)).join('');
+
+    openAccordions.forEach(tid => {
+      document.getElementById(`sub-panel-${tid}`)?.classList.add('open');
+      document.getElementById(`expand-btn-${tid}`)?.classList.add('open');
+      document.getElementById(`wrap-${tid}`)?.classList.add('has-subtasks-open');
+    });
+
+    if (editingId) {
+      const inputId = editingId.type === 'subtask' ? `sedit-${editingId.sid}` : `tedit-${editingId.tid}`;
+      setTimeout(() => { const inp = document.getElementById(inputId); if (inp) { inp.focus(); inp.select(); } }, 30);
+    }
+  }
+
+  function renderTaskWrapper(cid, tid, task) {
+    const subtasks = task.subtasks ? Object.entries(task.subtasks).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)) : [];
+    const subCount = subtasks.length;
+    const doneSubs = subtasks.filter(([,s]) => s.status === 'done').length;
+    const incompleteSubs = subCount - doneSubs;
+    const allDone = subCount > 0 && doneSubs === subCount;
+    const isOpen  = openAccordions.has(tid);
+    const isEditingTask = editingId?.type === 'task' && editingId?.tid === tid;
+
+    const statusLabel = { todo:'Da fare', inprogress:'In corso', done:'Completata', incomplete:'Incarico incompleto', missingfiles:'File mancanti' }[task.status] || 'Da fare';
+    const badgeCls    = { todo:'badge-todo', inprogress:'badge-inprogress', done:'badge-done', incomplete:'badge-incomplete', missingfiles:'badge-missingfiles' }[task.status] || 'badge-todo';
+    const date = task.createdAt ? new Date(task.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}) : '';
+    const expandBtnCls = `expand-btn${incompleteSubs>0&&subCount>0?' has-incomplete':''}${allDone?' all-done':''}`;
+
+    const expandBtn = `<button class="${expandBtnCls} ${subCount===0?'no-sub':''}" id="expand-btn-${tid}" onclick="window._toggleAccordion('${tid}')"><span class="arrow">▶</span><span class="sub-count">${subCount}</span></button>`;
+
+    const taskRow = `
+      <div class="task-item status-${task.status||'todo'}" id="task-${tid}">
+        ${expandBtn}
+        ${isEditingTask
+          ? `<input class="task-name-edit" id="tedit-${tid}" value="${escHtml(task.name)}" onkeydown="if(event.key==='Enter') window._saveTaskEdit('${cid}','${tid}'); if(event.key==='Escape') window._cancelEdit()"/>`
+          : `<span class="task-name">${escHtml(task.name)}</span>`}
+        <div class="task-meta">
+          ${!isEditingTask ? `<span class="status-badge ${badgeCls}">${statusLabel}</span>` : ''}
+          <select class="status-select" onchange="window._updateStatus('${cid}','${tid}',this.value)">
+            <option value="todo"         ${task.status==='todo'         ?'selected':''}>Da fare</option>
+            <option value="inprogress"   ${task.status==='inprogress'   ?'selected':''}>In corso</option>
+            <option value="done"         ${task.status==='done'         ?'selected':''}>Completata</option>
+            <option value="incomplete"   ${task.status==='incomplete'   ?'selected':''}>Incompleto</option>
+            <option value="missingfiles" ${task.status==='missingfiles' ?'selected':''}>File mancanti</option>
+          </select>
+          <span class="edit-only" style="display:contents">
+            ${!isEditingTask
+              ? `<button class="icon-btn" onclick="window._startTaskEdit('${cid}','${tid}')">✏️</button>`
+              : `<button class="icon-btn" onclick="window._saveTaskEdit('${cid}','${tid}')">💾</button>
+                 <button class="icon-btn" onclick="window._cancelEdit()">✕</button>`}
+            <button class="icon-btn delete" onclick="window._deleteTask('${cid}','${tid}')">🗑</button>
+          </span>
+          ${date ? `<span class="task-date">${date}</span>` : ''}
+        </div>
+      </div>`;
+
+    const subtaskRows = subtasks.map(([sid, sub]) => renderSubtaskRow(cid, tid, sid, sub)).join('');
+    const subPanel = `
+      <div class="subtasks-panel" id="sub-panel-${tid}">
+        <div class="subtasks-list">${subCount===0 ? `<div style="font-size:0.7rem;color:var(--muted)">Nessuna sub-task ancora.</div>` : subtaskRows}</div>
+        <div class="add-subtask-row edit-only">
+          <input type="text" id="sub-input-${tid}" placeholder="Nuova sub-task…" onkeydown="if(event.key==='Enter') window._addSubtask('${cid}','${tid}')"/>
+          <button class="btn-sub" onclick="window._addSubtask('${cid}','${tid}')">+ Sub-task</button>
+        </div>
+      </div>`;
+
+    return `<div class="task-wrapper${isOpen?' has-subtasks-open':''}" id="wrap-${tid}">${taskRow}${subPanel}</div>`;
+  }
+
+  function renderSubtaskRow(cid, tid, sid, sub) {
+    const isEditing = editingId?.type === 'subtask' && editingId?.sid === sid;
+    const badgeCls = { todo:'badge-todo', inprogress:'badge-inprogress', done:'badge-done', incomplete:'badge-incomplete', missingfiles:'badge-missingfiles' }[sub.status] || 'badge-todo';
+    const label    = { todo:'Da fare', inprogress:'In corso', done:'Completata', incomplete:'Incompleto', missingfiles:'File mancanti' }[sub.status] || 'Da fare';
+    return `
+      <div class="subtask-item status-${sub.status||'todo'}" id="subtask-${sid}">
+        <span class="subtask-arrow">↳</span>
+        ${isEditing
+          ? `<input class="subtask-name-edit" id="sedit-${sid}" value="${escHtml(sub.name)}" onkeydown="if(event.key==='Enter') window._saveSubEdit('${cid}','${tid}','${sid}'); if(event.key==='Escape') window._cancelEdit()"/>`
+          : `<span class="subtask-name">${escHtml(sub.name)}</span>`}
+        <div class="task-meta">
+          ${!isEditing ? `<span class="status-badge ${badgeCls}" style="font-size:0.56rem">${label}</span>` : ''}
+          <select class="status-select" style="font-size:0.63rem;padding:0.2rem 0.4rem" onchange="window._updateSubStatus('${cid}','${tid}','${sid}',this.value)">
+            <option value="todo"         ${sub.status==='todo'         ?'selected':''}>Da fare</option>
+            <option value="inprogress"   ${sub.status==='inprogress'   ?'selected':''}>In corso</option>
+            <option value="done"         ${sub.status==='done'         ?'selected':''}>Completata</option>
+            <option value="incomplete"   ${sub.status==='incomplete'   ?'selected':''}>Incompleto</option>
+            <option value="missingfiles" ${sub.status==='missingfiles' ?'selected':''}>File mancanti</option>
+          </select>
+          <span class="edit-only" style="display:contents">
+            ${!isEditing
+              ? `<button class="icon-btn" style="font-size:0.72rem" onclick="window._startSubEdit('${cid}','${tid}','${sid}')">✏️</button>`
+              : `<button class="icon-btn" style="font-size:0.72rem" onclick="window._saveSubEdit('${cid}','${tid}','${sid}')">💾</button>
+                 <button class="icon-btn" style="font-size:0.72rem" onclick="window._cancelEdit()">✕</button>`}
+            <button class="icon-btn delete" style="font-size:0.72rem" onclick="window._deleteSubtask('${cid}','${tid}','${sid}')">🗑</button>
+          </span>
+        </div>
+      </div>`;
+  }
+
+  // ── Accordion ────────────────────────────────────────────────
+  window._toggleAccordion = function(tid) {
+    const panel = document.getElementById(`sub-panel-${tid}`);
+    const btn   = document.getElementById(`expand-btn-${tid}`);
+    const wrap  = document.getElementById(`wrap-${tid}`);
+    if (!panel) return;
+    if (openAccordions.has(tid)) {
+      openAccordions.delete(tid);
+      panel.classList.remove('open'); btn?.classList.remove('open'); wrap?.classList.remove('has-subtasks-open');
+    } else {
+      openAccordions.add(tid);
+      panel.classList.add('open'); btn?.classList.add('open'); wrap?.classList.add('has-subtasks-open');
+      setTimeout(() => document.getElementById(`sub-input-${tid}`)?.focus(), 50);
+    }
+  };
+
+  // ── CRUD ─────────────────────────────────────────────────────
+  window._addTask = async function(cid) {
+    const inp = document.getElementById(`input-${cid}`);
+    const name = inp.value.trim(); if (!name || !db) return;
+    try { await window._fbPush(`tasks/${cid}`, { name, status:'todo', createdAt:Date.now() }); inp.value=''; toast('Task aggiunta ✓'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._updateStatus = async function(cid, tid, status) {
+    if (!db) return;
+    try { await window._fbSet(`tasks/${cid}/${tid}/status`, status); toast('Stato aggiornato ✓'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._deleteTask = async function(cid, tid) {
+    if (!db) return;
+    const task = allTasks[cid]?.[tid];
+    const n = task?.subtasks ? Object.keys(task.subtasks).length : 0;
+    if (!confirm(n>0 ? `Eliminare task e ${n} sub-task?` : 'Eliminare task?')) return;
+    try { await window._fbRemove(`tasks/${cid}/${tid}`); openAccordions.delete(tid); toast('Task eliminata'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._startTaskEdit = function(cid, tid) { editingId={type:'task',cid,tid}; renderTasks(cid); };
+  window._saveTaskEdit = async function(cid, tid) {
+    const inp = document.getElementById(`tedit-${tid}`); if (!inp) return;
+    const name = inp.value.trim(); if (!name||!db) return;
+    try { await window._fbSet(`tasks/${cid}/${tid}/name`, name); editingId=null; toast('Task modificata ✓'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._addSubtask = async function(cid, tid) {
+    const inp = document.getElementById(`sub-input-${tid}`);
+    const name = inp.value.trim(); if (!name||!db) return;
+    try { await window._fbPush(`tasks/${cid}/${tid}/subtasks`, {name,status:'todo',createdAt:Date.now()}); inp.value=''; openAccordions.add(tid); toast('Sub-task aggiunta ✓'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._updateSubStatus = async function(cid, tid, sid, status) {
+    if (!db) return;
+    try { await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/status`, status); toast('Stato aggiornato ✓'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._deleteSubtask = async function(cid, tid, sid) {
+    if (!db) return;
+    if (!confirm('Eliminare sub-task?')) return;
+    try { await window._fbRemove(`tasks/${cid}/${tid}/subtasks/${sid}`); toast('Sub-task eliminata'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._startSubEdit = function(cid, tid, sid) { editingId={type:'subtask',cid,tid,sid}; openAccordions.add(tid); renderTasks(cid); };
+  window._saveSubEdit = async function(cid, tid, sid) {
+    const inp = document.getElementById(`sedit-${sid}`); if (!inp) return;
+    const name = inp.value.trim(); if (!name||!db) return;
+    try { await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/name`, name); editingId=null; toast('Sub-task modificata ✓'); }
+    catch(e) { toast('Errore: '+e.message); }
+  };
+  window._cancelEdit = function() {
+    const prev = editingId; editingId = null;
+    if (prev) {
+      const g = GESTIONALI.find(g => g.companies.some(c => c.id === prev.cid));
+      if (g && allTasks[prev.cid]?.[prev.tid]) renderTasks(prev.cid);
+    }
+  };
+
+  // ── Utils ────────────────────────────────────────────────────
+  function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  let toastTimer;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent=msg; el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>el.classList.remove('show'), 2200);
+  }
+
+  initFirebase();
+</script>
+</body>
+</html>
