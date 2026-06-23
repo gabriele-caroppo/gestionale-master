@@ -77,7 +77,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 
 /* ── TASKS ── */
 .task-list{display:flex;flex-direction:column;gap:0.4rem;}
-.task-row{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:0.75rem 0.9rem;display:flex;align-items:center;gap:0.7rem;transition:background 0.12s;cursor:default;}
+.task-row{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:0.75rem 0.9rem;display:flex;flex-direction:row;align-items:center;gap:0.7rem;transition:background 0.12s;cursor:default;overflow:hidden;}
 .task-row:hover{background:var(--s2);}
 .task-row.s-done .task-name{text-decoration:line-through;color:var(--text3);}
 .task-row.s-inprogress{border-left:2px solid var(--yellow);}
@@ -85,8 +85,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .task-row.s-incomplete{border-left:2px solid var(--orange);}
 .task-row.s-missingfiles{border-left:2px solid var(--purple);}
 .task-row.s-todo{border-left:2px solid var(--border2);}
-.task-name{flex:1;font-size:0.85rem;font-weight:500;min-width:0;word-break:break-word;}
-.task-meta{display:flex;align-items:center;gap:0.4rem;flex-shrink:0;}
+.task-name{flex:1;font-size:0.85rem;font-weight:500;min-width:0;word-break:break-word;overflow:hidden;white-space:normal;}
+.task-meta{display:flex;align-items:center;gap:0.4rem;flex-shrink:0;flex-wrap:nowrap;}
 .badge{font-size:0.58rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:0.18rem 0.5rem;border-radius:20px;white-space:nowrap;}
 .badge-todo{background:rgba(255,255,255,0.06);color:var(--text3);}
 .badge-inprogress{background:rgba(233,196,106,0.15);color:var(--yellow);}
@@ -261,6 +261,14 @@ body.readonly .sel{display:none!important;}
   .split-grid{grid-template-columns:1fr;}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
   .add-row{flex-wrap:wrap;}
+  .task-row{flex-direction:row!important;align-items:center!important;flex-wrap:nowrap!important;}
+  .task-name{font-size:0.8rem;min-width:0;flex:1;overflow:hidden;}
+  .task-meta{gap:0.3rem;flex-shrink:0;}
+  .task-meta .badge{display:none;}
+  .badge-project{display:none;}
+  .exp-btn{flex-shrink:0;}
+  .sub-row{flex-direction:row!important;flex-wrap:nowrap!important;}
+  .sub-name{font-size:0.75rem;min-width:0;flex:1;overflow:hidden;}
 }
 @media(min-width:681px){
   #toast{bottom:1.5rem;right:1.5rem;}
@@ -543,13 +551,21 @@ async function initFirebase() {
   onValue(ref(db,'finanze'),async snap=>{
     finData=snap.val()||{entrate:{},uscite:{},abbonamenti:{}};
     ['entrate','uscite','abbonamenti'].forEach(k=>{if(!finData[k])finData[k]={};});
-    // Seed entrate se vuote
-    if(Object.keys(finData.entrate).length===0){
-      for(const e of ENTRATE_SEED) await push(ref(db,'finanze/entrate'),{...e,createdAt:new Date(e.date).getTime()});
-    }
-    // Seed abbonamenti se vuoti
-    if(Object.keys(finData.abbonamenti).length===0){
-      for(const a of ABBONAMENTI_DEFAULT) await push(ref(db,'finanze/abbonamenti'),{...a,createdAt:Date.now()});
+    // Seed una volta sola — flag globale per evitare duplicati
+    if(!window._seeded){
+      window._seeded = true;
+      // Entrate: seed solo se vuote
+      if(Object.keys(finData.entrate).length===0){
+        for(const e of ENTRATE_SEED) await push(ref(db,'finanze/entrate'),{...e,createdAt:new Date(e.date).getTime()});
+      }
+      // Abbonamenti: cancella tutto e riscrivi — evita duplicati da seed multipli
+      const abbCount = Object.keys(finData.abbonamenti).length;
+      const abbTotal = Object.values(finData.abbonamenti).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
+      // Se ci sono più di 10 abbonamenti OPPURE il totale supera €200 → duplicati, resetta
+      if(abbCount === 0 || abbCount > 10 || abbTotal > 200){
+        await set(ref(db,'finanze/abbonamenti'), null);
+        for(const a of ABBONAMENTI_DEFAULT) await push(ref(db,'finanze/abbonamenti'),{...a,createdAt:Date.now()});
+      }
     }
     renderFinanze(); renderDashboard();
   });
