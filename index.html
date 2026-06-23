@@ -7,32 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --bg: #0d0d0d;
-  --s1: #161616;
-  --s2: #1e1e1e;
-  --s3: #242424;
-  --s4: #2a2a2a;
-  --border: #2e2e2e;
-  --border2: #3a3a3a;
-  --text: #f0f0f0;
-  --text2: #8a8a8a;
-  --text3: #555;
-  --accent: #e63946;
-  --accent-dim: rgba(230,57,70,0.1);
-  --accent2: #457b9d;
-  --green: #52b788;
-  --yellow: #e9c46a;
-  --orange: #f4a261;
-  --purple: #9b72cf;
-  --red: #e63946;
-  --r: 8px;
-  --r2: 12px;
-  --sidebar: 220px;
+  --bg: #0d0d0d; --s1: #161616; --s2: #1e1e1e; --s3: #242424; --s4: #2a2a2a;
+  --border: #2e2e2e; --border2: #3a3a3a;
+  --text: #f0f0f0; --text2: #8a8a8a; --text3: #555;
+  --accent: #e63946; --accent-dim: rgba(230,57,70,0.1); --accent2: #457b9d;
+  --green: #52b788; --yellow: #e9c46a; --orange: #f4a261; --purple: #9b72cf; --red: #e63946;
+  --r: 8px; --r2: 12px; --sidebar: 220px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;}
 
-/* ── SIDEBAR ── */
+/* ── SIDEBAR desktop ── */
 #sidebar{width:var(--sidebar);min-height:100vh;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
 .sb-logo{padding:1.4rem 1.2rem 1rem;border-bottom:1px solid var(--border);}
 .sb-logo .logo-mark{font-weight:700;font-size:1.1rem;letter-spacing:-0.02em;color:var(--text);}
@@ -45,7 +30,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .sb-item.active{background:var(--accent-dim);color:var(--accent);}
 .sb-item .sb-icon{width:16px;height:16px;flex-shrink:0;opacity:0.7;}
 .sb-item.active .sb-icon{opacity:1;}
-.sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .sb-badge{margin-left:auto;font-size:0.58rem;font-weight:700;background:var(--s3);border-radius:10px;padding:1px 6px;color:var(--text3);}
 .sb-item.active .sb-badge{background:var(--accent);color:#fff;}
 .sb-spacer{flex:1;}
@@ -54,6 +38,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .conn-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);}
 .conn-dot.live{background:var(--green);animation:pulse 2.5s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── BOTTOM NAV mobile ── */
+#bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--border);z-index:50;padding-bottom:env(safe-area-inset-bottom,0);}
+.bn-inner{display:flex;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0.65rem 0.3rem;border:none;background:none;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:0.55rem;font-weight:600;cursor:pointer;transition:color 0.15s;letter-spacing:0.03em;text-transform:uppercase;position:relative;}
+.bn-item.active{color:var(--accent);}
+.bn-item svg{width:20px;height:20px;}
+.bn-badge{position:absolute;top:5px;right:calc(50% - 18px);background:var(--accent);color:#fff;font-size:0.48rem;font-weight:800;border-radius:8px;padding:1px 4px;min-width:14px;text-align:center;display:none;}
+
+/* ── APP LAYOUT ── */
+#app-body{display:flex;flex:1;min-height:0;}
 
 /* ── MAIN ── */
 #main{flex:1;min-width:0;overflow-y:auto;}
@@ -99,17 +94,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .badge-incomplete{background:rgba(244,162,97,0.15);color:var(--orange);}
 .badge-missingfiles{background:rgba(155,114,207,0.15);color:var(--purple);}
 .badge-project{background:var(--s3);color:var(--text2);font-size:0.56rem;padding:0.15rem 0.45rem;border-radius:20px;text-transform:uppercase;letter-spacing:0.04em;}
-
-/* ── STATUS SELECT ── */
 .sel{font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:600;background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:0.22rem 0.4rem;cursor:pointer;outline:none;}
 .sel option{background:var(--s2);}
-
-/* ── ICON BUTTONS ── */
 .ibtn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:0.78rem;padding:0.2rem;border-radius:4px;transition:color 0.15s;line-height:1;flex-shrink:0;}
 .ibtn:hover{color:var(--text);}
 .ibtn.del:hover{color:var(--red);}
-
-/* ── ADD ROW ── */
 .add-row{display:flex;gap:0.6rem;align-items:center;margin-bottom:1rem;}
 .add-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;padding:0.6rem 0.9rem;outline:none;transition:border-color 0.15s;}
 .add-input:focus{border-color:var(--accent);}
@@ -135,8 +124,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .sub-add-row input{flex:1;background:var(--s3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.78rem;padding:0.4rem 0.65rem;outline:none;}
 .sub-add-row input:focus{border-color:var(--accent);}
 .sub-add-row input::placeholder{color:var(--text3);}
-
-/* ── EXPAND BTN ── */
 .exp-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:0.6rem;padding:0.15rem 0.3rem;border-radius:4px;display:flex;align-items:center;gap:3px;flex-shrink:0;}
 .exp-btn:hover{color:var(--text);}
 .exp-arrow{display:inline-block;transition:transform 0.2s;}
@@ -144,8 +131,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .exp-count{font-size:0.56rem;font-weight:700;background:var(--s3);border-radius:8px;padding:1px 5px;}
 .exp-btn.has-inc .exp-count{background:rgba(233,196,106,0.2);color:var(--yellow);}
 .exp-btn.all-done .exp-count{background:rgba(82,183,136,0.15);color:var(--green);}
-
-/* ── EDIT INPUT ── */
 .edit-inp{flex:1;background:var(--s2);border:1px solid var(--accent);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.85rem;padding:0.25rem 0.6rem;outline:none;min-width:0;}
 
 /* ── TABS ── */
@@ -157,16 +142,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .tab-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
 .tab-count{font-size:0.56rem;font-weight:700;background:var(--s2);border-radius:8px;padding:1px 5px;margin-left:4px;}
 .tab.active .tab-count{background:var(--accent);color:#fff;}
-
-/* ── PANELS ── */
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-
-/* ── SECTION HEADER ── */
 .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.9rem;gap:1rem;}
 .sec-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text2);}
-
-/* ── DIVIDER ── */
 .divider{height:1px;background:var(--border);margin:1.4rem 0;}
 
 /* ── FINANZE ── */
@@ -204,33 +183,26 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .cal-nav button:hover{border-color:var(--border2);color:var(--text);}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
 .cal-dow{text-align:center;font-size:0.58rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;padding:0.3rem 0;}
-.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:0.72rem;font-weight:500;cursor:pointer;position:relative;transition:all 0.12s;border:1px solid transparent;}
-.cal-day:hover{background:var(--s2);border-color:var(--border);}
-.cal-day.empty{cursor:default;pointer-events:none;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:0.72rem;font-weight:500;cursor:pointer;position:relative;transition:all 0.12s;border:1px solid transparent;user-select:none;}
+.cal-day:hover:not(.empty):not(.future){background:var(--s2);border-color:var(--border);}
+.cal-day.empty{pointer-events:none;}
 .cal-day.today{border-color:var(--border2);color:var(--text);}
-.cal-day.future{color:var(--text3);cursor:default;pointer-events:none;}
+.cal-day.future{color:var(--text3);pointer-events:none;}
 .cal-day.has-A{background:rgba(82,183,136,0.2);border-color:rgba(82,183,136,0.4);color:#52b788;font-weight:700;}
 .cal-day.has-B{background:rgba(233,196,106,0.2);border-color:rgba(233,196,106,0.4);color:#e9c46a;font-weight:700;}
 .cal-day.has-C{background:rgba(69,123,157,0.2);border-color:rgba(69,123,157,0.4);color:#457b9d;font-weight:700;}
-.cal-day.has-A::after,.cal-day.has-B::after,.cal-day.has-C::after{content:attr(data-split);position:absolute;bottom:2px;right:3px;font-size:0.48rem;font-weight:800;opacity:0.9;}
-.split-legend{display:flex;gap:1rem;margin-top:0.8rem;}
+.cal-day.has-A::after,.cal-day.has-B::after,.cal-day.has-C::after{content:attr(data-split);position:absolute;bottom:2px;right:3px;font-size:0.46rem;font-weight:800;opacity:0.85;}
+.split-legend{display:flex;gap:1rem;margin-top:0.8rem;flex-wrap:wrap;}
 .split-leg-item{display:flex;align-items:center;gap:5px;font-size:0.65rem;color:var(--text2);}
 .split-leg-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0;}
 
 /* ── TRAINING SPLITS ── */
 .split-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;margin-bottom:1.4rem;}
-.split-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:0.9rem 1rem;cursor:pointer;transition:all 0.15s;}
-.split-card:hover{border-color:var(--border2);}
-.split-card.today{border-color:var(--accent);background:var(--accent-dim);}
+.split-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:0.9rem 1rem;transition:all 0.15s;}
 .split-name{font-size:0.75rem;font-weight:700;margin-bottom:0.2rem;}
 .split-muscles{font-size:0.62rem;color:var(--text2);line-height:1.4;}
 .split-last{font-size:0.6rem;color:var(--text3);margin-top:0.5rem;}
-.log-row{display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:1px solid var(--border);}
-.log-row:last-child{border-bottom:none;}
-.log-date{font-size:0.7rem;color:var(--text2);min-width:70px;}
-.log-split{font-size:0.8rem;font-weight:600;}
 .log-split-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.log-note{flex:1;font-size:0.75rem;color:var(--text2);}
 .streak-bar{display:flex;gap:4px;margin:0.5rem 0;flex-wrap:wrap;}
 .streak-day{width:18px;height:18px;border-radius:4px;background:var(--s3);}
 .streak-day.done-A{background:var(--green);}
@@ -238,15 +210,16 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .streak-day.done-C{background:var(--accent2);}
 .streak-day.rest{background:var(--s2);border:1px solid var(--border);}
 
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+/* ── MODAL training — sheet dal basso ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);display:flex;align-items:flex-end;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.2s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r2);padding:1.4rem;width:320px;transform:translateY(8px);transition:transform 0.2s;}
+.modal{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r2) var(--r2) 0 0;padding:1.2rem 1.4rem 1.6rem;width:100%;max-width:480px;transform:translateY(24px);transition:transform 0.25s cubic-bezier(0.34,1.2,0.64,1);}
 .modal-overlay.open .modal{transform:translateY(0);}
-.modal-title{font-size:0.95rem;font-weight:700;margin-bottom:1rem;}
-.modal-date{font-size:0.75rem;color:var(--text2);margin-bottom:1rem;padding:0.5rem 0.75rem;background:var(--s2);border-radius:6px;}
+.modal-handle{width:36px;height:3px;background:var(--border2);border-radius:3px;margin:0 auto 1rem;}
+.modal-title{font-size:0.95rem;font-weight:700;margin-bottom:0.8rem;}
+.modal-date{font-size:0.78rem;color:var(--text2);margin-bottom:1rem;padding:0.5rem 0.75rem;background:var(--s2);border-radius:6px;font-weight:500;}
 .split-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:1rem;}
-.split-btn{padding:0.6rem 0;border-radius:var(--r);border:2px solid var(--border);background:var(--s2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:center;}
+.split-btn{padding:0.65rem 0;border-radius:var(--r);border:2px solid var(--border);background:var(--s2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:center;line-height:1.4;}
 .split-btn:hover{border-color:var(--border2);color:var(--text);}
 .split-btn.sel-A{border-color:#52b788;background:rgba(82,183,136,0.15);color:#52b788;}
 .split-btn.sel-B{border-color:#e9c46a;background:rgba(233,196,106,0.15);color:#e9c46a;}
@@ -256,16 +229,14 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 .modal-note::placeholder{color:var(--text3);}
 .modal-actions{display:flex;gap:0.5rem;justify-content:flex-end;}
 
-/* ── DASHBOARD TODAY TASKS ── */
+/* ── DASHBOARD ── */
 .today-section{margin-bottom:1.6rem;}
 .today-section h3{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:0.7rem;}
 .urgent-pill{display:inline-flex;align-items:center;gap:4px;background:rgba(230,57,70,0.12);color:var(--red);font-size:0.62rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:20px;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:0.6rem;}
-
-/* ── EMPTY STATE ── */
 .empty{text-align:center;padding:2rem;color:var(--text3);font-size:0.78rem;border:1px dashed var(--border);border-radius:var(--r);}
 
 /* ── TOAST ── */
-#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--s2);border:1px solid var(--border2);color:var(--text);font-size:0.76rem;font-weight:500;padding:0.65rem 1rem;border-radius:var(--r);opacity:0;transform:translateY(6px);transition:all 0.2s;z-index:999;pointer-events:none;}
+#toast{position:fixed;bottom:80px;right:1rem;background:var(--s2);border:1px solid var(--border2);color:var(--text);font-size:0.76rem;font-weight:500;padding:0.65rem 1rem;border-radius:var(--r);opacity:0;transform:translateY(6px);transition:all 0.2s;z-index:999;pointer-events:none;}
 #toast.show{opacity:1;transform:translateY(0);}
 
 /* ── LOADING ── */
@@ -274,7 +245,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading p{font-size:0.68rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
 
-/* ── LOCK TOGGLE ── */
+/* ── LOCK / EDIT ── */
 #edit-banner{display:none;background:var(--accent-dim);border-bottom:1px solid var(--accent);padding:0.35rem 2rem;font-size:0.68rem;font-weight:600;color:var(--accent);letter-spacing:0.05em;text-transform:uppercase;text-align:center;}
 body:not(.readonly) #edit-banner{display:block;}
 body.readonly .edit-only{display:none!important;}
@@ -283,10 +254,16 @@ body.readonly .sel{display:none!important;}
 /* ── MOBILE ── */
 @media(max-width:680px){
   #sidebar{display:none;}
-  .fin-grid{grid-template-columns:1fr;}
-  .split-grid{grid-template-columns:1fr 1fr;}
-  .page{padding:1rem;}
+  #bottom-nav{display:block;}
+  #main{padding-bottom:72px;}
+  .page{padding:1rem 0.9rem;}
+  .fin-grid{grid-template-columns:1fr 1fr;}
+  .split-grid{grid-template-columns:1fr;}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .add-row{flex-wrap:wrap;}
+}
+@media(min-width:681px){
+  #toast{bottom:1.5rem;right:1.5rem;}
 }
 </style>
 </head>
@@ -298,12 +275,13 @@ body.readonly .sel{display:none!important;}
 <!-- MODAL TRAINING -->
 <div class="modal-overlay" id="train-modal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-title">🏋️ Registra sessione</div>
     <div class="modal-date" id="modal-day-label">—</div>
     <div class="split-btns">
-      <button class="split-btn" id="sbtn-A" onclick="selectSplit('A')">A<br><span style="font-size:0.58rem;font-weight:400;opacity:0.8">Gambe+Spalle</span></button>
-      <button class="split-btn" id="sbtn-B" onclick="selectSplit('B')">B<br><span style="font-size:0.58rem;font-weight:400;opacity:0.8">Petto+Tric</span></button>
-      <button class="split-btn" id="sbtn-C" onclick="selectSplit('C')">C<br><span style="font-size:0.58rem;font-weight:400;opacity:0.8">Schiena+Bic</span></button>
+      <button class="split-btn" id="sbtn-A" onclick="selectSplit('A')">A<br><span style="font-size:0.56rem;font-weight:400;opacity:0.8">Gambe+Spalle</span></button>
+      <button class="split-btn" id="sbtn-B" onclick="selectSplit('B')">B<br><span style="font-size:0.56rem;font-weight:400;opacity:0.8">Petto+Tric</span></button>
+      <button class="split-btn" id="sbtn-C" onclick="selectSplit('C')">C<br><span style="font-size:0.56rem;font-weight:400;opacity:0.8">Schiena+Bic</span></button>
     </div>
     <textarea class="modal-note" id="modal-note" rows="2" placeholder="Note opzionali…"></textarea>
     <div class="modal-actions">
@@ -314,16 +292,16 @@ body.readonly .sel{display:none!important;}
   </div>
 </div>
 
-<div id="app" style="display:none">
+<div id="app" style="display:none;flex-direction:column;min-height:100vh;">
 <div id="edit-banner">✏️ Modalità modifica attiva</div>
+<div id="app-body">
 
-<!-- SIDEBAR -->
+<!-- SIDEBAR desktop -->
 <nav id="sidebar">
   <div class="sb-logo">
     <div class="logo-mark">GC <span>·</span> Master</div>
     <div class="logo-sub">Dashboard personale</div>
   </div>
-
   <div class="sb-section">Navigazione</div>
   <div class="sb-nav">
     <button class="sb-item active" onclick="showPage('dashboard')">
@@ -332,8 +310,7 @@ body.readonly .sel{display:none!important;}
     </button>
     <button class="sb-item" onclick="showPage('progetti')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h4l2 2h6v8H2z"/></svg>
-      Progetti
-      <span class="sb-badge" id="badge-progetti">0</span>
+      Progetti <span class="sb-badge" id="badge-progetti">0</span>
     </button>
     <button class="sb-item" onclick="showPage('training')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
@@ -344,7 +321,6 @@ body.readonly .sel{display:none!important;}
       Finanze
     </button>
   </div>
-
   <div class="sb-spacer"></div>
   <div class="sb-footer">
     <div style="display:flex;gap:6px;margin-bottom:0.5rem;">
@@ -358,19 +334,13 @@ body.readonly .sel{display:none!important;}
 <!-- MAIN -->
 <div id="main">
 
-  <!-- ══ DASHBOARD ══ -->
+  <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
-    <div class="ph">
-      <div class="ph-row">
-        <div>
-          <h1 id="dash-greeting">Ciao, Gabriele 👋</h1>
-          <p id="dash-date">—</p>
-        </div>
-      </div>
-    </div>
-
+    <div class="ph"><div class="ph-row"><div>
+      <h1 id="dash-greeting">Ciao, Gabriele 👋</h1>
+      <p id="dash-date">—</p>
+    </div></div></div>
     <div class="stats-grid" id="dash-stats"></div>
-
     <div class="today-section edit-only">
       <h3>Aggiungi task rapida</h3>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
@@ -380,53 +350,26 @@ body.readonly .sel{display:none!important;}
         <button class="btn-primary" onclick="dashQuickAdd()">+ Aggiungi</button>
       </div>
     </div>
-
-    <div class="today-section">
-      <h3>Da fare — priorità</h3>
-      <div id="dash-urgent" class="task-list"></div>
-    </div>
-
-    <div class="today-section">
-      <h3>In corso</h3>
-      <div id="dash-inprogress" class="task-list"></div>
-    </div>
-
-    <div class="today-section">
-      <h3>Scadenze finanziarie</h3>
-      <div id="dash-fin-alerts"></div>
-    </div>
-
-    <div class="today-section">
-      <h3>Training — prossima sessione</h3>
-      <div id="dash-training"></div>
-    </div>
+    <div class="today-section"><h3>Da fare — priorità</h3><div id="dash-urgent" class="task-list"></div></div>
+    <div class="today-section"><h3>In corso</h3><div id="dash-inprogress" class="task-list"></div></div>
+    <div class="today-section"><h3>Scadenze finanziarie</h3><div id="dash-fin-alerts"></div></div>
+    <div class="today-section"><h3>Training — prossima sessione</h3><div id="dash-training"></div></div>
   </div>
 
-  <!-- ══ PROGETTI ══ -->
+  <!-- PROGETTI -->
   <div class="page" id="page-progetti">
-    <div class="ph">
-      <h1>Progetti</h1>
-      <p>Task e sub-task per tutti i clienti e collaborazioni</p>
-    </div>
+    <div class="ph"><h1>Progetti</h1><p>Task e sub-task per tutti i clienti e collaborazioni</p></div>
     <div class="tabs" id="proj-tabs"></div>
     <div id="proj-panels"></div>
   </div>
 
-  <!-- ══ TRAINING ══ -->
+  <!-- TRAINING -->
   <div class="page" id="page-training">
-    <div class="ph">
-      <h1>Training</h1>
-      <p>Split 3x/settimana · Knee-safe · Clicca un giorno per registrare</p>
-    </div>
-
-    <!-- CALENDARIO -->
+    <div class="ph"><h1>Training</h1><p>Split 3x/settimana · Knee-safe · Clicca un giorno per registrare</p></div>
     <div class="train-cal-wrap">
       <div class="cal-header">
         <div class="cal-title" id="cal-month-title">—</div>
-        <div class="cal-nav">
-          <button onclick="calPrev()">◀</button>
-          <button onclick="calNext()">▶</button>
-        </div>
+        <div class="cal-nav"><button onclick="calPrev()">◀</button><button onclick="calNext()">▶</button></div>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="split-legend">
@@ -435,45 +378,34 @@ body.readonly .sel{display:none!important;}
         <div class="split-leg-item"><div class="split-leg-dot" style="background:#457b9d"></div>C — Schiena + Bicipiti</div>
       </div>
     </div>
-
     <div class="split-grid" id="split-cards"></div>
-
     <div class="divider"></div>
     <div class="sec-title" style="margin-bottom:0.8rem;">Streak ultimi 28 giorni</div>
     <div class="streak-bar" id="streak-bar"></div>
     <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;">🟢 A · 🟡 B · 🔵 C · Grigio = riposo</div>
   </div>
 
-  <!-- ══ FINANZE ══ -->
+  <!-- FINANZE -->
   <div class="page" id="page-finanze">
-    <div class="ph">
-      <h1>Finanze</h1>
-      <p>Entrate, uscite e abbonamenti — riepilogo mensile</p>
-    </div>
-
+    <div class="ph"><h1>Finanze</h1><p>Entrate, uscite e abbonamenti — riepilogo mensile</p></div>
     <div class="fin-grid" id="fin-summary"></div>
-
     <div class="tabs">
       <button class="tab active" onclick="showFinTab('entrate',this)">Entrate</button>
       <button class="tab" onclick="showFinTab('uscite',this)">Uscite</button>
       <button class="tab" onclick="showFinTab('abbonamenti',this)">Abbonamenti fissi</button>
     </div>
-
     <div id="fin-entrate" class="tab-panel active">
       <div class="add-row edit-only">
         <input class="add-input" id="fin-e-desc" placeholder="Descrizione (es. Fattura Magnetize luglio)"/>
         <input class="add-input" id="fin-e-amt" placeholder="€ Importo" style="max-width:110px;"/>
         <input type="text" class="add-input" id="fin-e-client" placeholder="Cliente" style="max-width:120px;"/>
         <select class="sel" id="fin-e-status" style="font-size:0.75rem;padding:0.5rem 0.6rem;">
-          <option value="pagato">Pagato</option>
-          <option value="attesa">In attesa</option>
-          <option value="scaduto">Scaduto</option>
+          <option value="pagato">Pagato</option><option value="attesa">In attesa</option><option value="scaduto">Scaduto</option>
         </select>
         <button class="btn-primary" onclick="addFinEntry('entrate')">+ Aggiungi</button>
       </div>
       <div class="card" id="fin-entrate-list"></div>
     </div>
-
     <div id="fin-uscite" class="tab-panel">
       <div class="add-row edit-only">
         <input class="add-input" id="fin-u-desc" placeholder="Descrizione (es. Dominio, Hosting)"/>
@@ -483,492 +415,370 @@ body.readonly .sel{display:none!important;}
       </div>
       <div class="card" id="fin-uscite-list"></div>
     </div>
-
     <div id="fin-abbonamenti" class="tab-panel">
       <div class="card" id="fin-abbonamenti-list"></div>
     </div>
   </div>
 
 </div><!-- /main -->
+</div><!-- /app-body -->
 </div><!-- /app -->
+
+<!-- BOTTOM NAV mobile -->
+<nav id="bottom-nav">
+  <div class="bn-inner">
+    <button class="bn-item active" id="bn-dashboard" onclick="showPage('dashboard')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Home
+    </button>
+    <button class="bn-item" id="bn-progetti" onclick="showPage('progetti')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h4l2 2h6v8H2z"/></svg>
+      Progetti
+      <span class="bn-badge" id="bn-badge-progetti">0</span>
+    </button>
+    <button class="bn-item" id="bn-training" onclick="showPage('training')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
+      Training
+    </button>
+    <button class="bn-item" id="bn-finanze" onclick="showPage('finanze')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
+      Finanze
+    </button>
+    <button class="bn-item" id="bn-lock" onclick="toggleEdit()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+      Lock
+    </button>
+  </div>
+</nav>
 
 <script type="module">
 
-// ══════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════
 const GESTIONALI = [
-  { id:'antonio', name:'Antonio', color:'#c0392b',
-    companies:[
-      {id:'focacciamo', name:'Focacciamo', color:'#c0392b'},
-      {id:'lamancha',   name:'Mancha',     color:'#ff7b00'},
-      {id:'futuri',     name:'Futuri Campioni', color:'#39d353'},
-    ]},
-  { id:'slabhub', name:'SlabHub', color:'#2d6fa3',
-    companies:[
-      {id:'slabhub_gabriele', name:'Gabriele', color:'#2d6fa3'},
-      {id:'slabhub_davide',   name:'Davide',   color:'#1a5276'},
-      {id:'slabhub_valerio',  name:'Valerio',  color:'#1f618d'},
-    ]},
-  { id:'kissene', name:'Kissene', color:'#7d3c98',
-    companies:[
-      {id:'kissene_giulio',    name:'Giulio',   color:'#7d3c98'},
-      {id:'kissene_gabriele2', name:'Gabriele', color:'#6c3483'},
-      {id:'kissene_flavio',    name:'Flavio',   color:'#8e44ad'},
-      {id:'kissene_calogero',  name:'Calogero', color:'#76448a'},
-      {id:'kissene_bruna',     name:'Bruna',    color:'#9b59b6'},
-    ]},
-  { id:'luigi', name:'Luigi Stips', color:'#d4a017',
-    companies:[
-      {id:'luigi_luigi', name:'Luigi Stips', color:'#d4a017'},
-    ]},
+  {id:'antonio',name:'Antonio',color:'#c0392b',companies:[
+    {id:'focacciamo',name:'Focacciamo',color:'#c0392b'},
+    {id:'lamancha',name:'Mancha',color:'#ff7b00'},
+    {id:'futuri',name:'Futuri Campioni',color:'#39d353'},
+  ]},
+  {id:'slabhub',name:'SlabHub',color:'#2d6fa3',companies:[
+    {id:'slabhub_gabriele',name:'Gabriele',color:'#2d6fa3'},
+    {id:'slabhub_davide',name:'Davide',color:'#1a5276'},
+    {id:'slabhub_valerio',name:'Valerio',color:'#1f618d'},
+  ]},
+  {id:'kissene',name:'Kissene',color:'#7d3c98',companies:[
+    {id:'kissene_giulio',name:'Giulio',color:'#7d3c98'},
+    {id:'kissene_gabriele2',name:'Gabriele',color:'#6c3483'},
+    {id:'kissene_flavio',name:'Flavio',color:'#8e44ad'},
+    {id:'kissene_calogero',name:'Calogero',color:'#76448a'},
+    {id:'kissene_bruna',name:'Bruna',color:'#9b59b6'},
+  ]},
+  {id:'luigi',name:'Luigi Stips',color:'#d4a017',companies:[
+    {id:'luigi_luigi',name:'Luigi Stips',color:'#d4a017'},
+  ]},
 ];
 
 const SPLITS = [
-  { id:'A', name:'Sessione A', muscles:'Gambe + Spalle', color:'#52b788',
-    esercizi:['Hack Squat / X-Squat','Leg Curl','Leg Extension','Calf Machine','Shoulder Press Machine','Lateral Raise Cable','Face Pull'] },
-  { id:'B', name:'Sessione B', muscles:'Petto + Tricipiti', color:'#e9c46a',
-    esercizi:['Chest Press Machine','Pec-Deck / Cable Fly','Incline Dumbbell Press','Pushdown Cable','Overhead Tricep Extension Cable','Skull Crusher (Dumbbell)'] },
-  { id:'C', name:'Sessione C', muscles:'Schiena + Bicipiti', color:'#457b9d',
-    esercizi:['Lat Pulldown','Cable Row','Machine Row','Face Pull','Curl Machine / Cable Curl','Hammer Curl Dumbbell'] },
+  {id:'A',name:'Sessione A',muscles:'Gambe + Spalle',color:'#52b788',
+    esercizi:['Hack Squat / X-Squat','Leg Curl','Leg Extension','Calf Machine','Shoulder Press Machine','Lateral Raise Cable','Face Pull']},
+  {id:'B',name:'Sessione B',muscles:'Petto + Tricipiti',color:'#e9c46a',
+    esercizi:['Chest Press Machine','Pec-Deck / Cable Fly','Incline Dumbbell Press','Pushdown Cable','Overhead Tricep Extension Cable','Skull Crusher (Dumbbell)']},
+  {id:'C',name:'Sessione C',muscles:'Schiena + Bicipiti',color:'#457b9d',
+    esercizi:['Lat Pulldown','Cable Row','Machine Row','Face Pull','Curl Machine / Cable Curl','Hammer Curl Dumbbell']},
 ];
 
-// Abbonamenti aggiornati: rimossi Kling AI, CapCut, Skool
-// WINDTRE → trimestrale (ogni 3 mesi)
+// Abbonamenti: rimossi Kling AI, CapCut, Skool — WINDTRE trimestrale
 const ABBONAMENTI_DEFAULT = [
-  {desc:'Adobe Creative Cloud', amt:79.96, cat:'Design', ogni:'mese', color:'#e63946'},
-  {desc:'WINDTRE', amt:45.00, cat:'Telefonia', ogni:'trimestre', color:'#ff7b00', trimestrale:true},
-  {desc:'iliad', amt:15.00, cat:'Telefonia', ogni:'mese', color:'#e63946'},
-  {desc:'Claude.ai', amt:21.96, cat:'AI', ogni:'mese', color:'#7d3c98'},
-  {desc:'Amazon Prime', amt:2.49, cat:'Shopping', ogni:'mese', color:'#457b9d'},
-  {desc:'Sharesub (Spotify)', amt:4.99, cat:'Musica', ogni:'mese', color:'#39d353'},
-  {desc:'Apple (iCloud/App)', amt:9.99, cat:'Apple', ogni:'mese', color:'#8a8a8a'},
-  {desc:'Pdfguru.com', amt:0.99, cat:'Utility', ogni:'mese', color:'#555'},
-  {desc:'Shopify Basic (SlabHub)', amt:32, cat:'E-commerce', ogni:'mese', color:'#2d6fa3'},
-  {desc:'GitHub Pages', amt:0, cat:'Dev', ogni:'mese', color:'#8a8a8a'},
+  {desc:'Adobe Creative Cloud',amt:79.96,cat:'Design',ogni:'mese',color:'#e63946'},
+  {desc:'WINDTRE',amt:45.00,cat:'Telefonia',ogni:'trimestre',color:'#ff7b00',trimestrale:true},
+  {desc:'iliad',amt:15.00,cat:'Telefonia',ogni:'mese',color:'#e63946'},
+  {desc:'Claude.ai',amt:21.96,cat:'AI',ogni:'mese',color:'#7d3c98'},
+  {desc:'Amazon Prime',amt:2.49,cat:'Shopping',ogni:'mese',color:'#457b9d'},
+  {desc:'Sharesub (Spotify)',amt:4.99,cat:'Musica',ogni:'mese',color:'#39d353'},
+  {desc:'Apple (iCloud/App)',amt:9.99,cat:'Apple',ogni:'mese',color:'#8a8a8a'},
+  {desc:'Pdfguru.com',amt:0.99,cat:'Utility',ogni:'mese',color:'#555'},
+  {desc:'Shopify Basic (SlabHub)',amt:32,cat:'E-commerce',ogni:'mese',color:'#2d6fa3'},
+  {desc:'GitHub Pages',amt:0,cat:'Dev',ogni:'mese',color:'#8a8a8a'},
 ];
 
-// ══════════════════════════════════════════
+// Entrate reali da estratto conto Revolut apr-giu 2026
+const ENTRATE_SEED = [
+  {desc:'Pagamento Davide Scopelliti',amt:10,client:'SlabHub',status:'pagato',date:'2026-05-03'},
+  {desc:'Revolut Technologies Inc.',amt:718,client:'—',status:'pagato',date:'2026-05-09'},
+  {desc:'Pagamento Davide Scopelliti',amt:20,client:'SlabHub',status:'pagato',date:'2026-05-13'},
+  {desc:'Pagamento Flavio Tranchida',amt:9.50,client:'Kissene',status:'pagato',date:'2026-05-28'},
+  {desc:'Pagamento Flavio Tranchida',amt:5.50,client:'Kissene',status:'pagato',date:'2026-06-02'},
+  {desc:'Revolut Technologies Inc.',amt:335,client:'—',status:'pagato',date:'2026-06-04'},
+  {desc:'Pagamento Marco Parisi',amt:15,client:'—',status:'pagato',date:'2026-06-05'},
+  {desc:'Pagamento Marco Parisi',amt:5.50,client:'—',status:'pagato',date:'2026-06-07'},
+  {desc:'Pagamento Gabriele Spicuzza',amt:25,client:'—',status:'pagato',date:'2026-06-13'},
+];
+
 // STATE
-// ══════════════════════════════════════════
-let db, allTasks = {}, finData = {entrate:{}, uscite:{}, abbonamenti:{}}, trainLogs = {};
-let activeG = GESTIONALI[0].id, activeC = {}, openAcc = new Set();
-let editingId = null, isEdit = false;
-let activeFinTab = 'entrate';
-GESTIONALI.forEach(g => activeC[g.id] = g.companies[0].id);
+let db, allTasks={}, finData={entrate:{},uscite:{},abbonamenti:{}}, trainLogs={};
+let activeG=GESTIONALI[0].id, activeC={}, openAcc=new Set(), editingId=null, isEdit=false;
+let activeFinTab='entrate';
+GESTIONALI.forEach(g=>activeC[g.id]=g.companies[0].id);
 
-// Calendar state
-let calYear, calMonth;
-const today = new Date();
-calYear = today.getFullYear();
-calMonth = today.getMonth();
+const today=new Date();
+let calYear=today.getFullYear(), calMonth=today.getMonth();
+let modalDate=null, modalSelectedSplit=null, modalExistingKey=null;
 
-// Modal state
-let modalDate = null, modalSelectedSplit = null, modalExistingKey = null;
-
-// ══════════════════════════════════════════
-// FIREBASE
-// ══════════════════════════════════════════
+// ── FIREBASE ──
 async function initFirebase() {
-  const {initializeApp} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-  const {getDatabase, ref, onValue, set, remove, push} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
-
-  const app = initializeApp({
+  const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  const {getDatabase,ref,onValue,set,remove,push}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+  const app=initializeApp({
     apiKey:'AIzaSyAfy8G_pHz8DftywbYi4YX1k71EyrmOgxQ',
     authDomain:'gestionale-gabriele.firebaseapp.com',
     databaseURL:'https://gestionale-gabriele-default-rtdb.europe-west1.firebasedatabase.app',
     projectId:'gestionale-gabriele',
   });
-  db = getDatabase(app);
+  db=getDatabase(app);
+  document.getElementById('conn-dot').classList.add('live');
+  document.getElementById('conn-text').textContent='Live';
 
-  const connDot = document.getElementById('conn-dot');
-  const connText = document.getElementById('conn-text');
-  connDot.classList.add('live'); connText.textContent = 'Live';
-
-  const allCo = GESTIONALI.flatMap(g => g.companies);
-  allCo.forEach(c => {
-    onValue(ref(db, `tasks/${c.id}`), snap => {
-      allTasks[c.id] = snap.val() || {};
-      refreshUI();
-    });
+  GESTIONALI.flatMap(g=>g.companies).forEach(c=>{
+    onValue(ref(db,`tasks/${c.id}`),snap=>{allTasks[c.id]=snap.val()||{};refreshUI();});
   });
 
-  onValue(ref(db, 'finanze'), snap => {
-    finData = snap.val() || {entrate:{}, uscite:{}, abbonamenti:{}};
-    if (!finData.entrate) finData.entrate = {};
-    if (!finData.uscite) finData.uscite = {};
-    if (!finData.abbonamenti) finData.abbonamenti = {};
-    renderFinanze();
-    renderDashboard();
-  });
-
-  onValue(ref(db, 'training'), snap => {
-    trainLogs = snap.val() || {};
-    renderTraining();
-    renderDashboard();
-  });
-
-  window._fbSet    = (path, val) => set(ref(db, path), val);
-  window._fbRemove = (path)      => remove(ref(db, path));
-  window._fbPush   = (path, val) => push(ref(db, path), val);
-
-  // Seed abbonamenti default se vuoti
-  const abbKeys = Object.keys(finData.abbonamenti || {});
-  if (abbKeys.length === 0) {
-    for (const a of ABBONAMENTI_DEFAULT) {
-      await push(ref(db, 'finanze/abbonamenti'), {...a, createdAt: Date.now()});
+  onValue(ref(db,'finanze'),async snap=>{
+    finData=snap.val()||{entrate:{},uscite:{},abbonamenti:{}};
+    ['entrate','uscite','abbonamenti'].forEach(k=>{if(!finData[k])finData[k]={};});
+    // Seed entrate se vuote
+    if(Object.keys(finData.entrate).length===0){
+      for(const e of ENTRATE_SEED) await push(ref(db,'finanze/entrate'),{...e,createdAt:new Date(e.date).getTime()});
     }
-  }
-
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-
-  buildProjUI();
-  buildSplitCards();
-  setDate();
-  dashBuildSelectors();
-  renderCalendar();
-  renderDashboard();
-}
-
-function setDate() {
-  const now = new Date();
-  const days = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
-  const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
-  const hour = now.getHours();
-  const greet = hour < 12 ? 'Buongiorno' : hour < 18 ? 'Buon pomeriggio' : 'Buonasera';
-  document.getElementById('dash-greeting').textContent = `${greet}, Gabriele 👋`;
-  document.getElementById('dash-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-}
-
-// ══════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════
-window.showPage = function(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
-  document.getElementById(`page-${id}`).classList.add('active');
-  const btn = [...document.querySelectorAll('.sb-item')].find(b => b.getAttribute('onclick')?.includes(id));
-  if (btn) btn.classList.add('active');
-};
-
-// ══════════════════════════════════════════
-// EDIT TOGGLE
-// ══════════════════════════════════════════
-window.toggleEdit = function() {
-  isEdit = !isEdit;
-  document.body.classList.toggle('readonly', !isEdit);
-  document.getElementById('lock-btn').textContent = isEdit ? '🔓' : '🔒';
-  toast(isEdit ? '✏️ Modifica abilitata' : '🔒 Sola lettura');
-};
-
-// ══════════════════════════════════════════
-// REFRESH
-// ══════════════════════════════════════════
-function refreshUI() {
-  updateProjBadge();
-  renderProjPanel(activeG, activeC[activeG] || GESTIONALI.find(g=>g.id===activeG).companies[0].id);
-  renderDashboard();
-}
-
-function updateProjBadge() {
-  let tot = 0;
-  GESTIONALI.flatMap(g=>g.companies).forEach(c => {
-    const tasks = Object.values(allTasks[c.id] || {});
-    tot += tasks.filter(t => t.status !== 'done').length;
+    // Seed abbonamenti se vuoti
+    if(Object.keys(finData.abbonamenti).length===0){
+      for(const a of ABBONAMENTI_DEFAULT) await push(ref(db,'finanze/abbonamenti'),{...a,createdAt:Date.now()});
+    }
+    renderFinanze(); renderDashboard();
   });
-  document.getElementById('badge-progetti').textContent = tot;
+
+  onValue(ref(db,'training'),snap=>{trainLogs=snap.val()||{};renderTraining();renderDashboard();});
+
+  window._fbSet=(p,v)=>set(ref(db,p),v);
+  window._fbRemove=p=>remove(ref(db,p));
+  window._fbPush=(p,v)=>push(ref(db,p),v);
+
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='flex';
+  buildProjUI(); buildSplitCards(); setDate(); dashBuildSelectors(); renderCalendar(); renderDashboard();
 }
 
-// ══════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════
-function renderDashboard() {
-  renderDashStats();
-  renderDashUrgent();
-  renderDashFinAlerts();
-  renderDashTraining();
+function setDate(){
+  const now=new Date();
+  const days=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const months=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  const h=now.getHours();
+  document.getElementById('dash-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, Gabriele 👋`;
+  document.getElementById('dash-date').textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
 
-function renderDashStats() {
-  const allTaskArr = GESTIONALI.flatMap(g=>g.companies).flatMap(c=>Object.values(allTasks[c.id]||{}));
-  const todo = allTaskArr.filter(t=>t.status==='todo'||t.status==='inprogress').length;
-  const done = allTaskArr.filter(t=>t.status==='done').length;
-  const pct = allTaskArr.length > 0 ? Math.round(done/allTaskArr.length*100) : 0;
+// ── NAVIGATION ──
+window.showPage=function(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`page-${id}`).classList.add('active');
+  document.querySelector(`.sb-item[onclick*="${id}"]`)?.classList.add('active');
+  document.getElementById(`bn-${id}`)?.classList.add('active');
+};
 
-  const entrate = Object.values(finData.entrate||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0), 0);
-  const uscite  = Object.values(finData.uscite||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0), 0);
-  // Per abbonamenti: quelli trimestrali vengono divisi per 3 per avere equiv mensile
-  const abb = Object.values(finData.abbonamenti||{}).reduce((s,e)=>{
-    const amt = parseFloat(e.amt)||0;
-    return s + (e.trimestrale ? amt/3 : amt);
-  }, 0);
-  const saldo = entrate - uscite - abb;
+// ── EDIT TOGGLE ──
+window.toggleEdit=function(){
+  isEdit=!isEdit;
+  document.body.classList.toggle('readonly',!isEdit);
+  const icon=isEdit?'🔓':'🔒';
+  document.getElementById('lock-btn').textContent=icon;
+  const bnLock=document.getElementById('bn-lock');
+  if(bnLock)bnLock.style.color=isEdit?'var(--accent)':'var(--text3)';
+  toast(isEdit?'✏️ Modifica abilitata':'🔒 Sola lettura');
+};
 
-  const logs = Object.values(trainLogs||{});
-  const thisWeek = logs.filter(l => {
-    const d = new Date(l.date);
-    const now = new Date();
-    const start = new Date(now); start.setDate(now.getDate() - now.getDay());
-    return d >= start;
+// ── REFRESH ──
+function refreshUI(){
+  updateProjBadge();
+  renderProjPanel(activeG,activeC[activeG]||GESTIONALI.find(g=>g.id===activeG).companies[0].id);
+  renderDashboard();
+}
+function updateProjBadge(){
+  let tot=0;
+  GESTIONALI.flatMap(g=>g.companies).forEach(c=>{tot+=Object.values(allTasks[c.id]||{}).filter(t=>t.status!=='done').length;});
+  document.getElementById('badge-progetti').textContent=tot;
+  const bb=document.getElementById('bn-badge-progetti');
+  if(bb){bb.textContent=tot;bb.style.display=tot>0?'block':'none';}
+}
+
+// ── DASHBOARD ──
+function renderDashboard(){renderDashStats();renderDashUrgent();renderDashFinAlerts();renderDashTraining();}
+
+function renderDashStats(){
+  const all=GESTIONALI.flatMap(g=>g.companies).flatMap(c=>Object.values(allTasks[c.id]||{}));
+  const todo=all.filter(t=>t.status==='todo'||t.status==='inprogress').length;
+  const done=all.filter(t=>t.status==='done').length;
+  const pct=all.length>0?Math.round(done/all.length*100):0;
+  const entrate=Object.values(finData.entrate||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
+  const uscite=Object.values(finData.uscite||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
+  const abb=Object.values(finData.abbonamenti||{}).reduce((s,e)=>s+(e.trimestrale?(parseFloat(e.amt)||0)/3:(parseFloat(e.amt)||0)),0);
+  const saldo=entrate-uscite-abb;
+  const thisWeek=Object.values(trainLogs||{}).filter(l=>{
+    const d=new Date(l.date),now=new Date(),start=new Date(now);
+    start.setDate(now.getDate()-now.getDay());return d>=start;
   }).length;
-
-  document.getElementById('dash-stats').innerHTML = `
-    <div class="stat-card">
-      <div class="stat-label">Task attive</div>
-      <div class="stat-num" style="color:var(--accent)">${todo}</div>
-      <div class="stat-sub">${done} completate</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Saldo mese</div>
-      <div class="stat-num" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}€${Math.abs(saldo).toFixed(0)}</div>
-      <div class="stat-sub">Entrate €${entrate.toFixed(0)}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Sessioni sett.</div>
-      <div class="stat-num" style="color:var(--green)">${thisWeek}<span style="font-size:0.9rem;color:var(--text2)">/3</span></div>
-      <div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Abbonamenti/mese</div>
-      <div class="stat-num" style="color:var(--orange)">€${abb.toFixed(0)}</div>
-      <div class="stat-sub">${Object.keys(finData.abbonamenti||{}).length} attivi</div>
-    </div>`;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Task attive</div><div class="stat-num" style="color:var(--accent)">${todo}</div><div class="stat-sub">${done} completate</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div></div>
+    <div class="stat-card"><div class="stat-label">Saldo mese</div><div class="stat-num" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}€${Math.abs(saldo).toFixed(0)}</div><div class="stat-sub">Entrate €${entrate.toFixed(0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Sessioni sett.</div><div class="stat-num" style="color:var(--green)">${thisWeek}<span style="font-size:0.9rem;color:var(--text2)">/3</span></div><div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div></div>
+    <div class="stat-card"><div class="stat-label">Abbonamenti/mese</div><div class="stat-num" style="color:var(--orange)">€${abb.toFixed(0)}</div><div class="stat-sub">${Object.keys(finData.abbonamenti||{}).length} attivi</div></div>`;
 }
 
-function renderDashUrgent() {
-  function buildItems(statusFilter) {
-    const items = [];
+function renderDashUrgent(){
+  function buildItems(sf){
+    const arr=[];
     GESTIONALI.flatMap(g=>g.companies).forEach(c=>{
       Object.entries(allTasks[c.id]||{}).forEach(([tid,t])=>{
-        if(t.status===statusFilter) items.push({name:t.name, project:c.name, tid, cid:c.id, type:'task'});
-        Object.entries(t.subtasks||{}).forEach(([sid,s])=>{
-          if(s.status===statusFilter) items.push({name:s.name, project:c.name, parent:t.name, tid, sid, cid:c.id, type:'subtask'});
-        });
+        if(t.status===sf)arr.push({name:t.name,project:c.name,tid,cid:c.id,type:'task'});
+        Object.entries(t.subtasks||{}).forEach(([sid,s])=>{if(s.status===sf)arr.push({name:s.name,project:c.name,parent:t.name,tid,sid,cid:c.id,type:'subtask'});});
       });
     });
-    return items.slice(0,8);
+    return arr.slice(0,8);
   }
-
-  const allT   = buildItems('todo');
-  const inprog = buildItems('inprogress');
-
-  const urgEl = document.getElementById('dash-urgent');
-  urgEl.innerHTML = allT.length === 0
-    ? `<div class="empty">Nessuna task da fare 🎉</div>`
-    : allT.map(t=>`
-      <div class="task-row s-todo" style="${t.type==='subtask'?'padding-left:1.6rem;':''}">
-        ${t.type==='subtask'?`<span style="color:var(--text3);font-size:0.65rem;flex-shrink:0">↳</span>`:''}
-        <span class="task-name">${esc(t.name)}${t.type==='subtask'?` <span style="font-size:0.65rem;color:var(--text3)">in ${esc(t.parent)}</span>`:''}</span>
-        <span class="badge badge-project">${esc(t.project)}</span>
-      </div>`).join('');
-
-  const ipEl = document.getElementById('dash-inprogress');
-  ipEl.innerHTML = inprog.length === 0
-    ? `<div class="empty">Nessuna task in corso</div>`
-    : inprog.map(t=>`
-      <div class="task-row s-inprogress" style="${t.type==='subtask'?'padding-left:1.6rem;':''}">
-        ${t.type==='subtask'?`<span style="color:var(--text3);font-size:0.65rem;flex-shrink:0">↳</span>`:''}
-        <span class="task-name">${esc(t.name)}${t.type==='subtask'?` <span style="font-size:0.65rem;color:var(--text3)">in ${esc(t.parent)}</span>`:''}</span>
-        <span class="badge badge-project">${esc(t.project)}</span>
-        <span class="badge badge-inprogress">In corso</span>
-      </div>`).join('');
+  const allT=buildItems('todo'),inprog=buildItems('inprogress');
+  const mkRow=(t,s)=>`<div class="task-row s-${s}" style="${t.type==='subtask'?'padding-left:1.6rem;':''}">
+    ${t.type==='subtask'?`<span style="color:var(--text3);font-size:0.65rem;flex-shrink:0">↳</span>`:''}
+    <span class="task-name">${esc(t.name)}${t.type==='subtask'?` <span style="font-size:0.65rem;color:var(--text3)">in ${esc(t.parent)}</span>`:''}</span>
+    <span class="badge badge-project">${esc(t.project)}</span>
+    ${s==='inprogress'?'<span class="badge badge-inprogress">In corso</span>':''}
+  </div>`;
+  document.getElementById('dash-urgent').innerHTML=allT.length?allT.map(t=>mkRow(t,'todo')).join(''):'<div class="empty">Nessuna task da fare 🎉</div>';
+  document.getElementById('dash-inprogress').innerHTML=inprog.length?inprog.map(t=>mkRow(t,'inprogress')).join(''):'<div class="empty">Nessuna task in corso</div>';
 }
 
-function dashBuildSelectors() {
-  const gSel = document.getElementById('dash-quick-g');
-  if (!gSel) return;
-  gSel.innerHTML = GESTIONALI.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+function dashBuildSelectors(){
+  const gSel=document.getElementById('dash-quick-g');if(!gSel)return;
+  gSel.innerHTML=GESTIONALI.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
   dashUpdateCompanies();
 }
-window.dashUpdateCompanies = function() {
-  const gid = document.getElementById('dash-quick-g')?.value;
-  const g = GESTIONALI.find(x=>x.id===gid);
-  const cSel = document.getElementById('dash-quick-c');
-  if (!cSel || !g) return;
-  cSel.innerHTML = g.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+window.dashUpdateCompanies=function(){
+  const g=GESTIONALI.find(x=>x.id===document.getElementById('dash-quick-g')?.value);
+  const cSel=document.getElementById('dash-quick-c');if(!cSel||!g)return;
+  cSel.innerHTML=g.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
 };
-window.dashQuickAdd = async function() {
-  const name = document.getElementById('dash-quick-name')?.value.trim();
-  const cid  = document.getElementById('dash-quick-c')?.value;
-  if (!name || !cid || !db) return;
-  try {
-    await window._fbPush(`tasks/${cid}`, {name, status:'todo', createdAt:Date.now()});
-    document.getElementById('dash-quick-name').value = '';
-    toast('Task aggiunta ✓');
-  } catch(e) { toast('Errore: '+e.message); }
+window.dashQuickAdd=async function(){
+  const name=document.getElementById('dash-quick-name')?.value.trim();
+  const cid=document.getElementById('dash-quick-c')?.value;
+  if(!name||!cid||!db)return;
+  try{await window._fbPush(`tasks/${cid}`,{name,status:'todo',createdAt:Date.now()});document.getElementById('dash-quick-name').value='';toast('Task aggiunta ✓');}
+  catch(e){toast('Errore: '+e.message);}
 };
 
-function renderDashFinAlerts() {
-  const el = document.getElementById('dash-fin-alerts');
-  const attesa = Object.values(finData.entrate||{}).filter(e=>e.status==='attesa'||e.status==='scaduto');
-  if (attesa.length === 0) { el.innerHTML = `<div class="empty">Nessuna scadenza pendente</div>`; return; }
-  el.innerHTML = attesa.map(e=>`
-    <div class="task-row s-${e.status==='scaduto'?'incomplete':'inprogress'}">
-      <span class="task-name">${esc(e.desc)}</span>
-      <span class="badge badge-project">${esc(e.client||'')}</span>
-      <span class="fin-amt pos">+€${parseFloat(e.amt||0).toFixed(0)}</span>
-      <span class="fin-status ${e.status}">${e.status==='attesa'?'In attesa':'Scaduto'}</span>
-    </div>`).join('');
+function renderDashFinAlerts(){
+  const el=document.getElementById('dash-fin-alerts');
+  const attesa=Object.values(finData.entrate||{}).filter(e=>e.status==='attesa'||e.status==='scaduto');
+  el.innerHTML=attesa.length?attesa.map(e=>`<div class="task-row s-${e.status==='scaduto'?'incomplete':'inprogress'}">
+    <span class="task-name">${esc(e.desc)}</span>
+    <span class="badge badge-project">${esc(e.client||'')}</span>
+    <span class="fin-amt pos">+€${parseFloat(e.amt||0).toFixed(0)}</span>
+    <span class="fin-status ${e.status}">${e.status==='attesa'?'In attesa':'Scaduto'}</span>
+  </div>`).join(''):'<div class="empty">Nessuna scadenza pendente</div>';
 }
 
-function renderDashTraining() {
-  const el = document.getElementById('dash-training');
-  const logs = Object.values(trainLogs||{}).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const last = logs[0];
-  const lastSplit = last?.split || null;
-  const splitOrder = ['A','B','C'];
-  let nextSplit = 'A';
-  if (lastSplit) {
-    const idx = splitOrder.indexOf(lastSplit);
-    nextSplit = splitOrder[(idx+1)%3];
-  }
-  const sp = SPLITS.find(s=>s.id===nextSplit);
-  el.innerHTML = `
-    <div class="card-sm" style="border-left:2px solid ${sp.color}">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.4rem;">
-        <div class="log-split-dot" style="background:${sp.color}"></div>
-        <span style="font-weight:600;font-size:0.88rem;">${sp.name} — ${sp.muscles}</span>
-      </div>
-      <div style="font-size:0.75rem;color:var(--text2);line-height:1.6">${sp.esercizi.join(' · ')}</div>
-      ${last ? `<div style="font-size:0.65rem;color:var(--text3);margin-top:0.5rem;">Ultima: Sessione ${last.split} il ${last.date}</div>` : ''}
-    </div>`;
+function renderDashTraining(){
+  const el=document.getElementById('dash-training');
+  const logs=Object.values(trainLogs||{}).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const last=logs[0];
+  const splitOrder=['A','B','C'];
+  const nextSplit=last?splitOrder[(splitOrder.indexOf(last.split)+1)%3]:'A';
+  const sp=SPLITS.find(s=>s.id===nextSplit);
+  el.innerHTML=`<div class="card-sm" style="border-left:2px solid ${sp.color}">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.4rem;">
+      <div class="log-split-dot" style="background:${sp.color}"></div>
+      <span style="font-weight:600;font-size:0.88rem;">${sp.name} — ${sp.muscles}</span>
+    </div>
+    <div style="font-size:0.75rem;color:var(--text2);line-height:1.6">${sp.esercizi.join(' · ')}</div>
+    ${last?`<div style="font-size:0.65rem;color:var(--text3);margin-top:0.5rem;">Ultima: Sessione ${last.split} il ${last.date}</div>`:''}
+  </div>`;
 }
 
-// ══════════════════════════════════════════
-// TRAINING CALENDAR
-// ══════════════════════════════════════════
-const MONTHS_IT = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const DAYS_IT   = ['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+// ── CALENDAR ──
+const MONTHS_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const DAYS_IT=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
 
-function getLogsByDate() {
-  const map = {};
-  Object.entries(trainLogs||{}).forEach(([key, l]) => {
-    map[l.date] = {key, ...l};
-  });
+function getLogsByDate(){
+  const map={};
+  Object.entries(trainLogs||{}).forEach(([key,l])=>{map[l.date]={key,...l};});
   return map;
 }
 
-function renderCalendar() {
-  const logMap = getLogsByDate();
-  document.getElementById('cal-month-title').textContent = `${MONTHS_IT[calMonth]} ${calYear}`;
-
-  const grid = document.getElementById('cal-grid');
-  let html = DAYS_IT.map(d=>`<div class="cal-dow">${d}</div>`).join('');
-
-  const firstDay = new Date(calYear, calMonth, 1).getDay();
-  // Converti da domenica=0 a lunedì=0
-  const startOffset = (firstDay === 0) ? 6 : firstDay - 1;
-  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  const todayStr = today.toISOString().split('T')[0];
-
-  // Celle vuote prima
-  for (let i = 0; i < startOffset; i++) {
-    html += `<div class="cal-day empty"></div>`;
+function renderCalendar(){
+  const logMap=getLogsByDate();
+  document.getElementById('cal-month-title').textContent=`${MONTHS_IT[calMonth]} ${calYear}`;
+  const grid=document.getElementById('cal-grid');
+  let html=DAYS_IT.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const offset=(firstDay===0)?6:firstDay-1;
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const todayStr=today.toISOString().split('T')[0];
+  for(let i=0;i<offset;i++)html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const log=logMap[ds];
+    const isToday=ds===todayStr,isFuture=ds>todayStr;
+    let cls='cal-day';
+    if(isFuture)cls+=' future';
+    else if(isToday)cls+=' today';
+    if(log)cls+=` has-${log.split}`;
+    const da=log?`data-split="${log.split}"`:'';
+    const click=isFuture?'':` onclick="openTrainModal('${ds}')"`;
+    html+=`<div class="${cls}" ${da}${click} title="${log?`Sessione ${log.split}${log.note?' — '+log.note:''}`:ds}">${d}</div>`;
   }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const log = logMap[dateStr];
-    const isToday = dateStr === todayStr;
-    const isFuture = dateStr > todayStr;
-    let cls = 'cal-day';
-    if (isFuture) cls += ' future';
-    else if (isToday) cls += ' today';
-    if (log) cls += ` has-${log.split}`;
-    const dataAttr = log ? `data-split="${log.split}"` : '';
-    const clickAttr = isFuture ? '' : `onclick="openTrainModal('${dateStr}')"`;
-    html += `<div class="${cls}" ${dataAttr} ${clickAttr} title="${log ? `Sessione ${log.split}${log.note?' — '+log.note:''}` : dateStr}">${d}</div>`;
-  }
-
-  grid.innerHTML = html;
+  grid.innerHTML=html;
 }
 
-window.calPrev = function() {
-  calMonth--;
-  if (calMonth < 0) { calMonth = 11; calYear--; }
-  renderCalendar();
-};
-window.calNext = function() {
-  calMonth++;
-  if (calMonth > 11) { calMonth = 0; calYear++; }
-  renderCalendar();
-};
+window.calPrev=function(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
+window.calNext=function(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();};
 
-// Modal
-window.openTrainModal = function(dateStr) {
-  if (!isEdit) {
-    // In readonly mostra solo info
-    const logMap = getLogsByDate();
-    const log = logMap[dateStr];
-    if (log) toast(`${dateStr}: Sessione ${log.split}${log.note?' — '+log.note:''}`);
-    return;
-  }
-  modalDate = dateStr;
-  const logMap = getLogsByDate();
-  const existing = logMap[dateStr];
-  modalExistingKey = existing ? existing.key : null;
-  modalSelectedSplit = existing ? existing.split : null;
-
-  document.getElementById('modal-day-label').textContent = `📅 ${dateStr}`;
-  document.getElementById('modal-note').value = existing?.note || '';
-  ['A','B','C'].forEach(s => {
-    const btn = document.getElementById(`sbtn-${s}`);
-    btn.className = 'split-btn' + (modalSelectedSplit===s ? ` sel-${s}` : '');
-  });
-  const delBtn = document.getElementById('modal-delete-btn');
-  delBtn.style.display = existing ? 'block' : 'none';
-
+// ── TRAINING MODAL — sempre accessibile, nessun lock richiesto ──
+window.openTrainModal=function(dateStr){
+  modalDate=dateStr;
+  const logMap=getLogsByDate();
+  const existing=logMap[dateStr];
+  modalExistingKey=existing?existing.key:null;
+  modalSelectedSplit=existing?existing.split:null;
+  document.getElementById('modal-day-label').textContent=`📅 ${dateStr}`;
+  document.getElementById('modal-note').value=existing?.note||'';
+  ['A','B','C'].forEach(s=>{document.getElementById(`sbtn-${s}`).className='split-btn'+(modalSelectedSplit===s?` sel-${s}`:'');});
+  document.getElementById('modal-delete-btn').style.display=existing?'block':'none';
   document.getElementById('train-modal').classList.add('open');
 };
-
-window.selectSplit = function(s) {
-  modalSelectedSplit = s;
-  ['A','B','C'].forEach(x => {
-    document.getElementById(`sbtn-${x}`).className = 'split-btn' + (x===s ? ` sel-${s}` : '');
-  });
+window.selectSplit=function(s){
+  modalSelectedSplit=s;
+  ['A','B','C'].forEach(x=>{document.getElementById(`sbtn-${x}`).className='split-btn'+(x===s?` sel-${s}`:'');});
 };
-
-window.closeTrainModal = function() {
+window.closeTrainModal=function(){
   document.getElementById('train-modal').classList.remove('open');
-  modalDate = null; modalSelectedSplit = null; modalExistingKey = null;
+  modalDate=null;modalSelectedSplit=null;modalExistingKey=null;
 };
-
-window.saveTrainDay = async function() {
-  if (!modalDate || !modalSelectedSplit || !db) { toast('Seleziona una sessione'); return; }
-  const note = document.getElementById('modal-note').value.trim();
-  try {
-    if (modalExistingKey) {
-      await window._fbSet(`training/${modalExistingKey}`, {split:modalSelectedSplit, date:modalDate, note, createdAt:Date.now()});
-    } else {
-      await window._fbPush('training', {split:modalSelectedSplit, date:modalDate, note, createdAt:Date.now()});
-    }
-    closeTrainModal();
-    toast('Sessione salvata ✓');
-  } catch(e) { toast('Errore: '+e.message); }
+window.saveTrainDay=async function(){
+  if(!modalDate||!modalSelectedSplit||!db){toast('Seleziona A, B o C');return;}
+  const note=document.getElementById('modal-note').value.trim();
+  try{
+    if(modalExistingKey)await window._fbSet(`training/${modalExistingKey}`,{split:modalSelectedSplit,date:modalDate,note,createdAt:Date.now()});
+    else await window._fbPush('training',{split:modalSelectedSplit,date:modalDate,note,createdAt:Date.now()});
+    closeTrainModal();toast('Sessione salvata ✓');
+  }catch(e){toast('Errore: '+e.message);}
 };
-
-window.deleteTrainDay = async function() {
-  if (!modalExistingKey || !db) return;
-  if (!confirm('Rimuovere questa sessione?')) return;
-  try {
-    await window._fbRemove(`training/${modalExistingKey}`);
-    closeTrainModal();
-    toast('Sessione rimossa');
-  } catch(e) { toast('Errore'); }
+window.deleteTrainDay=async function(){
+  if(!modalExistingKey||!db)return;
+  if(!confirm('Rimuovere questa sessione?'))return;
+  try{await window._fbRemove(`training/${modalExistingKey}`);closeTrainModal();toast('Sessione rimossa');}
+  catch(e){toast('Errore');}
 };
+document.getElementById('train-modal').addEventListener('click',function(e){if(e.target===this)closeTrainModal();});
 
-// Chiudi modal cliccando overlay
-document.getElementById('train-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeTrainModal();
-});
-
-// ══════════════════════════════════════════
-// TRAINING RENDER
-// ══════════════════════════════════════════
-function buildSplitCards() {
-  document.getElementById('split-cards').innerHTML = SPLITS.map(s=>`
+// ── TRAINING RENDER ──
+function buildSplitCards(){
+  document.getElementById('split-cards').innerHTML=SPLITS.map(s=>`
     <div class="split-card" id="scard-${s.id}">
       <div class="split-name" style="color:${s.color}">${s.name}</div>
       <div class="split-muscles">${s.muscles}</div>
@@ -977,45 +787,32 @@ function buildSplitCards() {
     </div>`).join('');
 }
 
-function renderTraining() {
-  const logs = Object.entries(trainLogs||{}).sort((a,b)=>new Date(b[1].date)-new Date(a[1].date));
-
+function renderTraining(){
+  const logs=Object.entries(trainLogs||{}).sort((a,b)=>new Date(b[1].date)-new Date(a[1].date));
   SPLITS.forEach(s=>{
-    const last = logs.find(([,l])=>l.split===s.id);
-    const el = document.getElementById(`slast-${s.id}`);
-    if (el) el.textContent = last ? `Ultima: ${last[1].date}` : 'Nessuna sessione';
+    const last=logs.find(([,l])=>l.split===s.id);
+    const el=document.getElementById(`slast-${s.id}`);
+    if(el)el.textContent=last?`Ultima: ${last[1].date}`:'Nessuna sessione';
   });
-
-  // Streak 28 giorni
-  const streakEl = document.getElementById('streak-bar');
-  const logMap = getLogsByDate();
-  const days = [];
-  for (let i=27; i>=0; i--) {
-    const d = new Date(); d.setDate(d.getDate()-i);
-    const ds = d.toISOString().split('T')[0];
-    const log = logMap[ds];
-    if (log) days.push(`<div class="streak-day done-${log.split}" title="${ds} — ${log.split}"></div>`);
-    else days.push(`<div class="streak-day rest" title="${ds}"></div>`);
+  const logMap=getLogsByDate();
+  const days=[];
+  for(let i=27;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().split('T')[0];
+    const log=logMap[ds];
+    days.push(log?`<div class="streak-day done-${log.split}" title="${ds} — ${log.split}"></div>`:`<div class="streak-day rest" title="${ds}"></div>`);
   }
-  streakEl.innerHTML = days.join('');
-
-  // Aggiorna calendario
+  document.getElementById('streak-bar').innerHTML=days.join('');
   renderCalendar();
 }
 
-// ══════════════════════════════════════════
-// PROGETTI
-// ══════════════════════════════════════════
-function buildProjUI() {
-  const tabsEl = document.getElementById('proj-tabs');
-  const panelsEl = document.getElementById('proj-panels');
-
-  tabsEl.innerHTML = GESTIONALI.map(g=>`
+// ── PROGETTI ──
+function buildProjUI(){
+  document.getElementById('proj-tabs').innerHTML=GESTIONALI.map(g=>`
     <button class="tab" id="ptab-${g.id}" onclick="switchProjG('${g.id}')">
       <span class="tab-dot" style="background:${g.color}"></span>${g.name}
     </button>`).join('');
-
-  panelsEl.innerHTML = GESTIONALI.map(g=>`
+  document.getElementById('proj-panels').innerHTML=GESTIONALI.map(g=>`
     <div class="tab-panel" id="ppanel-${g.id}">
       <div class="tabs" id="ctabs-${g.id}"></div>
       ${g.companies.map(c=>`
@@ -1028,379 +825,211 @@ function buildProjUI() {
           <div class="task-list" id="clist-${c.id}"></div>
         </div>`).join('')}
     </div>`).join('');
-
   switchProjG(GESTIONALI[0].id);
 }
 
-window.switchProjG = function(gid) {
-  activeG = gid;
+window.switchProjG=function(gid){
+  activeG=gid;
   document.querySelectorAll('.tab-panel[id^=ppanel]').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab[id^=ptab]').forEach(b=>b.classList.remove('active'));
   document.getElementById(`ppanel-${gid}`).classList.add('active');
   document.getElementById(`ptab-${gid}`).classList.add('active');
-
-  const g = GESTIONALI.find(x=>x.id===gid);
-  const ctabsEl = document.getElementById(`ctabs-${gid}`);
-  ctabsEl.innerHTML = g.companies.map(c=>`
+  const g=GESTIONALI.find(x=>x.id===gid);
+  document.getElementById(`ctabs-${gid}`).innerHTML=g.companies.map(c=>`
     <button class="tab" id="ctab-${c.id}" onclick="switchProjC('${gid}','${c.id}')">
       ${c.name} <span class="tab-count" id="ccnt-${c.id}">${Object.keys(allTasks[c.id]||{}).length}</span>
     </button>`).join('');
-
-  switchProjC(gid, activeC[gid] || g.companies[0].id);
+  switchProjC(gid,activeC[gid]||g.companies[0].id);
 };
 
-window.switchProjC = function(gid, cid) {
-  activeC[gid] = cid;
-  const g = GESTIONALI.find(x=>x.id===gid);
-  g.companies.forEach(c=>{
-    document.getElementById(`cpanel-${c.id}`)?.classList.remove('active');
-    document.getElementById(`ctab-${c.id}`)?.classList.remove('active');
-  });
+window.switchProjC=function(gid,cid){
+  activeC[gid]=cid;
+  const g=GESTIONALI.find(x=>x.id===gid);
+  g.companies.forEach(c=>{document.getElementById(`cpanel-${c.id}`)?.classList.remove('active');document.getElementById(`ctab-${c.id}`)?.classList.remove('active');});
   document.getElementById(`cpanel-${cid}`)?.classList.add('active');
   document.getElementById(`ctab-${cid}`)?.classList.add('active');
-  renderProjPanel(gid, cid);
+  renderProjPanel(gid,cid);
 };
 
-function renderProjPanel(gid, cid) {
-  const tasks = allTasks[cid] || {};
-  const order = {inprogress:0, incomplete:1, missingfiles:2, todo:3, done:4};
-  const arr = Object.entries(tasks).sort((a,b)=>{
-    const so = (order[a[1].status]??3)-(order[b[1].status]??3);
-    return so !== 0 ? so : (a[1].createdAt||0)-(b[1].createdAt||0);
-  });
-
-  const total = arr.length;
-  const done = arr.filter(([,t])=>t.status==='done').length;
-  const pct = total>0 ? Math.round(done/total*100) : 0;
-  const inprog = arr.filter(([,t])=>t.status==='inprogress').length;
-  const statsEl = document.getElementById(`cstats-${cid}`);
-  if (statsEl) statsEl.innerHTML = `
+function renderProjPanel(gid,cid){
+  const tasks=allTasks[cid]||{};
+  const order={inprogress:0,incomplete:1,missingfiles:2,todo:3,done:4};
+  const arr=Object.entries(tasks).sort((a,b)=>{const so=(order[a[1].status]??3)-(order[b[1].status]??3);return so||(a[1].createdAt||0)-(b[1].createdAt||0);});
+  const total=arr.length,done=arr.filter(([,t])=>t.status==='done').length,pct=total>0?Math.round(done/total*100):0,inprog=arr.filter(([,t])=>t.status==='inprogress').length;
+  const statsEl=document.getElementById(`cstats-${cid}`);
+  if(statsEl)statsEl.innerHTML=`
     <div class="stat-card"><div class="stat-label">Task</div><div class="stat-num">${total}</div></div>
     <div class="stat-card"><div class="stat-label">In corso</div><div class="stat-num" style="color:var(--yellow)">${inprog}</div></div>
     <div class="stat-card"><div class="stat-label">Completate</div><div class="stat-num" style="color:var(--green)">${done}</div></div>
-    <div class="stat-card"><div class="stat-label">Progresso</div><div class="stat-num" style="color:var(--accent)">${pct}%</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div></div>`;
-
-  const listEl = document.getElementById(`clist-${cid}`);
-  if (!listEl) return;
-
-  if (arr.length === 0) { listEl.innerHTML = `<div class="empty">Nessuna task.</div>`; return; }
-  listEl.innerHTML = arr.map(([tid,t])=>renderTaskWrapper(cid, tid, t)).join('');
-
+    <div class="stat-card"><div class="stat-label">Progresso</div><div class="stat-num" style="color:var(--accent)">${pct}%</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div></div>`;
+  const listEl=document.getElementById(`clist-${cid}`);if(!listEl)return;
+  if(arr.length===0){listEl.innerHTML='<div class="empty">Nessuna task.</div>';return;}
+  listEl.innerHTML=arr.map(([tid,t])=>renderTaskWrapper(cid,tid,t)).join('');
   openAcc.forEach(tid=>{
     document.getElementById(`subpanel-${tid}`)?.classList.add('open');
     document.getElementById(`expbtn-${tid}`)?.classList.add('open');
-    document.getElementById(`wrap-${tid}`)?.classList.add('open-top');
+    document.getElementById(`trow-${tid}`)?.classList.add('open-top');
   });
-
-  if (editingId) {
-    const inp = editingId.type==='task' ? `tedit-${editingId.tid}` : `sedit-${editingId.sid}`;
-    setTimeout(()=>{ const el=document.getElementById(inp); if(el){el.focus();el.select();} }, 30);
-  }
-
-  const ccnt = document.getElementById(`ccnt-${cid}`);
-  if (ccnt) ccnt.textContent = total;
+  if(editingId){const inp=editingId.type==='task'?`tedit-${editingId.tid}`:`sedit-${editingId.sid}`;setTimeout(()=>{const el=document.getElementById(inp);if(el){el.focus();el.select();}},30);}
+  const ccnt=document.getElementById(`ccnt-${cid}`);if(ccnt)ccnt.textContent=total;
 }
 
-function renderTaskWrapper(cid, tid, task) {
-  const subs = task.subtasks ? Object.entries(task.subtasks).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)) : [];
-  const subCount = subs.length;
-  const doneSubs = subs.filter(([,s])=>s.status==='done').length;
-  const allDone = subCount>0 && doneSubs===subCount;
-  const hasInc = subCount>0 && doneSubs<subCount;
-  const isEditing = editingId?.type==='task' && editingId?.tid===tid;
-  const statusLabels = {todo:'Da fare',inprogress:'In corso',done:'Completata',incomplete:'Incompleto',missingfiles:'File mancanti'};
-  const date = task.createdAt ? new Date(task.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}) : '';
-
-  const expCls = `exp-btn${hasInc?' has-inc':''}${allDone?' all-done':''}`;
-  const expBtn = `<button class="${expCls}" id="expbtn-${tid}" onclick="toggleAcc('${tid}')"><span class="exp-arrow">▶</span><span class="exp-count">${subCount}</span></button>`;
-
-  const taskRow = `
-    <div class="task-row s-${task.status||'todo'}${openAcc.has(tid)?' open-top':''}" id="trow-${tid}">
-      ${expBtn}
-      ${isEditing
-        ? `<input class="edit-inp" id="tedit-${tid}" value="${esc(task.name)}" onkeydown="if(event.key==='Enter') saveTaskEdit('${cid}','${tid}'); if(event.key==='Escape') cancelEdit()"/>`
-        : `<span class="task-name">${esc(task.name)}</span>`}
-      <div class="task-meta">
-        ${!isEditing ? `<span class="badge badge-${task.status||'todo'}">${statusLabels[task.status||'todo']}</span>` : ''}
-        <select class="sel" onchange="updateStatus('${cid}','${tid}',this.value)">
-          <option value="todo"         ${task.status==='todo'?'selected':''}>Da fare</option>
-          <option value="inprogress"   ${task.status==='inprogress'?'selected':''}>In corso</option>
-          <option value="done"         ${task.status==='done'?'selected':''}>Completata</option>
-          <option value="incomplete"   ${task.status==='incomplete'?'selected':''}>Incompleto</option>
-          <option value="missingfiles" ${task.status==='missingfiles'?'selected':''}>File mancanti</option>
-        </select>
-        <span class="edit-only" style="display:contents">
-          ${!isEditing
-            ? `<button class="ibtn" onclick="startTaskEdit('${cid}','${tid}')">✏️</button>`
-            : `<button class="ibtn" onclick="saveTaskEdit('${cid}','${tid}')">💾</button><button class="ibtn" onclick="cancelEdit()">✕</button>`}
-          <button class="ibtn del" onclick="deleteTask('${cid}','${tid}')">🗑</button>
-        </span>
-        ${date ? `<span style="font-size:0.6rem;color:var(--text3)">${date}</span>` : ''}
-      </div>
-    </div>`;
-
-  const subRows = subs.map(([sid,s])=>renderSubRow(cid,tid,sid,s)).join('');
-  const subPanel = `
-    <div class="subtask-panel" id="subpanel-${tid}">
-      <div style="display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.5rem">
-        ${subCount===0?`<div style="font-size:0.7rem;color:var(--text3)">Nessuna sub-task.</div>`:subRows}
-      </div>
-      <div class="sub-add-row edit-only">
-        <input type="text" id="subinput-${tid}" placeholder="Nuova sub-task…" onkeydown="if(event.key==='Enter') addSubtask('${cid}','${tid}')"/>
-        <button class="btn-ghost" onclick="addSubtask('${cid}','${tid}')">+ Sub</button>
-      </div>
-    </div>`;
-
+function renderTaskWrapper(cid,tid,task){
+  const subs=task.subtasks?Object.entries(task.subtasks).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)):[];
+  const sc=subs.length,ds=subs.filter(([,s])=>s.status==='done').length;
+  const allDone=sc>0&&ds===sc,hasInc=sc>0&&ds<sc;
+  const isEditing=editingId?.type==='task'&&editingId?.tid===tid;
+  const labels={todo:'Da fare',inprogress:'In corso',done:'Completata',incomplete:'Incompleto',missingfiles:'File mancanti'};
+  const date=task.createdAt?new Date(task.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}):'';
+  const expCls=`exp-btn${hasInc?' has-inc':''}${allDone?' all-done':''}`;
+  const taskRow=`<div class="task-row s-${task.status||'todo'}${openAcc.has(tid)?' open-top':''}" id="trow-${tid}">
+    <button class="${expCls}" id="expbtn-${tid}" onclick="toggleAcc('${tid}')"><span class="exp-arrow">▶</span><span class="exp-count">${sc}</span></button>
+    ${isEditing?`<input class="edit-inp" id="tedit-${tid}" value="${esc(task.name)}" onkeydown="if(event.key==='Enter')saveTaskEdit('${cid}','${tid}');if(event.key==='Escape')cancelEdit()"/>`:`<span class="task-name">${esc(task.name)}</span>`}
+    <div class="task-meta">
+      ${!isEditing?`<span class="badge badge-${task.status||'todo'}">${labels[task.status||'todo']}</span>`:''}
+      <select class="sel" onchange="updateStatus('${cid}','${tid}',this.value)">
+        <option value="todo" ${task.status==='todo'?'selected':''}>Da fare</option>
+        <option value="inprogress" ${task.status==='inprogress'?'selected':''}>In corso</option>
+        <option value="done" ${task.status==='done'?'selected':''}>Completata</option>
+        <option value="incomplete" ${task.status==='incomplete'?'selected':''}>Incompleto</option>
+        <option value="missingfiles" ${task.status==='missingfiles'?'selected':''}>File mancanti</option>
+      </select>
+      <span class="edit-only" style="display:contents">
+        ${!isEditing?`<button class="ibtn" onclick="startTaskEdit('${cid}','${tid}')">✏️</button>`:`<button class="ibtn" onclick="saveTaskEdit('${cid}','${tid}')">💾</button><button class="ibtn" onclick="cancelEdit()">✕</button>`}
+        <button class="ibtn del" onclick="deleteTask('${cid}','${tid}')">🗑</button>
+      </span>
+      ${date?`<span style="font-size:0.6rem;color:var(--text3)">${date}</span>`:''}
+    </div>
+  </div>`;
+  const subRows=subs.map(([sid,s])=>renderSubRow(cid,tid,sid,s)).join('');
+  const subPanel=`<div class="subtask-panel" id="subpanel-${tid}">
+    <div style="display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.5rem">${sc===0?'<div style="font-size:0.7rem;color:var(--text3)">Nessuna sub-task.</div>':subRows}</div>
+    <div class="sub-add-row edit-only">
+      <input type="text" id="subinput-${tid}" placeholder="Nuova sub-task…" onkeydown="if(event.key==='Enter')addSubtask('${cid}','${tid}')"/>
+      <button class="btn-ghost" onclick="addSubtask('${cid}','${tid}')">+ Sub</button>
+    </div>
+  </div>`;
   return `<div class="task-wrapper" id="wrap-${tid}">${taskRow}${subPanel}</div>`;
 }
 
-function renderSubRow(cid, tid, sid, sub) {
-  const isEditing = editingId?.type==='subtask' && editingId?.sid===sid;
-  const labels = {todo:'Da fare',inprogress:'In corso',done:'Completata',incomplete:'Incompleto',missingfiles:'File mancanti'};
-  return `
-    <div class="sub-row s-${sub.status||'todo'}" id="subrow-${sid}">
-      <span class="sub-arrow">↳</span>
-      ${isEditing
-        ? `<input class="edit-inp" id="sedit-${sid}" value="${esc(sub.name)}" style="font-size:0.8rem" onkeydown="if(event.key==='Enter') saveSubEdit('${cid}','${tid}','${sid}'); if(event.key==='Escape') cancelEdit()"/>`
-        : `<span class="sub-name">${esc(sub.name)}</span>`}
-      <div class="task-meta">
-        ${!isEditing?`<span class="badge badge-${sub.status||'todo'}" style="font-size:0.54rem">${labels[sub.status||'todo']}</span>`:''}
-        <select class="sel" style="font-size:0.62rem" onchange="updateSubStatus('${cid}','${tid}','${sid}',this.value)">
-          <option value="todo"         ${sub.status==='todo'?'selected':''}>Da fare</option>
-          <option value="inprogress"   ${sub.status==='inprogress'?'selected':''}>In corso</option>
-          <option value="done"         ${sub.status==='done'?'selected':''}>Completata</option>
-          <option value="incomplete"   ${sub.status==='incomplete'?'selected':''}>Incompleto</option>
-          <option value="missingfiles" ${sub.status==='missingfiles'?'selected':''}>File mancanti</option>
-        </select>
-        <span class="edit-only" style="display:contents">
-          ${!isEditing
-            ?`<button class="ibtn" style="font-size:0.7rem" onclick="startSubEdit('${cid}','${tid}','${sid}')">✏️</button>`
-            :`<button class="ibtn" onclick="saveSubEdit('${cid}','${tid}','${sid}')">💾</button><button class="ibtn" onclick="cancelEdit()">✕</button>`}
-          <button class="ibtn del" style="font-size:0.7rem" onclick="deleteSubtask('${cid}','${tid}','${sid}')">🗑</button>
-        </span>
-      </div>
-    </div>`;
+function renderSubRow(cid,tid,sid,sub){
+  const isEditing=editingId?.type==='subtask'&&editingId?.sid===sid;
+  const labels={todo:'Da fare',inprogress:'In corso',done:'Completata',incomplete:'Incompleto',missingfiles:'File mancanti'};
+  return `<div class="sub-row s-${sub.status||'todo'}" id="subrow-${sid}">
+    <span class="sub-arrow">↳</span>
+    ${isEditing?`<input class="edit-inp" id="sedit-${sid}" value="${esc(sub.name)}" style="font-size:0.8rem" onkeydown="if(event.key==='Enter')saveSubEdit('${cid}','${tid}','${sid}');if(event.key==='Escape')cancelEdit()"/>`:`<span class="sub-name">${esc(sub.name)}</span>`}
+    <div class="task-meta">
+      ${!isEditing?`<span class="badge badge-${sub.status||'todo'}" style="font-size:0.54rem">${labels[sub.status||'todo']}</span>`:''}
+      <select class="sel" style="font-size:0.62rem" onchange="updateSubStatus('${cid}','${tid}','${sid}',this.value)">
+        <option value="todo" ${sub.status==='todo'?'selected':''}>Da fare</option>
+        <option value="inprogress" ${sub.status==='inprogress'?'selected':''}>In corso</option>
+        <option value="done" ${sub.status==='done'?'selected':''}>Completata</option>
+        <option value="incomplete" ${sub.status==='incomplete'?'selected':''}>Incompleto</option>
+        <option value="missingfiles" ${sub.status==='missingfiles'?'selected':''}>File mancanti</option>
+      </select>
+      <span class="edit-only" style="display:contents">
+        ${!isEditing?`<button class="ibtn" style="font-size:0.7rem" onclick="startSubEdit('${cid}','${tid}','${sid}')">✏️</button>`:`<button class="ibtn" onclick="saveSubEdit('${cid}','${tid}','${sid}')">💾</button><button class="ibtn" onclick="cancelEdit()">✕</button>`}
+        <button class="ibtn del" style="font-size:0.7rem" onclick="deleteSubtask('${cid}','${tid}','${sid}')">🗑</button>
+      </span>
+    </div>
+  </div>`;
 }
 
-// ══════════════════════════════════════════
-// ACCORDION
-// ══════════════════════════════════════════
-window.toggleAcc = function(tid) {
-  const panel = document.getElementById(`subpanel-${tid}`);
-  const btn   = document.getElementById(`expbtn-${tid}`);
-  const row   = document.getElementById(`trow-${tid}`);
-  if (!panel) return;
-  if (openAcc.has(tid)) {
-    openAcc.delete(tid);
-    panel.classList.remove('open'); btn?.classList.remove('open'); row?.classList.remove('open-top');
-  } else {
-    openAcc.add(tid);
-    panel.classList.add('open'); btn?.classList.add('open'); row?.classList.add('open-top');
-    setTimeout(()=>document.getElementById(`subinput-${tid}`)?.focus(), 50);
-  }
+window.toggleAcc=function(tid){
+  const panel=document.getElementById(`subpanel-${tid}`),btn=document.getElementById(`expbtn-${tid}`),row=document.getElementById(`trow-${tid}`);
+  if(!panel)return;
+  if(openAcc.has(tid)){openAcc.delete(tid);panel.classList.remove('open');btn?.classList.remove('open');row?.classList.remove('open-top');}
+  else{openAcc.add(tid);panel.classList.add('open');btn?.classList.add('open');row?.classList.add('open-top');setTimeout(()=>document.getElementById(`subinput-${tid}`)?.focus(),50);}
 };
 
-// ══════════════════════════════════════════
-// TASK CRUD
-// ══════════════════════════════════════════
-window.addTask = async function(cid) {
-  const inp = document.getElementById(`cinput-${cid}`);
-  const name = inp.value.trim(); if (!name||!db) return;
-  try { await window._fbPush(`tasks/${cid}`, {name, status:'todo', createdAt:Date.now()}); inp.value=''; toast('Task aggiunta ✓'); }
-  catch(e) { toast('Errore: '+e.message); }
-};
-window.updateStatus = async function(cid, tid, status) {
-  if (!db) return;
-  try { await window._fbSet(`tasks/${cid}/${tid}/status`, status); toast('Stato aggiornato ✓'); }
-  catch(e) { toast('Errore'); }
-};
-window.deleteTask = async function(cid, tid) {
-  if (!db) return;
-  const n = Object.keys(allTasks[cid]?.[tid]?.subtasks||{}).length;
-  if (!confirm(n>0?`Eliminare task e ${n} sub-task?`:'Eliminare task?')) return;
-  try { await window._fbRemove(`tasks/${cid}/${tid}`); openAcc.delete(tid); toast('Eliminata'); }
-  catch(e) { toast('Errore'); }
-};
-window.startTaskEdit = function(cid, tid) { editingId={type:'task',cid,tid}; renderProjPanel(activeG, cid); };
-window.saveTaskEdit  = async function(cid, tid) {
-  const inp = document.getElementById(`tedit-${tid}`); if (!inp) return;
-  const name = inp.value.trim(); if (!name||!db) return;
-  try { await window._fbSet(`tasks/${cid}/${tid}/name`, name); editingId=null; toast('Modificata ✓'); }
-  catch(e) { toast('Errore'); }
-};
-window.addSubtask = async function(cid, tid) {
-  const inp = document.getElementById(`subinput-${tid}`);
-  const name = inp.value.trim(); if (!name||!db) return;
-  try { await window._fbPush(`tasks/${cid}/${tid}/subtasks`, {name, status:'todo', createdAt:Date.now()}); inp.value=''; openAcc.add(tid); toast('Sub-task aggiunta ✓'); }
-  catch(e) { toast('Errore'); }
-};
-window.updateSubStatus = async function(cid, tid, sid, status) {
-  if (!db) return;
-  try { await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/status`, status); toast('Aggiornato ✓'); }
-  catch(e) { toast('Errore'); }
-};
-window.deleteSubtask = async function(cid, tid, sid) {
-  if (!db) return;
-  if (!confirm('Eliminare sub-task?')) return;
-  try { await window._fbRemove(`tasks/${cid}/${tid}/subtasks/${sid}`); toast('Eliminata'); }
-  catch(e) { toast('Errore'); }
-};
-window.startSubEdit = function(cid, tid, sid) { editingId={type:'subtask',cid,tid,sid}; openAcc.add(tid); renderProjPanel(activeG, cid); };
-window.saveSubEdit  = async function(cid, tid, sid) {
-  const inp = document.getElementById(`sedit-${sid}`); if (!inp) return;
-  const name = inp.value.trim(); if (!name||!db) return;
-  try { await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/name`, name); editingId=null; toast('Modificata ✓'); }
-  catch(e) { toast('Errore'); }
-};
-window.cancelEdit = function() {
-  const prev = editingId; editingId = null;
-  if (prev) renderProjPanel(activeG, prev.cid);
-};
+window.addTask=async function(cid){const inp=document.getElementById(`cinput-${cid}`);const name=inp.value.trim();if(!name||!db)return;try{await window._fbPush(`tasks/${cid}`,{name,status:'todo',createdAt:Date.now()});inp.value='';toast('Task aggiunta ✓');}catch(e){toast('Errore');}};
+window.updateStatus=async function(cid,tid,status){if(!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/status`,status);toast('Stato aggiornato ✓');}catch(e){toast('Errore');}};
+window.deleteTask=async function(cid,tid){if(!db)return;const n=Object.keys(allTasks[cid]?.[tid]?.subtasks||{}).length;if(!confirm(n>0?`Eliminare task e ${n} sub-task?`:'Eliminare task?'))return;try{await window._fbRemove(`tasks/${cid}/${tid}`);openAcc.delete(tid);toast('Eliminata');}catch(e){toast('Errore');}};
+window.startTaskEdit=function(cid,tid){editingId={type:'task',cid,tid};renderProjPanel(activeG,cid);};
+window.saveTaskEdit=async function(cid,tid){const inp=document.getElementById(`tedit-${tid}`);if(!inp)return;const name=inp.value.trim();if(!name||!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/name`,name);editingId=null;toast('Modificata ✓');}catch(e){toast('Errore');}};
+window.addSubtask=async function(cid,tid){const inp=document.getElementById(`subinput-${tid}`);const name=inp.value.trim();if(!name||!db)return;try{await window._fbPush(`tasks/${cid}/${tid}/subtasks`,{name,status:'todo',createdAt:Date.now()});inp.value='';openAcc.add(tid);toast('Sub-task aggiunta ✓');}catch(e){toast('Errore');}};
+window.updateSubStatus=async function(cid,tid,sid,status){if(!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/status`,status);toast('Aggiornato ✓');}catch(e){toast('Errore');}};
+window.deleteSubtask=async function(cid,tid,sid){if(!db)return;if(!confirm('Eliminare sub-task?'))return;try{await window._fbRemove(`tasks/${cid}/${tid}/subtasks/${sid}`);toast('Eliminata');}catch(e){toast('Errore');}};
+window.startSubEdit=function(cid,tid,sid){editingId={type:'subtask',cid,tid,sid};openAcc.add(tid);renderProjPanel(activeG,cid);};
+window.saveSubEdit=async function(cid,tid,sid){const inp=document.getElementById(`sedit-${sid}`);if(!inp)return;const name=inp.value.trim();if(!name||!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/name`,name);editingId=null;toast('Modificata ✓');}catch(e){toast('Errore');}};
+window.cancelEdit=function(){const prev=editingId;editingId=null;if(prev)renderProjPanel(activeG,prev.cid);};
 
-// ══════════════════════════════════════════
-// FINANZE
-// ══════════════════════════════════════════
-window.showFinTab = function(tab, btn) {
-  activeFinTab = tab;
+// ── FINANZE ──
+window.showFinTab=function(tab,btn){
+  activeFinTab=tab;
   document.querySelectorAll('#page-finanze .tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('#page-finanze .tab-panel').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(`fin-${tab}`).classList.add('active');
+  btn.classList.add('active');document.getElementById(`fin-${tab}`).classList.add('active');
 };
 
-function renderFinanze() {
-  const entrate = Object.values(finData.entrate||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-  const uscite  = Object.values(finData.uscite||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-  // Mensile equiv: trimestrali /3
-  const abb = Object.values(finData.abbonamenti||{}).reduce((s,e)=>{
-    const amt = parseFloat(e.amt)||0;
-    return s + (e.trimestrale ? amt/3 : amt);
-  }, 0);
-  const saldo = entrate - uscite - abb;
+function renderFinanze(){
+  const entrate=Object.values(finData.entrate||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
+  const uscite=Object.values(finData.uscite||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
+  const abb=Object.values(finData.abbonamenti||{}).reduce((s,e)=>s+(e.trimestrale?(parseFloat(e.amt)||0)/3:(parseFloat(e.amt)||0)),0);
+  const saldo=entrate-uscite-abb;
+  document.getElementById('fin-summary').innerHTML=`
+    <div class="fin-card"><div class="fin-label">Entrate</div><div class="fin-amount pos">+€${entrate.toFixed(2)}</div></div>
+    <div class="fin-card"><div class="fin-label">Uscite totali</div><div class="fin-amount neg">-€${(uscite+abb).toFixed(2)}</div></div>
+    <div class="fin-card"><div class="fin-label">Saldo netto</div><div class="fin-amount ${saldo>=0?'pos':'neg'}">${saldo>=0?'+':'-'}€${Math.abs(saldo).toFixed(2)}</div></div>
+    <div class="fin-card"><div class="fin-label">Abb. equiv/mese</div><div class="fin-amount neutral">€${abb.toFixed(2)}</div></div>`;
 
-  document.getElementById('fin-summary').innerHTML = `
-    <div class="fin-card">
-      <div class="fin-label">Entrate</div>
-      <div class="fin-amount pos">+€${entrate.toFixed(2)}</div>
-    </div>
-    <div class="fin-card">
-      <div class="fin-label">Uscite totali</div>
-      <div class="fin-amount neg">-€${(uscite+abb).toFixed(2)}</div>
-    </div>
-    <div class="fin-card">
-      <div class="fin-label">Saldo netto</div>
-      <div class="fin-amount ${saldo>=0?'pos':'neg'}">${saldo>=0?'+':'-'}€${Math.abs(saldo).toFixed(2)}</div>
-    </div>
-    <div class="fin-card">
-      <div class="fin-label">Abb. equiv/mese</div>
-      <div class="fin-amount neutral">€${abb.toFixed(2)}</div>
-    </div>`;
-
-  const eArr = Object.entries(finData.entrate||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  const eEl = document.getElementById('fin-entrate-list');
-  eEl.innerHTML = eArr.length===0 ? '<div class="empty">Nessuna entrata.</div>' : eArr.map(([eid,e])=>`
+  const eArr=Object.entries(finData.entrate||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  document.getElementById('fin-entrate-list').innerHTML=eArr.length?eArr.map(([eid,e])=>`
     <div class="fin-row">
       <div class="fin-dot" style="background:var(--green)"></div>
-      <div style="flex:1;min-width:0">
-        <div class="fin-name">${esc(e.desc)}</div>
-        <div class="fin-client">${esc(e.client||'')}</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="fin-name">${esc(e.desc)}</div><div class="fin-client">${esc(e.client||'')}${e.date?' · '+e.date:''}</div></div>
       <span class="fin-amt pos">+€${parseFloat(e.amt||0).toFixed(2)}</span>
       <select class="fin-select edit-only" onchange="updateFinStatus('entrate','${eid}',this.value)">
-        <option value="pagato"  ${e.status==='pagato'?'selected':''}>Pagato</option>
-        <option value="attesa"  ${e.status==='attesa'?'selected':''}>In attesa</option>
+        <option value="pagato" ${e.status==='pagato'?'selected':''}>Pagato</option>
+        <option value="attesa" ${e.status==='attesa'?'selected':''}>In attesa</option>
         <option value="scaduto" ${e.status==='scaduto'?'selected':''}>Scaduto</option>
       </select>
       <span class="fin-status ${e.status||'pagato'}">${{pagato:'Pagato',attesa:'In attesa',scaduto:'Scaduto'}[e.status||'pagato']}</span>
       <button class="ibtn del edit-only" onclick="deleteFinEntry('entrate','${eid}')">🗑</button>
-    </div>`).join('');
+    </div>`).join(''):'<div class="empty">Nessuna entrata registrata.</div>';
 
-  const uArr = Object.entries(finData.uscite||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  const uEl = document.getElementById('fin-uscite-list');
-  uEl.innerHTML = uArr.length===0 ? '<div class="empty">Nessuna uscita.</div>' : uArr.map(([uid,u])=>`
+  const uArr=Object.entries(finData.uscite||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  document.getElementById('fin-uscite-list').innerHTML=uArr.length?uArr.map(([uid,u])=>`
     <div class="fin-row">
       <div class="fin-dot" style="background:var(--red)"></div>
-      <div style="flex:1;min-width:0">
-        <div class="fin-name">${esc(u.desc)}</div>
-        <div class="fin-client">${esc(u.cat||'')}</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="fin-name">${esc(u.desc)}</div><div class="fin-client">${esc(u.cat||'')}</div></div>
       <span class="fin-amt neg">-€${parseFloat(u.amt||0).toFixed(2)}</span>
       <button class="ibtn del edit-only" onclick="deleteFinEntry('uscite','${uid}')">🗑</button>
-    </div>`).join('');
+    </div>`).join(''):'<div class="empty">Nessuna uscita registrata.</div>';
 
-  const aArr = Object.entries(finData.abbonamenti||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  const aEl = document.getElementById('fin-abbonamenti-list');
-  aEl.innerHTML = aArr.length===0 ? '<div class="empty">Nessun abbonamento.</div>' : aArr.map(([aid,a])=>{
-    const isTrim = a.trimestrale || a.ogni==='trimestre';
-    const amtDisplay = parseFloat(a.amt||0)>0 ? (isTrim ? `-€${parseFloat(a.amt||0).toFixed(2)}/trim` : `-€${parseFloat(a.amt||0).toFixed(2)}`) : 'Gratis';
-    const statusCls = isTrim ? 'trimestrale' : 'ricorrente';
-    const statusLabel = isTrim ? 'Trimestrale' : 'Ricorrente';
-    return `
-    <div class="fin-row">
+  const aArr=Object.entries(finData.abbonamenti||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  document.getElementById('fin-abbonamenti-list').innerHTML=aArr.length?aArr.map(([aid,a])=>{
+    const isTrim=a.trimestrale||a.ogni==='trimestre';
+    const amtStr=parseFloat(a.amt||0)>0?(isTrim?`-€${parseFloat(a.amt).toFixed(2)}/trim`:`-€${parseFloat(a.amt).toFixed(2)}`):'Gratis';
+    return `<div class="fin-row">
       <div class="fin-dot" style="background:${a.color||'var(--purple)'}"></div>
-      <div style="flex:1;min-width:0">
-        <div class="fin-name">${esc(a.desc)}</div>
-        <div class="fin-client">${esc(a.cat||'')} · ogni ${a.ogni||'mese'}</div>
-      </div>
-      <span class="fin-amt neg">${amtDisplay}</span>
-      <span class="fin-status ${statusCls}">${statusLabel}</span>
+      <div style="flex:1;min-width:0"><div class="fin-name">${esc(a.desc)}</div><div class="fin-client">${esc(a.cat||'')} · ogni ${a.ogni||'mese'}</div></div>
+      <span class="fin-amt neg">${amtStr}</span>
+      <span class="fin-status ${isTrim?'trimestrale':'ricorrente'}">${isTrim?'Trimestrale':'Ricorrente'}</span>
       <button class="ibtn del edit-only" onclick="deleteFinEntry('abbonamenti','${aid}')">🗑</button>
-    </div>`;}).join('');
+    </div>`;}).join(''):'<div class="empty">Nessun abbonamento.</div>';
 }
 
-window.addFinEntry = async function(type) {
-  if (!db) return;
-  if (type==='entrate') {
-    const desc   = document.getElementById('fin-e-desc').value.trim();
-    const amt    = document.getElementById('fin-e-amt').value.trim();
-    const client = document.getElementById('fin-e-client').value.trim();
-    const status = document.getElementById('fin-e-status').value;
-    if (!desc||!amt) return;
-    try {
-      await window._fbPush('finanze/entrate', {desc, amt:parseFloat(amt), client, status, createdAt:Date.now()});
-      document.getElementById('fin-e-desc').value='';
-      document.getElementById('fin-e-amt').value='';
-      document.getElementById('fin-e-client').value='';
-      toast('Entrata aggiunta ✓');
-    } catch(e) { toast('Errore'); }
-  } else {
-    const desc = document.getElementById('fin-u-desc').value.trim();
-    const amt  = document.getElementById('fin-u-amt').value.trim();
-    const cat  = document.getElementById('fin-u-cat').value.trim();
-    if (!desc||!amt) return;
-    try {
-      await window._fbPush('finanze/uscite', {desc, amt:parseFloat(amt), cat, createdAt:Date.now()});
-      document.getElementById('fin-u-desc').value='';
-      document.getElementById('fin-u-amt').value='';
-      document.getElementById('fin-u-cat').value='';
-      toast('Uscita aggiunta ✓');
-    } catch(e) { toast('Errore'); }
+window.addFinEntry=async function(type){
+  if(!db)return;
+  if(type==='entrate'){
+    const desc=document.getElementById('fin-e-desc').value.trim(),amt=document.getElementById('fin-e-amt').value.trim(),client=document.getElementById('fin-e-client').value.trim(),status=document.getElementById('fin-e-status').value;
+    if(!desc||!amt)return;
+    try{await window._fbPush('finanze/entrate',{desc,amt:parseFloat(amt),client,status,createdAt:Date.now()});['fin-e-desc','fin-e-amt','fin-e-client'].forEach(id=>document.getElementById(id).value='');toast('Entrata aggiunta ✓');}catch(e){toast('Errore');}
+  }else{
+    const desc=document.getElementById('fin-u-desc').value.trim(),amt=document.getElementById('fin-u-amt').value.trim(),cat=document.getElementById('fin-u-cat').value.trim();
+    if(!desc||!amt)return;
+    try{await window._fbPush('finanze/uscite',{desc,amt:parseFloat(amt),cat,createdAt:Date.now()});['fin-u-desc','fin-u-amt','fin-u-cat'].forEach(id=>document.getElementById(id).value='');toast('Uscita aggiunta ✓');}catch(e){toast('Errore');}
   }
 };
+window.updateFinStatus=async function(type,id,status){if(!db)return;try{await window._fbSet(`finanze/${type}/${id}/status`,status);toast('Aggiornato ✓');}catch(e){toast('Errore');}};
+window.deleteFinEntry=async function(type,id){if(!db||!confirm('Eliminare voce?'))return;try{await window._fbRemove(`finanze/${type}/${id}`);toast('Eliminata');}catch(e){toast('Errore');}};
 
-window.updateFinStatus = async function(type, id, status) {
-  if (!db) return;
-  try { await window._fbSet(`finanze/${type}/${id}/status`, status); toast('Aggiornato ✓'); }
-  catch(e) { toast('Errore'); }
-};
-
-window.deleteFinEntry = async function(type, id) {
-  if (!db||!confirm('Eliminare voce?')) return;
-  try { await window._fbRemove(`finanze/${type}/${id}`); toast('Eliminata'); }
-  catch(e) { toast('Errore'); }
-};
-
-// ══════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ── UTILS ──
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 let toastT;
-function toast(msg) {
-  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2200);
-}
-window.toast = toast;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);}
+window.toast=toast;
 
 initFirebase();
 </script>
