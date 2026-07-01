@@ -870,7 +870,24 @@ function buildProjUI(){
   document.getElementById('proj-panels').innerHTML=GESTIONALI.map(g=>`
     <div class="tab-panel" id="ppanel-${g.id}">
       <div class="tabs" id="ctabs-${g.id}"></div>
-      ${g.companies.map(c=>`
+      ${g.companies.map(c=>c.id==='luigi_luigi'?`
+        <div class="tab-panel" id="cpanel-luigi_luigi">
+          <div class="tracker-tabs">
+            <button class="tracker-tab active" id="ltab-tasks" onclick="luigiSwitchTab('tasks',this)">📋 Task</button>
+            <button class="tracker-tab" id="ltab-tracker" onclick="luigiSwitchTab('tracker',this)">📅 Pubblicazioni</button>
+          </div>
+          <div id="luigi-tasks-panel">
+            <div class="stats-grid" id="cstats-luigi_luigi"></div>
+            <div class="add-row edit-only">
+              <input class="add-input" id="cinput-luigi_luigi" placeholder="Nuova task…" onkeydown="if(event.key==='Enter') addTask('luigi_luigi')"/>
+              <button class="btn-primary" onclick="addTask('luigi_luigi')">+ Aggiungi</button>
+            </div>
+            <div class="task-list" id="clist-luigi_luigi"></div>
+          </div>
+          <div id="luigi-tracker-panel" style="display:none;">
+            <div id="luigi-tracker-content"></div>
+          </div>
+        </div>`:`
         <div class="tab-panel" id="cpanel-${c.id}">
           <div class="stats-grid" id="cstats-${c.id}"></div>
           <div class="add-row edit-only">
