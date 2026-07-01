@@ -273,6 +273,45 @@ body.readonly .sel{display:none!important;}
 @media(min-width:681px){
   #toast{bottom:1.5rem;right:1.5rem;}
 }
+
+/* ── TRACKER PUBBLICAZIONI (Luigi Stips) ── */
+.tracker-wrap{margin-top:1.6rem;}
+.tracker-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;}
+.tracker-title{font-size:0.85rem;font-weight:700;letter-spacing:-0.01em;}
+.tracker-month-nav{display:flex;align-items:center;gap:0.5rem;}
+.tracker-month-nav button{background:var(--s2);border:1px solid var(--border);color:var(--text2);border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:0.75rem;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.tracker-month-nav button:hover{border-color:var(--border2);color:var(--text);}
+.tracker-month-label{font-size:0.8rem;font-weight:600;min-width:110px;text-align:center;}
+.tracker-profiles{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.2rem;}
+.profile-block{background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;}
+.profile-block-header{padding:0.7rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;}
+.profile-block-name{font-size:0.82rem;font-weight:700;}
+.profile-block-stats{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.profile-stat-pill{font-size:0.62rem;font-weight:600;color:var(--text2);background:var(--s2);border-radius:20px;padding:0.18rem 0.55rem;}
+.profile-stat-pill span{color:var(--yellow);}
+.content-type-row{display:flex;align-items:center;padding:0.6rem 1rem;border-bottom:1px solid var(--border);gap:0.8rem;}
+.content-type-row:last-child{border-bottom:none;}
+.content-type-label{font-size:0.72rem;font-weight:500;color:var(--text2);flex:0 0 130px;}
+.days-grid{display:flex;flex-wrap:wrap;gap:3px;flex:1;}
+.day-btn{width:24px;height:24px;border-radius:4px;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:0.55rem;font-weight:700;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:all 0.12s;flex-shrink:0;}
+.day-btn:hover{border-color:var(--border2);color:var(--text);}
+.day-btn.published{background:var(--yellow);border-color:var(--yellow);color:#111;}
+.day-btn.today{box-shadow:0 0 0 1px var(--accent);}
+.day-btn.future{opacity:0.25;cursor:default;pointer-events:none;}
+.tracker-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.6rem;}
+.tracker-sum-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:0.75rem 0.9rem;}
+.tracker-sum-label{font-size:0.58rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.3rem;}
+.tracker-sum-num{font-size:1.4rem;font-weight:700;color:var(--yellow);}
+.tracker-tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:1.2rem;}
+.tracker-tab{background:none;border:none;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:600;padding:0.6rem 0.9rem;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.tracker-tab:hover{color:var(--text);}
+.tracker-tab.active{color:var(--yellow);border-bottom-color:var(--yellow);}
+@media(max-width:680px){
+  .content-type-label{flex:0 0 90px;font-size:0.65rem;}
+  .day-btn{width:20px;height:20px;font-size:0.48rem;}
+  .tracker-summary{grid-template-columns:repeat(2,1fr);}
+}
+
 </style>
 </head>
 <body class="readonly">
@@ -1046,6 +1085,144 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 let toastT;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);}
 window.toast=toast;
+
+
+// ── TRACKER LUIGI STIPS ──────────────────────────────────────
+const TRACKER_PROFILES = [
+  {id:'grow_with_luigi', name:'Grow With Luigi', types:[
+    {id:'post', label:'📸 Post'},
+  ]},
+  {id:'luigi_stips', name:'Luigi Stips', types:[
+    {id:'reel', label:'🎬 Reel'},
+    {id:'storia', label:'⏱ Storia'},
+  ]},
+];
+const TRACKER_MONTHS = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+let trackerYear=new Date().getFullYear(), trackerMonth=new Date().getMonth();
+let trackerData={};
+let trackerLoaded=false;
+
+window.luigiSwitchTab=function(tab, btn){
+  document.querySelectorAll('.tracker-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const tasksPanel=document.getElementById('luigi-tasks-panel');
+  const trackerPanel=document.getElementById('luigi-tracker-panel');
+  if(tab==='tasks'){
+    if(tasksPanel)tasksPanel.style.display='';
+    if(trackerPanel)trackerPanel.style.display='none';
+  } else {
+    if(tasksPanel)tasksPanel.style.display='none';
+    if(trackerPanel)trackerPanel.style.display='';
+    if(!trackerLoaded){trackerLoaded=true;loadTrackerData();}
+    else renderTracker();
+  }
+};
+
+async function loadTrackerData(){
+  if(!db)return;
+  const {ref,get}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+  try{
+    const snap=await get(ref(db,'tracker/luigi'));
+    trackerData=snap.val()||{};
+  }catch(e){trackerData={};}
+  renderTracker();
+}
+
+window.trackerToggleDay=async function(profileId,typeId,dateStr){
+  if(!db)return;
+  const key=(profileId+'_'+typeId+'_'+dateStr).replace(/[^a-zA-Z0-9_]/g,'_');
+  const newVal=!trackerData[key];
+  if(newVal)trackerData[key]=true;
+  else delete trackerData[key];
+  try{
+    await window._fbSet('tracker/luigi/'+key, newVal||null);
+    renderTracker();
+    toast(newVal?'✓ Pubblicazione segnata':'Pubblicazione rimossa');
+  }catch(e){toast('Errore: '+e.message);}
+};
+
+window.trackerPrev=function(){trackerMonth--;if(trackerMonth<0){trackerMonth=11;trackerYear--;}loadTrackerData();};
+window.trackerNext=function(){trackerMonth++;if(trackerMonth>11){trackerMonth=0;trackerYear++;}loadTrackerData();};
+
+function renderTracker(){
+  const el=document.getElementById('luigi-tracker-content');
+  if(!el)return;
+  const todayStr=new Date().toISOString().split('T')[0];
+  const daysInMonth=new Date(trackerYear,trackerMonth+1,0).getDate();
+
+  // Calcola totali
+  const totals={};
+  TRACKER_PROFILES.forEach(p=>{
+    totals[p.id]={};
+    p.types.forEach(t=>{
+      let count=0;
+      for(let d=1;d<=daysInMonth;d++){
+        const ds=trackerYear+'-'+String(trackerMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const k=(p.id+'_'+t.id+'_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
+        if(trackerData[k])count++;
+      }
+      totals[p.id][t.id]=count;
+    });
+  });
+
+  const profilesHTML=TRACKER_PROFILES.map(p=>{
+    const typesHTML=p.types.map(t=>{
+      const daysHTML=Array.from({length:daysInMonth},(_,i)=>{
+        const d=i+1;
+        const ds=trackerYear+'-'+String(trackerMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const k=(p.id+'_'+t.id+'_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
+        const pub=!!trackerData[k];
+        const isToday=ds===todayStr, isFuture=ds>todayStr;
+        let cls='day-btn';
+        if(pub)cls+=' published';
+        if(isToday)cls+=' today';
+        if(isFuture)cls+=' future';
+        return `<button class="${cls}" onclick="trackerToggleDay('${p.id}','${t.id}','${ds}')" title="${ds}">${d}</button>`;
+      }).join('');
+      return `<div class="content-type-row">
+        <span class="content-type-label">${t.label}</span>
+        <div class="days-grid">${daysHTML}</div>
+      </div>`;
+    }).join('');
+
+    const statsHTML=p.types.map(t=>
+      `<span class="profile-stat-pill">${t.label}: <span>${totals[p.id][t.id]}</span></span>`
+    ).join('');
+
+    return `<div class="profile-block">
+      <div class="profile-block-header">
+        <span class="profile-block-name">${esc(p.name)}</span>
+        <div class="profile-block-stats">${statsHTML}</div>
+      </div>
+      <div>${typesHTML}</div>
+    </div>`;
+  }).join('');
+
+  let grandTotal=0;
+  TRACKER_PROFILES.forEach(p=>p.types.forEach(t=>{grandTotal+=totals[p.id][t.id];}));
+  const gwl=totals['grow_with_luigi']?.post||0;
+  const lsR=totals['luigi_stips']?.reel||0;
+  const lsS=totals['luigi_stips']?.storia||0;
+
+  el.innerHTML=`
+    <div class="tracker-wrap">
+      <div class="tracker-header">
+        <span class="tracker-title">📅 ${TRACKER_MONTHS[trackerMonth]} ${trackerYear}</span>
+        <div class="tracker-month-nav">
+          <button onclick="trackerPrev()">‹</button>
+          <span class="tracker-month-label">${TRACKER_MONTHS[trackerMonth]} ${trackerYear}</span>
+          <button onclick="trackerNext()">›</button>
+        </div>
+      </div>
+      <div class="tracker-profiles">${profilesHTML}</div>
+      <div class="tracker-summary">
+        <div class="tracker-sum-card"><div class="tracker-sum-label">Tot. contenuti</div><div class="tracker-sum-num">${grandTotal}</div></div>
+        <div class="tracker-sum-card"><div class="tracker-sum-label">GWL · Post</div><div class="tracker-sum-num">${gwl}</div></div>
+        <div class="tracker-sum-card"><div class="tracker-sum-label">LS · Reels</div><div class="tracker-sum-num">${lsR}</div></div>
+        <div class="tracker-sum-card"><div class="tracker-sum-label">LS · Storie</div><div class="tracker-sum-num">${lsS}</div></div>
+      </div>
+    </div>`;
+}
 
 initFirebase();
 </script>
