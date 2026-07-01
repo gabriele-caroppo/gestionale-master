@@ -1107,7 +1107,7 @@ window.toast=toast;
 // ── TRACKER LUIGI STIPS ──────────────────────────────────────
 const TRACKER_PROFILES = [
   {id:'grow_with_luigi', name:'Grow With Luigi', types:[
-    {id:'post', label:'📸 Post'},
+    {id:'reel', label:'🎬 Reel'},
   ]},
   {id:'luigi_stips', name:'Luigi Stips', types:[
     {id:'reel', label:'🎬 Reel'},
@@ -1217,27 +1217,81 @@ function renderTracker(){
 
   let grandTotal=0;
   TRACKER_PROFILES.forEach(p=>p.types.forEach(t=>{grandTotal+=totals[p.id][t.id];}));
-  const gwl=totals['grow_with_luigi']?.post||0;
+  const gwlR=totals['grow_with_luigi']?.reel||0;
   const lsR=totals['luigi_stips']?.reel||0;
   const lsS=totals['luigi_stips']?.storia||0;
+
+  // Target mensili
+  const daysInMonth=new Date(trackerYear,trackerMonth+1,0).getDate();
+  const targetLsReel=6*daysInMonth;
+  const targetLsStorie=4*daysInMonth;
+  const targetGwl=Math.floor(daysInMonth/2); // 1 ogni 2 giorni
+
+  // Compenso
+  const compensoReel=150;
+  const compensoStorie=40;
+  const compensoGwl=gwlR>=15?15:0;
+  const compensoTot=compensoReel+compensoStorie+compensoGwl;
+
+  // Percentuali progresso
+  const pctLsR=Math.min(100,Math.round(lsR/targetLsReel*100));
+  const pctLsS=Math.min(100,Math.round(lsS/targetLsStorie*100));
+  const pctGwl=Math.min(100,Math.round(gwlR/targetGwl*100));
 
   el.innerHTML=`
     <div class="tracker-wrap">
       <div class="tracker-header">
-        <span class="tracker-title">📅 ${TRACKER_MONTHS[trackerMonth]} ${trackerYear}</span>
+        <span class="tracker-title">📅 \${TRACKER_MONTHS[trackerMonth]} \${trackerYear}</span>
         <div class="tracker-month-nav">
           <button onclick="trackerPrev()">‹</button>
-          <span class="tracker-month-label">${TRACKER_MONTHS[trackerMonth]} ${trackerYear}</span>
+          <span class="tracker-month-label">\${TRACKER_MONTHS[trackerMonth]} \${trackerYear}</span>
           <button onclick="trackerNext()">›</button>
         </div>
       </div>
-      <div class="tracker-profiles">${profilesHTML}</div>
-      <div class="tracker-summary">
-        <div class="tracker-sum-card"><div class="tracker-sum-label">Tot. contenuti</div><div class="tracker-sum-num">${grandTotal}</div></div>
-        <div class="tracker-sum-card"><div class="tracker-sum-label">GWL · Post</div><div class="tracker-sum-num">${gwl}</div></div>
-        <div class="tracker-sum-card"><div class="tracker-sum-label">LS · Reels</div><div class="tracker-sum-num">${lsR}</div></div>
-        <div class="tracker-sum-card"><div class="tracker-sum-label">LS · Storie</div><div class="tracker-sum-num">${lsS}</div></div>
+      <div class="tracker-profiles">\${profilesHTML}</div>
+
+      <div style="margin-top:1.2rem;margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);">Progresso target mensile</div>
+      <div class="tracker-summary" style="margin-bottom:1.4rem;">
+        <div class="tracker-sum-card">
+          <div class="tracker-sum-label">LS · Reel <span style="color:var(--text3)">/\${targetLsReel}</span></div>
+          <div class="tracker-sum-num">\${lsR}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:\${pctLsR}%;background:var(--yellow);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">\${targetLsReel-lsR>0?targetLsReel-lsR+' mancanti':'✓ Target raggiunto'}</div>
+        </div>
+        <div class="tracker-sum-card">
+          <div class="tracker-sum-label">LS · Storie <span style="color:var(--text3)">/\${targetLsStorie}</span></div>
+          <div class="tracker-sum-num">\${lsS}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:\${pctLsS}%;background:var(--green);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">\${targetLsStorie-lsS>0?targetLsStorie-lsS+' mancanti':'✓ Target raggiunto'}</div>
+        </div>
+        <div class="tracker-sum-card">
+          <div class="tracker-sum-label">GWL · Reel <span style="color:var(--text3)">/\${targetGwl}</span></div>
+          <div class="tracker-sum-num">\${gwlR}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:\${pctGwl}%;background:var(--accent2);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">\${targetGwl-gwlR>0?targetGwl-gwlR+' mancanti':'✓ Target raggiunto'}</div>
+        </div>
       </div>
+
+      <div style="margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);">Compenso mese</div>
+      <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:1.2rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
+          <span style="font-size:0.82rem;font-weight:500">🎬 Reel Luigi Stips <span style="font-size:0.65rem;color:var(--text3)">(6/g · fisso mensile)</span></span>
+          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€150</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
+          <span style="font-size:0.82rem;font-weight:500">⏱ Storie Luigi Stips <span style="font-size:0.65rem;color:var(--text3)">(4/g · fisso mensile)</span></span>
+          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€40</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
+          <span style="font-size:0.82rem;font-weight:500">🎬 Reel Grow With Luigi <span style="font-size:0.65rem;color:var(--text3)">(≥15/mese)</span></span>
+          <span style="font-size:0.88rem;font-weight:700;color:\${compensoGwl>0?'var(--green)':'var(--text3)'}">\${compensoGwl>0?'+€15':'€0 — non raggiunto'}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--s2);">
+          <span style="font-size:0.88rem;font-weight:700">Totale</span>
+          <span style="font-size:1.1rem;font-weight:700;color:var(--green)">+€\${compensoTot}</span>
+        </div>
+      </div>
+
     </div>`;
 }
 
