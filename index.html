@@ -560,7 +560,7 @@ const ENTRATE_SEED = [
 ];
 
 // STATE
-let db, allTasks={}, finData={entrate:{},uscite:{},abbonamenti:{}}, trainLogs={};
+let db, _ref, _get, allTasks={}, finData={entrate:{},uscite:{},abbonamenti:{}}, trainLogs={};
 let activeG=GESTIONALI[0].id, activeC={}, openAcc=new Set(), editingId=null, isEdit=false;
 let activeFinTab='entrate';
 GESTIONALI.forEach(g=>activeC[g.id]=g.companies[0].id);
@@ -572,7 +572,7 @@ let modalDate=null, modalSelectedSplit=null, modalExistingKey=null;
 // ── FIREBASE ──
 async function initFirebase() {
   const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-  const {getDatabase,ref,onValue,set,remove,push}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+  const {getDatabase,ref,get,onValue,set,remove,push}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
   const app=initializeApp({
     apiKey:'AIzaSyAfy8G_pHz8DftywbYi4YX1k71EyrmOgxQ',
     authDomain:'gestionale-gabriele.firebaseapp.com',
@@ -580,6 +580,13 @@ async function initFirebase() {
     projectId:'gestionale-gabriele',
   });
   db=getDatabase(app);
+  _ref=ref; _get=get;
+
+  // Definisci helper PRIMA degli onValue
+  window._fbSet    = (p,v) => set(ref(db,p),v);
+  window._fbRemove = p     => remove(ref(db,p));
+  window._fbPush   = (p,v) => push(ref(db,p),v);
+
   document.getElementById('conn-dot').classList.add('live');
   document.getElementById('conn-text').textContent='Live';
 
@@ -587,33 +594,36 @@ async function initFirebase() {
     onValue(ref(db,`tasks/${c.id}`),snap=>{allTasks[c.id]=snap.val()||{};refreshUI();});
   });
 
-  onValue(ref(db,'finanze'),async snap=>{
+  onValue(ref(db,'finanze'),snap=>{
     finData=snap.val()||{entrate:{},uscite:{},abbonamenti:{}};
     ['entrate','uscite','abbonamenti'].forEach(k=>{if(!finData[k])finData[k]={};});
-    // Seed una volta sola — flag globale per evitare duplicati
-    if(!window._seeded){
-      window._seeded = true;
-      // Entrate: seed solo se vuote
-      if(Object.keys(finData.entrate).length===0){
-        for(const e of ENTRATE_SEED) await push(ref(db,'finanze/entrate'),{...e,createdAt:new Date(e.date).getTime()});
-      }
-      // Abbonamenti: cancella tutto e riscrivi — evita duplicati da seed multipli
-      const abbCount = Object.keys(finData.abbonamenti).length;
-      const abbTotal = Object.values(finData.abbonamenti).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-      // Se ci sono più di 10 abbonamenti OPPURE il totale supera €200 → duplicati, resetta
-      if(abbCount === 0 || abbCount > 10 || abbTotal > 200){
-        await set(ref(db,'finanze/abbonamenti'), null);
-        for(const a of ABBONAMENTI_DEFAULT) await push(ref(db,'finanze/abbonamenti'),{...a,createdAt:Date.now()});
-      }
-    }
     renderFinanze(); renderDashboard();
   });
 
   onValue(ref(db,'training'),snap=>{trainLogs=snap.val()||{};renderTraining();renderDashboard();});
 
-  window._fbSet=(p,v)=>set(ref(db,p),v);
-  window._fbRemove=p=>remove(ref(db,p));
-  window._fbPush=(p,v)=>push(ref(db,p),v);
+  // Seed eseguito una volta sola dopo il primo caricamento dati
+  setTimeout(async ()=>{
+    if(window._seeded) return;
+    window._seeded = true;
+    try {
+      const snapFin = await get(ref(db,'finanze'));
+      const fin = snapFin.val()||{};
+      const entrate = fin.entrate||{};
+      const abbonamenti = fin.abbonamenti||{};
+      // Seed entrate se vuote
+      if(Object.keys(entrate).length===0){
+        for(const e of ENTRATE_SEED) await push(ref(db,'finanze/entrate'),{...e,createdAt:new Date(e.date).getTime()});
+      }
+      // Seed abbonamenti — resetta se duplicati
+      const abbCount=Object.keys(abbonamenti).length;
+      const abbTotal=Object.values(abbonamenti).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
+      if(abbCount===0||abbCount>10||abbTotal>200){
+        await set(ref(db,'finanze/abbonamenti'),null);
+        for(const a of ABBONAMENTI_DEFAULT) await push(ref(db,'finanze/abbonamenti'),{...a,createdAt:Date.now()});
+      }
+    } catch(e){ console.error('Seed error:',e); }
+  }, 1500);
 
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -1141,10 +1151,9 @@ window.luigiSwitchTab=function(tab, btn){
 };
 
 async function loadTrackerData(){
-  if(!db)return;
-  const {ref,get}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js');
+  if(!db||!_ref||!_get)return;
   try{
-    const snap=await get(ref(db,'tracker/luigi'));
+    const snap=await _get(_ref(db,'tracker/luigi'));
     trackerData=snap.val()||{};
   }catch(e){trackerData={};}
   renderTracker();
@@ -1227,7 +1236,6 @@ function renderTracker(){
   const lsS=totals['luigi_stips']?.storia||0;
 
   // Target mensili
-  const daysInMonth=new Date(trackerYear,trackerMonth+1,0).getDate();
   const targetLsReel=6*daysInMonth;
   const targetLsStorie=4*daysInMonth;
   const targetGwl=Math.floor(daysInMonth/2); // 1 ogni 2 giorni
