@@ -1181,7 +1181,9 @@ function renderTracker(){
   const todayStr=new Date().toISOString().split('T')[0];
   const daysInMonth=new Date(trackerYear,trackerMonth+1,0).getDate();
 
-  // Calcola totali
+  // Moltiplicatori: LS reel=6/g, LS storia=4/g, GWL reel=1
+  const MULT={'luigi_stips_reel':6,'luigi_stips_storia':4,'grow_with_luigi_reel':1};
+  const getMult=(pid,tid)=>MULT[pid+'_'+tid]||1;
   const totals={};
   TRACKER_PROFILES.forEach(p=>{
     totals[p.id]={};
@@ -1192,7 +1194,7 @@ function renderTracker(){
         const k=(p.id+'_'+t.id+'_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
         if(trackerData[k])count++;
       }
-      totals[p.id][t.id]=count;
+      totals[p.id][t.id]=count*getMult(p.id,t.id);
     });
   });
 
@@ -1216,9 +1218,11 @@ function renderTracker(){
       </div>`;
     }).join('');
 
-    const statsHTML=p.types.map(t=>
-      `<span class="profile-stat-pill">${t.label}: <span>${totals[p.id][t.id]}</span></span>`
-    ).join('');
+    const statsHTML=p.types.map(t=>{
+      const m=getMult(p.id,t.id);
+      const sub=m>1?' ('+m+'/g)':'';
+      return '<span class="profile-stat-pill">'+t.label+sub+': <span>'+totals[p.id][t.id]+'</span></span>';
+    }).join('');
 
     return `<div class="profile-block">
       <div class="profile-block-header">
@@ -1296,8 +1300,8 @@ function renderTracker(){
           <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€40</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
-          <span style="font-size:0.82rem;font-weight:500">🎬 Reel Grow With Luigi <span style="font-size:0.65rem;color:var(--text3)">(≥15/mese)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:${compensoGwl>0?'var(--green)':'var(--text3)'}">${compensoGwl>0?'+€15':'€0 — non raggiunto'}</span>
+          <span style="font-size:0.82rem;font-weight:500">🎬 Reel Grow With Luigi <span style="font-size:0.65rem;color:var(--text3)">(1 ogni 2gg · ≥15/mese · fisso €15)</span></span>
+          <span style="font-size:0.88rem;font-weight:700;color:${compensoGwl>0?'var(--green)':'var(--text3)'}">${compensoGwl>0?'+€15':gwlR+'/15 — non raggiunto'}</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--s2);">
           <span style="font-size:0.88rem;font-weight:700">Totale</span>
