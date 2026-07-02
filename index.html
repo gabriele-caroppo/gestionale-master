@@ -862,6 +862,36 @@ function renderTraining(){
 }
 
 // ── PROGETTI ──
+function companyPanelHTML(c){
+  if(c.id==='luigi_luigi'){
+    return '<div class="tab-panel" id="cpanel-luigi_luigi">'
+      +'<div class="tracker-tabs">'
+      +'<button class="tracker-tab active" id="ltab-tasks" onclick="luigiSwitchTab(\'tasks\',this)">📋 Task</button>'
+      +'<button class="tracker-tab" id="ltab-tracker" onclick="luigiSwitchTab(\'tracker\',this)">📅 Pubblicazioni</button>'
+      +'</div>'
+      +'<div id="luigi-tasks-panel">'
+      +'<div class="stats-grid" id="cstats-luigi_luigi"></div>'
+      +'<div class="add-row edit-only">'
+      +'<input class="add-input" id="cinput-luigi_luigi" placeholder="Nuova task…" onkeydown="if(event.key===\'Enter\') addTask(\'luigi_luigi\')"\/>'
+      +'<button class="btn-primary" onclick="addTask(\'luigi_luigi\')">+ Aggiungi<\/button>'
+      +'<\/div>'
+      +'<div class="task-list" id="clist-luigi_luigi"><\/div>'
+      +'<\/div>'
+      +'<div id="luigi-tracker-panel" style="display:none;">'
+      +'<div id="luigi-tracker-content"><\/div>'
+      +'<\/div>'
+      +'<\/div>';
+  }
+  return '<div class="tab-panel" id="cpanel-'+c.id+'">'
+    +'<div class="stats-grid" id="cstats-'+c.id+'"><\/div>'
+    +'<div class="add-row edit-only">'
+    +'<input class="add-input" id="cinput-'+c.id+'" placeholder="Nuova task…" onkeydown="if(event.key===\'Enter\') addTask(\''+c.id+'\')"\/>'
+    +'<button class="btn-primary" onclick="addTask(\''+c.id+'\')">+ Aggiungi<\/button>'
+    +'<\/div>'
+    +'<div class="task-list" id="clist-'+c.id+'"><\/div>'
+    +'<\/div>';
+}
+
 function buildProjUI(){
   document.getElementById('proj-tabs').innerHTML=GESTIONALI.map(g=>`
     <button class="tab" id="ptab-${g.id}" onclick="switchProjG('${g.id}')">
@@ -870,32 +900,7 @@ function buildProjUI(){
   document.getElementById('proj-panels').innerHTML=GESTIONALI.map(g=>`
     <div class="tab-panel" id="ppanel-${g.id}">
       <div class="tabs" id="ctabs-${g.id}"></div>
-      ${g.companies.map(c=>c.id==='luigi_luigi'?`
-        <div class="tab-panel" id="cpanel-luigi_luigi">
-          <div class="tracker-tabs">
-            <button class="tracker-tab active" id="ltab-tasks" onclick="luigiSwitchTab('tasks',this)">📋 Task</button>
-            <button class="tracker-tab" id="ltab-tracker" onclick="luigiSwitchTab('tracker',this)">📅 Pubblicazioni</button>
-          </div>
-          <div id="luigi-tasks-panel">
-            <div class="stats-grid" id="cstats-luigi_luigi"></div>
-            <div class="add-row edit-only">
-              <input class="add-input" id="cinput-luigi_luigi" placeholder="Nuova task…" onkeydown="if(event.key==='Enter') addTask('luigi_luigi')"/>
-              <button class="btn-primary" onclick="addTask('luigi_luigi')">+ Aggiungi</button>
-            </div>
-            <div class="task-list" id="clist-luigi_luigi"></div>
-          </div>
-          <div id="luigi-tracker-panel" style="display:none;">
-            <div id="luigi-tracker-content"></div>
-          </div>
-        </div>`:`
-        <div class="tab-panel" id="cpanel-${c.id}">
-          <div class="stats-grid" id="cstats-${c.id}"></div>
-          <div class="add-row edit-only">
-            <input class="add-input" id="cinput-${c.id}" placeholder="Nuova task…" onkeydown="if(event.key==='Enter') addTask('${c.id}')"/>
-            <button class="btn-primary" onclick="addTask('${c.id}')">+ Aggiungi</button>
-          </div>
-          <div class="task-list" id="clist-${c.id}"></div>
-        </div>`).join('')}
+      ${g.companies.map(c=>companyPanelHTML(c)).join('')}
     </div>`).join('');
   switchProjG(GESTIONALI[0].id);
 }
@@ -1241,34 +1246,34 @@ function renderTracker(){
   el.innerHTML=`
     <div class="tracker-wrap">
       <div class="tracker-header">
-        <span class="tracker-title">📅 \${TRACKER_MONTHS[trackerMonth]} \${trackerYear}</span>
+        <span class="tracker-title">📅 ${TRACKER_MONTHS[trackerMonth]} ${trackerYear}</span>
         <div class="tracker-month-nav">
           <button onclick="trackerPrev()">‹</button>
-          <span class="tracker-month-label">\${TRACKER_MONTHS[trackerMonth]} \${trackerYear}</span>
+          <span class="tracker-month-label">${TRACKER_MONTHS[trackerMonth]} ${trackerYear}</span>
           <button onclick="trackerNext()">›</button>
         </div>
       </div>
-      <div class="tracker-profiles">\${profilesHTML}</div>
+      <div class="tracker-profiles">${profilesHTML}</div>
 
       <div style="margin-top:1.2rem;margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);">Progresso target mensile</div>
       <div class="tracker-summary" style="margin-bottom:1.4rem;">
         <div class="tracker-sum-card">
-          <div class="tracker-sum-label">LS · Reel <span style="color:var(--text3)">/\${targetLsReel}</span></div>
-          <div class="tracker-sum-num">\${lsR}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:\${pctLsR}%;background:var(--yellow);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">\${targetLsReel-lsR>0?targetLsReel-lsR+' mancanti':'✓ Target raggiunto'}</div>
+          <div class="tracker-sum-label">LS · Reel <span style="color:var(--text3)">/${targetLsReel}</span></div>
+          <div class="tracker-sum-num">${lsR}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${pctLsR}%;background:var(--yellow);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${targetLsReel-lsR>0?targetLsReel-lsR+' mancanti':'✓ Target raggiunto'}</div>
         </div>
         <div class="tracker-sum-card">
-          <div class="tracker-sum-label">LS · Storie <span style="color:var(--text3)">/\${targetLsStorie}</span></div>
-          <div class="tracker-sum-num">\${lsS}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:\${pctLsS}%;background:var(--green);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">\${targetLsStorie-lsS>0?targetLsStorie-lsS+' mancanti':'✓ Target raggiunto'}</div>
+          <div class="tracker-sum-label">LS · Storie <span style="color:var(--text3)">/${targetLsStorie}</span></div>
+          <div class="tracker-sum-num">${lsS}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${pctLsS}%;background:var(--green);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${targetLsStorie-lsS>0?targetLsStorie-lsS+' mancanti':'✓ Target raggiunto'}</div>
         </div>
         <div class="tracker-sum-card">
-          <div class="tracker-sum-label">GWL · Reel <span style="color:var(--text3)">/\${targetGwl}</span></div>
-          <div class="tracker-sum-num">\${gwlR}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:\${pctGwl}%;background:var(--accent2);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">\${targetGwl-gwlR>0?targetGwl-gwlR+' mancanti':'✓ Target raggiunto'}</div>
+          <div class="tracker-sum-label">GWL · Reel <span style="color:var(--text3)">/${targetGwl}</span></div>
+          <div class="tracker-sum-num">${gwlR}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${pctGwl}%;background:var(--accent2);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${targetGwl-gwlR>0?targetGwl-gwlR+' mancanti':'✓ Target raggiunto'}</div>
         </div>
       </div>
 
@@ -1284,11 +1289,11 @@ function renderTracker(){
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
           <span style="font-size:0.82rem;font-weight:500">🎬 Reel Grow With Luigi <span style="font-size:0.65rem;color:var(--text3)">(≥15/mese)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:\${compensoGwl>0?'var(--green)':'var(--text3)'}">\${compensoGwl>0?'+€15':'€0 — non raggiunto'}</span>
+          <span style="font-size:0.88rem;font-weight:700;color:${compensoGwl>0?'var(--green)':'var(--text3)'}">${compensoGwl>0?'+€15':'€0 — non raggiunto'}</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--s2);">
           <span style="font-size:0.88rem;font-weight:700">Totale</span>
-          <span style="font-size:1.1rem;font-weight:700;color:var(--green)">+€\${compensoTot}</span>
+          <span style="font-size:1.1rem;font-weight:700;color:var(--green)">+€${compensoTot}</span>
         </div>
       </div>
 
