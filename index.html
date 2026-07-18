@@ -49,6 +49,7 @@ button,input,select,textarea{font:inherit} button{color:inherit}
 .conn-pill,#conn-status{display:flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--surface2);border-radius:999px;padding:7px 10px;color:var(--text3);font-family:var(--font-mono);font-size:9px}.conn-dot{width:6px;height:6px;border-radius:50%;background:var(--text3)}.conn-dot.live,.status-dot{background:var(--green);box-shadow:0 0 0 4px rgba(85,217,138,.08)}
 
 .page,.main-panel,main{padding:34px 40px 56px;max-width:1180px}.page{display:none}.page.active,.main-panel.active,.company-panel.active{display:block;animation:fadeIn .24s var(--ease)}
+.tab-panel{display:none}.tab-panel.active{display:block;animation:fadeIn .24s var(--ease)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .ph,header{margin-bottom:30px}.ph h1,.header-left h1{font-size:clamp(28px,3vw,40px);line-height:1.04;font-weight:700;letter-spacing:-.045em}.ph p{font-size:14px;color:var(--text2);margin-top:8px}.ph-row,header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
 header{padding:28px 32px 22px;border-bottom:1px solid var(--border);margin-bottom:0}.header-right{display:flex;align-items:center;gap:8px}
@@ -102,6 +103,100 @@ header{padding:28px 32px 22px;border-bottom:1px solid var(--border);margin-botto
 .bn-badge{position:absolute;top:5px;right:calc(50% - 18px);background:var(--company-color);color:#0b0a0e;font-family:var(--font-mono);font-size:8px;font-weight:700;border-radius:999px;padding:1px 5px;min-width:14px;text-align:center;display:none;}
 .fin-status.trimestrale{background:rgba(110,159,208,.13);color:var(--accent2);}
 .fin-status.ricorrente{background:rgba(177,140,255,.13);color:var(--purple);}
+
+/* ── DYRECTIO premium polish v2 ── */
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:999px}
+*::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+html{scrollbar-color:var(--surface4) transparent;scrollbar-width:thin}
+
+button:focus-visible,.tab:focus-visible,.tab-btn:focus-visible,.main-tab:focus-visible,.sb-item:focus-visible,.bn-item:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--company-color);outline-offset:2px;border-radius:8px}
+
+.page,.main-panel,main{padding:38px 46px 64px}
+@media(max-width:760px){.page,.main-panel,main{padding:24px 16px 100px}}
+
+.ph h1,.header-left h1{font-size:clamp(30px,3.4vw,44px);letter-spacing:-.05em}
+.ph p{font-size:14.5px;color:var(--text2);margin-top:9px;line-height:1.5}
+
+.stat-card,.stat{padding:22px}
+.card{padding:24px}
+.stats-grid,.stats-bar{gap:14px;margin-bottom:28px}
+.stat-num,.fin-amount,.target-num,.tracker-sum-num{font-size:32px;font-variant-numeric:tabular-nums}
+
+.stat-card,.stat,.card,.fin-card,.split-card,.profile-block,.target-card,.tracker-sum-card{transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .22s var(--ease)}
+.stat-card:hover,.stat:hover,.split-card:hover,.profile-block:hover{transform:translateY(-2px);border-color:var(--border2);box-shadow:0 4px 18px rgba(0,0,0,.26),0 22px 48px rgba(0,0,0,.22)}
+
+.task-row,.task-item{transition:background .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease),box-shadow .18s var(--ease)}
+.task-row:hover,.task-item:hover{transform:translateX(2px);box-shadow:0 2px 12px rgba(0,0,0,.2)}
+
+.btn-primary,.btn-add,.btn-sub,.btn-ghost,#backoffice-btn{transition:transform .14s var(--ease),filter .18s var(--ease),background .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease)}
+.btn-primary:active,.btn-add:active,.btn-sub:active,.btn-ghost:active{transform:scale(.96)}
+.ibtn:active,.icon-btn:active{transform:scale(.9)}
+
+.sb-item{padding:11px 12px;transition:background .18s var(--ease),color .18s var(--ease),box-shadow .18s var(--ease)}
+.sb-item.active{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--company-color) 26%,transparent),0 0 0 3px color-mix(in srgb,var(--company-color) 8%,transparent)}
+
+.bn-item{transition:color .18s var(--ease)}
+.bn-item.active{position:relative}
+.bn-item.active::before{content:'';position:absolute;inset:2px 6px;border-radius:12px;background:var(--company-dim);z-index:-1}
+
+.modal-overlay{backdrop-filter:blur(14px);background:rgba(3,2,6,.78)}
+.modal{box-shadow:0 -4px 0 rgba(255,255,255,.02) inset,var(--shadow-2)}
+
+.tabs,.main-tabs,.tracker-tabs{margin-bottom:26px}
+.tab,.tab-btn,.main-tab,.tracker-tab{padding:12px 15px}
+
+.task-name{font-size:14.5px}
+
+@media(min-width:761px){.stat-card,.stat{min-height:118px}}
+
+/* ── DYRECTIO master — missing component styles ── */
+.today-section{margin-bottom:30px}
+.today-section h3{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:13px}
+
+.split-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-soft)}
+.split-leg-item{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text2)}
+.split-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.divider{height:1px;background:var(--border);margin:30px 0}
+.sec-title{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text3)}
+
+.streak-bar{display:flex;gap:4px;flex-wrap:wrap}
+.streak-day{width:19px;height:19px;border-radius:6px;background:var(--surface3);border:1px solid var(--border);transition:transform .16s var(--ease)}
+.streak-day:hover{transform:scale(1.15)}
+.streak-day.done-A{background:#52b788;border-color:#52b788}
+.streak-day.done-B{background:#e9c46a;border-color:#e9c46a}
+.streak-day.done-C{background:#457b9d;border-color:#457b9d}
+
+.split-card .split-name{font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px}
+.split-muscles{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.split-last{margin-top:14px;padding-top:11px;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--text2)}
+
+.log-split-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+.tab-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle}
+
+.fin-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.content-type-label{font-size:12.5px;font-weight:600;color:var(--text2);min-width:112px}
+
+.tracker-profiles{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.tracker-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.profile-block-stats{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:760px){.tracker-summary{grid-template-columns:1fr}.split-legend{gap:12px}}
+
+/* ── Quick Add FAB ── */
+#fab-add{position:fixed;right:28px;bottom:28px;width:56px;height:56px;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 72%,white 8%);background:var(--accent);color:#fff;font-size:26px;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 28px rgba(141,120,255,.38),0 2px 8px rgba(0,0,0,.3);z-index:150;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+#fab-add:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 34px rgba(141,120,255,.46),0 2px 10px rgba(0,0,0,.32)}
+#fab-add:active{transform:scale(.94)}
+@media(max-width:760px){#fab-add{right:16px;bottom:86px;width:52px;height:52px;font-size:24px}}
+.qa-row{display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
+.qa-row label{font-family:var(--font-mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px;display:block}
+.qa-row select,.qa-row input{width:100%}
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.qa-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body class="readonly">
@@ -125,6 +220,43 @@ header{padding:28px 32px 22px;border-bottom:1px solid var(--border);margin-botto
       <button class="btn-ghost" onclick="closeTrainModal()">Annulla</button>
       <button class="btn-primary" id="modal-delete-btn" style="background:var(--surface3);color:var(--red);border:1px solid rgba(239,104,104,0.25);display:none;" onclick="deleteTrainDay()">🗑 Rimuovi</button>
       <button class="btn-primary" onclick="saveTrainDay()">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK ADD globale -->
+<button id="fab-add" title="Aggiungi rapida" onclick="openQaModal()">+</button>
+<div class="modal-overlay" id="qa-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚡ Quick Add</div>
+    <div class="qa-row">
+      <label>Task</label>
+      <input class="add-input" id="qa-name" placeholder="Descrizione task…" style="width:100%" onkeydown="if(event.key==='Enter') qaSubmit()"/>
+    </div>
+    <div class="qa-grid">
+      <div class="qa-row">
+        <label>Gestionale</label>
+        <select class="sel" id="qa-g" style="width:100%;padding:10px 12px;font-size:13px" onchange="qaUpdateCompanies()"></select>
+      </div>
+      <div class="qa-row">
+        <label>Azienda</label>
+        <select class="sel" id="qa-c" style="width:100%;padding:10px 12px;font-size:13px"></select>
+      </div>
+    </div>
+    <div class="qa-row">
+      <label>Stato</label>
+      <select class="sel" id="qa-status" style="width:100%;padding:10px 12px;font-size:13px">
+        <option value="todo">Da fare</option>
+        <option value="inprogress">In corso</option>
+        <option value="done">Completata</option>
+        <option value="incomplete">Incompleto</option>
+        <option value="missingfiles">File mancanti</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeQaModal()">Annulla</button>
+      <button class="btn-primary" onclick="qaSubmit()">+ Aggiungi</button>
     </div>
   </div>
 </div>
@@ -464,8 +596,15 @@ window.toggleEdit=function(){
 // ── REFRESH ──
 function refreshUI(){
   updateProjBadge();
+  updateAllCompanyCounts();
   renderProjPanel(activeG,activeC[activeG]||GESTIONALI.find(g=>g.id===activeG).companies[0].id);
   renderDashboard();
+}
+function updateAllCompanyCounts(){
+  GESTIONALI.flatMap(g=>g.companies).forEach(c=>{
+    const el=document.getElementById(`ccnt-${c.id}`);
+    if(el)el.textContent=Object.keys(allTasks[c.id]||{}).length;
+  });
 }
 function updateProjBadge(){
   let tot=0;
@@ -641,6 +780,36 @@ window.deleteTrainDay=async function(){
   catch(e){toast('Errore');}
 };
 document.getElementById('train-modal').addEventListener('click',function(e){if(e.target===this)closeTrainModal();});
+
+// ── QUICK ADD globale ──
+window.openQaModal=function(){
+  const gSel=document.getElementById('qa-g');
+  gSel.innerHTML=GESTIONALI.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  qaUpdateCompanies();
+  document.getElementById('qa-name').value='';
+  document.getElementById('qa-status').value='todo';
+  document.getElementById('qa-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('qa-name')?.focus(),80);
+};
+window.qaUpdateCompanies=function(){
+  const g=GESTIONALI.find(x=>x.id===document.getElementById('qa-g')?.value);
+  const cSel=document.getElementById('qa-c');if(!cSel||!g)return;
+  cSel.innerHTML=g.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+};
+window.closeQaModal=function(){document.getElementById('qa-modal').classList.remove('open');};
+window.qaSubmit=async function(){
+  const name=document.getElementById('qa-name').value.trim();
+  const cid=document.getElementById('qa-c').value;
+  const status=document.getElementById('qa-status').value;
+  if(!name){toast('Inserisci il nome della task');return;}
+  if(!cid||!db){toast('Errore: gestionale non disponibile');return;}
+  try{
+    await window._fbPush(`tasks/${cid}`,{name,status,createdAt:Date.now()});
+    closeQaModal();
+    toast('Task aggiunta ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+document.getElementById('qa-modal').addEventListener('click',function(e){if(e.target===this)closeQaModal();});
 
 // ── TRAINING RENDER ──
 function buildSplitCards(){
