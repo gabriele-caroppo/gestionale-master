@@ -227,6 +227,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .fin-status.trimestrale{background:rgba(110,159,208,.13);color:var(--accent2)}
 .fin-status.ricorrente{background:rgba(177,140,255,.13);color:var(--purple)}
 
+/* ── Apri gestionale singolo ── */
+.open-gestionale-btn{--gbtn-color:var(--accent);display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:10px 16px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb,var(--gbtn-color) 40%,var(--border));background:color-mix(in srgb,var(--gbtn-color) 12%,transparent);color:var(--gbtn-color);font-size:13px;font-weight:650;text-decoration:none;transition:background .15s ease,border-color .15s ease,transform .12s ease}
+.open-gestionale-btn svg{width:14px;height:14px;flex-shrink:0}
+.open-gestionale-btn:hover{background:color-mix(in srgb,var(--gbtn-color) 20%,transparent);border-color:var(--gbtn-color)}
+.open-gestionale-btn:active{transform:scale(.97)}
+
 /* ── FAB Quick Add ── */
 #fab-add{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:999px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow-1);z-index:150;transition:opacity .15s ease,transform .12s ease}
 #fab-add svg{width:24px;height:24px}
@@ -496,24 +502,24 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 <script type="module">
 
 const GESTIONALI = [
-  {id:'antonio',name:'Antonio',color:'#c0392b',companies:[
+  {id:'antonio',name:'Antonio',color:'#c0392b',url:'https://gabriele-caroppo.github.io/gestionale-aziende/',companies:[
     {id:'focacciamo',name:'Focacciamo',color:'#c0392b'},
     {id:'lamancha',name:'Mancha',color:'#ff7b00'},
     {id:'futuri',name:'Futuri Campioni',color:'#39d353'},
   ]},
-  {id:'slabhub',name:'SlabHub',color:'#2d6fa3',companies:[
+  {id:'slabhub',name:'SlabHub',color:'#2d6fa3',url:'https://gabriele-caroppo.github.io/gestionale-slabhub/',companies:[
     {id:'slabhub_gabriele',name:'Gabriele',color:'#2d6fa3'},
     {id:'slabhub_davide',name:'Davide',color:'#1a5276'},
     {id:'slabhub_valerio',name:'Valerio',color:'#1f618d'},
   ]},
-  {id:'kissene',name:'Kissene',color:'#7d3c98',companies:[
+  {id:'kissene',name:'Kissene',color:'#7d3c98',url:'https://gabriele-caroppo.github.io/gestionale-kissene/',companies:[
     {id:'kissene_giulio',name:'Giulio',color:'#7d3c98'},
     {id:'kissene_gabriele2',name:'Gabriele',color:'#6c3483'},
     {id:'kissene_flavio',name:'Flavio',color:'#8e44ad'},
     {id:'kissene_calogero',name:'Calogero',color:'#76448a'},
     {id:'kissene_bruna',name:'Bruna',color:'#9b59b6'},
   ]},
-  {id:'luigi',name:'Luigi Stips',color:'#d4a017',companies:[
+  {id:'luigi',name:'Luigi Stips',color:'#d4a017',url:'https://gabriele-caroppo.github.io/gestionale-luigistips/',companies:[
     {id:'luigi_luigi',name:'Luigi Stips',color:'#d4a017'},
   ]},
 ];
@@ -981,6 +987,10 @@ function buildProjUI(){
     </button>`).join('');
   document.getElementById('proj-panels').innerHTML=GESTIONALI.map(g=>`
     <div class="tab-panel" id="ppanel-${g.id}">
+      ${g.url?`<a class="open-gestionale-btn" href="${g.url}" target="_blank" rel="noopener" style="--gbtn-color:${g.color}">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3H3v10h10V10"/><path d="M9 2h5v5"/><path d="M14 2 7 9"/></svg>
+        Apri gestionale ${g.name}
+      </a>`:''}
       <div class="tabs" id="ctabs-${g.id}"></div>
       ${g.companies.map(c=>companyPanelHTML(c)).join('')}
     </div>`).join('');
