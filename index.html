@@ -99,103 +99,171 @@ header{padding:28px 32px 22px;border-bottom:1px solid var(--border);margin-botto
 
 @media(max-width:760px){#sidebar{display:none}#bottom-nav{display:block;position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(17,16,22,.94);backdrop-filter:blur(18px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}#main{padding-bottom:74px}.page,.main-panel,main{padding:24px 16px 96px}.ph h1,.header-left h1{font-size:28px}.stats-grid,.stats-bar{grid-template-columns:repeat(2,1fr)}.split-grid{grid-template-columns:1fr}.fin-grid{grid-template-columns:1fr}.task-row,.task-item{align-items:flex-start}.task-meta{max-width:42%}.badge-project{display:none}.csv-import{align-items:flex-start;flex-direction:column}.csv-import__button{width:100%;justify-content:center}.subtask-panel.open,.subtasks-panel.open{padding-left:14px}.content-type-row{align-items:flex-start;flex-direction:column}.split-btns{grid-template-columns:1fr}.modal{padding-inline:16px}}
 
-/* ── custom overrides ── */
-.bn-badge{position:absolute;top:5px;right:calc(50% - 18px);background:var(--company-color);color:#0b0a0e;font-family:var(--font-mono);font-size:8px;font-weight:700;border-radius:999px;padding:1px 5px;min-width:14px;text-align:center;display:none;}
-.fin-status.trimestrale{background:rgba(110,159,208,.13);color:var(--accent2);}
-.fin-status.ricorrente{background:rgba(177,140,255,.13);color:var(--purple);}
+/* ═══════════════ DYRECTIO restyle v3 — Apple premium ═══════════════ */
 
-/* ── DYRECTIO premium polish v2 ── */
+/* scrollbar + focus */
 *::-webkit-scrollbar{width:8px;height:8px}
 *::-webkit-scrollbar-track{background:transparent}
 *::-webkit-scrollbar-thumb{background:var(--surface4);border-radius:999px}
 *::-webkit-scrollbar-thumb:hover{background:var(--border2)}
 html{scrollbar-color:var(--surface4) transparent;scrollbar-width:thin}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
 
-button:focus-visible,.tab:focus-visible,.tab-btn:focus-visible,.main-tab:focus-visible,.sb-item:focus-visible,.bn-item:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--company-color);outline-offset:2px;border-radius:8px}
+/* ── Tipografia ── */
+.ph h1,.header-left h1{font-size:28px;font-weight:700;letter-spacing:-.02em;font-family:var(--font-sans);line-height:1.1}
+.ph p{font-size:14px;color:var(--text2);margin-top:8px;line-height:1.5}
+.sb-section,.today-section h3,.sec-title,.stat-label,.fin-label,.target-label,.tracker-sum-label,.qa-row label{font-family:var(--font-mono);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.task-name,.sub-name,.subtask-name{font-size:15px;font-weight:500;line-height:1.5}
+.task-date,.fin-client,.fin-date{font-family:var(--font-mono);font-size:11px;color:var(--text3)}
 
-.page,.main-panel,main{padding:38px 46px 64px}
-@media(max-width:760px){.page,.main-panel,main{padding:24px 16px 100px}}
-
-.ph h1,.header-left h1{font-size:clamp(30px,3.4vw,44px);letter-spacing:-.05em}
-.ph p{font-size:14.5px;color:var(--text2);margin-top:9px;line-height:1.5}
-
-.stat-card,.stat{padding:22px}
-.card{padding:24px}
-.stats-grid,.stats-bar{gap:14px;margin-bottom:28px}
-.stat-num,.fin-amount,.target-num,.tracker-sum-num{font-size:32px;font-variant-numeric:tabular-nums}
-
-.stat-card,.stat,.card,.fin-card,.split-card,.profile-block,.target-card,.tracker-sum-card{transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .22s var(--ease)}
-.stat-card:hover,.stat:hover,.split-card:hover,.profile-block:hover{transform:translateY(-2px);border-color:var(--border2);box-shadow:0 4px 18px rgba(0,0,0,.26),0 22px 48px rgba(0,0,0,.22)}
-
-.task-row,.task-item{transition:background .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease),box-shadow .18s var(--ease)}
-.task-row:hover,.task-item:hover{transform:translateX(2px);box-shadow:0 2px 12px rgba(0,0,0,.2)}
-
-.btn-primary,.btn-add,.btn-sub,.btn-ghost,#backoffice-btn{transition:transform .14s var(--ease),filter .18s var(--ease),background .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease)}
-.btn-primary:active,.btn-add:active,.btn-sub:active,.btn-ghost:active{transform:scale(.96)}
-.ibtn:active,.icon-btn:active{transform:scale(.9)}
-
-.sb-item{padding:11px 12px;transition:background .18s var(--ease),color .18s var(--ease),box-shadow .18s var(--ease)}
-.sb-item.active{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--company-color) 26%,transparent),0 0 0 3px color-mix(in srgb,var(--company-color) 8%,transparent)}
-
-.bn-item{transition:color .18s var(--ease)}
-.bn-item.active{position:relative}
-.bn-item.active::before{content:'';position:absolute;inset:2px 6px;border-radius:12px;background:var(--company-dim);z-index:-1}
-
-.modal-overlay{backdrop-filter:blur(14px);background:rgba(3,2,6,.78)}
-.modal{box-shadow:0 -4px 0 rgba(255,255,255,.02) inset,var(--shadow-2)}
-
-.tabs,.main-tabs,.tracker-tabs{margin-bottom:26px}
-.tab,.tab-btn,.main-tab,.tracker-tab{padding:12px 15px}
-
-.task-name{font-size:14.5px}
-
-@media(min-width:761px){.stat-card,.stat{min-height:118px}}
-
-/* ── DYRECTIO master — missing component styles ── */
+/* ── Spaziature ── */
+.page,.main-panel,main{padding:28px 32px 72px;max-width:1180px}
+.task-list,.tasks-list{gap:10px}
+.card-sm,.split-card,.fin-card{padding:16px}
+.task-row,.task-item{padding:16px}
+.ph{margin-bottom:26px}
 .today-section{margin-bottom:30px}
-.today-section h3{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:13px}
+.today-section h3{margin-bottom:12px}
 
-.split-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-soft)}
+/* ── Task card ── */
+.task-row,.task-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);transition:background .12s ease,border-color .12s ease}
+.task-row:hover,.task-item:hover{background:var(--surface2)}
+.task-row.s-todo,.task-item.status-todo{border-left:2px solid var(--border2)}
+.task-row.s-inprogress,.task-item.status-inprogress{border-left:2px solid var(--yellow)}
+.task-row.s-done,.task-item.status-done{border-left:2px solid var(--green)}
+.task-row.s-incomplete,.task-item.status-incomplete{border-left:2px solid var(--orange)}
+.task-row.s-missingfiles,.task-item.status-missingfiles{border-left:2px solid var(--purple)}
+.badge,.status-badge,.fin-status,.profile-stat-pill{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-radius:999px;padding:4px 9px}
+.exp-btn,.expand-btn{gap:5px}
+.exp-arrow,.arrow{font-size:16px;line-height:1}
+.exp-count,.sub-count{min-width:22px;padding:2px 7px;border-radius:999px;background:var(--surface3);font-family:var(--font-mono);font-size:10px}
+
+/* ── Stat card ── */
+.stat-card,.stat,.target-card,.tracker-sum-card{background:linear-gradient(145deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;box-shadow:var(--shadow-1)}
+.stat-num,.fin-amount,.target-num,.tracker-sum-num{font-size:32px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat-label,.fin-label,.target-label,.tracker-sum-label{margin-bottom:10px}
+.stats-grid,.stats-bar{gap:10px;margin-bottom:26px}
+.progress-bar,.stat-bar-inner,.progress-row{height:2px;border-radius:999px;background:var(--surface4)}
+.progress-fill,.stat-bar-fill{background:var(--accent)}
+
+/* ── Sidebar desktop ── */
+#sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);backdrop-filter:none}
+.logo-mark{font-family:var(--font-mono);font-size:15px;font-weight:700;letter-spacing:0}
+.logo-mark span{color:var(--accent)}
+.sb-item{height:44px;padding:0 12px;border-radius:var(--radius-sm);border-left:2px solid transparent;color:var(--text2);font-size:13.5px;font-weight:550}
+.sb-item:hover{background:var(--surface2);color:var(--text)}
+.sb-item.active{background:var(--accent-dim);color:var(--accent);border-left:2px solid var(--accent);box-shadow:none}
+.sb-item.active .sb-badge{background:var(--accent);color:#fff}
+
+/* ── Tabs ── */
+.tabs,.main-tabs,.tracker-tabs{gap:2px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.tab,.tab-btn,.main-tab,.tracker-tab{font-family:var(--font-mono);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);background:none;border:0;border-bottom:2px solid transparent;padding:12px 14px}
+.tab:hover,.tab-btn:hover,.main-tab:hover,.tracker-tab:hover{color:var(--text)}
+.tab.active,.tab-btn.active,.main-tab.active,.tracker-tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
+.tab.active .tab-count,.active>.tab-count{background:var(--accent);color:#fff}
+
+/* ── Bottoni ── */
+.btn-primary,.btn-add{height:48px;padding:0 22px;border:0;border-radius:var(--radius-pill);background:var(--accent);color:#fff;font-size:15px;font-weight:700;box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s ease,transform .12s ease}
+.btn-primary:hover,.btn-add:hover{opacity:.88;transform:none;filter:none}
+.btn-primary:active,.btn-add:active{transform:scale(.97)}
+.btn-ghost,.btn-sub,#backoffice-btn{height:48px;padding:0 20px;border-radius:var(--radius-pill);background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:15px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;transition:color .15s ease,border-color .15s ease,transform .12s ease}
+.btn-ghost:hover,.btn-sub:hover,#backoffice-btn:hover{color:var(--text);border-color:var(--text3);background:transparent}
+.btn-ghost:active,.btn-sub:active{transform:scale(.97)}
+
+/* ── Input ── */
+.add-input,.add-section input,.sub-add-row input,.add-subtask-row input,.task-name-edit,.subtask-name-edit,.edit-inp{height:48px;padding:0 16px;font-size:15px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text)}
+.modal-note{padding:14px 16px;font-size:15px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);width:100%;margin-bottom:16px}
+.add-input:focus,.add-section input:focus,.sub-add-row input:focus,.add-subtask-row input:focus,.modal-note:focus,.task-name-edit:focus,.subtask-name-edit:focus,.edit-inp:focus{border-color:var(--accent);outline:none;box-shadow:none}
+::placeholder{color:var(--text3)}
+.sub-add-row input{height:42px;font-size:14px}
+.sub-add-row .btn-ghost{height:42px;font-size:13px;padding:0 16px}
+
+/* ── Modal sheet ── */
+.modal-overlay{background:rgba(0,0,0,.6);backdrop-filter:blur(6px);transition:opacity .2s ease}
+.modal{border-radius:20px 20px 0 0;background:var(--surface);border:1px solid var(--border2);border-bottom:0;padding:16px 24px 28px;transform:translateY(100%);transition:transform .22s ease-in}
+.modal-overlay.open .modal{transform:translateY(0);transition:transform .28s cubic-bezier(.32,.72,0,1)}
+.modal-handle{width:36px;height:4px;border-radius:999px;background:var(--border2);margin:0 auto 20px}
+.modal-title{font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+
+/* ── Split buttons (training modal) ── */
+.split-btns{gap:10px;margin-bottom:16px}
+.split-btn{padding:16px 8px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:17px;font-weight:700;transition:border-color .15s,background .15s,color .15s}
+.split-btn.sel-A{background:rgba(85,217,138,.18);border-color:rgba(85,217,138,.45);color:var(--green)}
+.split-btn.sel-B{background:rgba(231,191,102,.18);border-color:rgba(231,191,102,.45);color:var(--yellow)}
+.split-btn.sel-C{background:rgba(141,120,255,.18);border-color:rgba(141,120,255,.45);color:var(--accent)}
+
+/* ── Calendario training ── */
+.cal-grid{gap:6px}
+.cal-day{width:36px;height:36px;aspect-ratio:auto;place-self:center;border-radius:10px;font-size:13px;font-weight:500;border:1px solid transparent}
+.cal-day:hover:not(.empty):not(.future){background:var(--surface2);border-color:var(--border)}
+.cal-day.has-A{background:rgba(85,217,138,.18);border:1px solid rgba(85,217,138,.35);color:var(--green)}
+.cal-day.has-B{background:rgba(231,191,102,.18);border:1px solid rgba(231,191,102,.35);color:var(--yellow)}
+.cal-day.has-C{background:rgba(141,120,255,.18);border:1px solid rgba(141,120,255,.35);color:var(--accent)}
+.cal-day.today{box-shadow:0 0 0 2px var(--accent);border-color:transparent}
+.cal-day.future{opacity:.25;pointer-events:none}
+.cal-nav button,.tracker-month-nav button{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--surface2)}
+
+/* ── Componenti master ── */
+.split-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line-soft)}
 .split-leg-item{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text2)}
 .split-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
 .divider{height:1px;background:var(--border);margin:30px 0}
-.sec-title{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--text3)}
-
 .streak-bar{display:flex;gap:4px;flex-wrap:wrap}
-.streak-day{width:19px;height:19px;border-radius:6px;background:var(--surface3);border:1px solid var(--border);transition:transform .16s var(--ease)}
-.streak-day:hover{transform:scale(1.15)}
-.streak-day.done-A{background:#52b788;border-color:#52b788}
-.streak-day.done-B{background:#e9c46a;border-color:#e9c46a}
-.streak-day.done-C{background:#457b9d;border-color:#457b9d}
-
+.streak-day{width:19px;height:19px;border-radius:6px;background:var(--surface3);border:1px solid var(--border)}
+.streak-day.done-A{background:var(--green);border-color:var(--green)}
+.streak-day.done-B{background:var(--yellow);border-color:var(--yellow)}
+.streak-day.done-C{background:var(--accent);border-color:var(--accent)}
 .split-card .split-name{font-size:16px;font-weight:700;letter-spacing:-.02em;margin-bottom:5px}
 .split-muscles{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
 .split-last{margin-top:14px;padding-top:11px;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--text2)}
-
 .log-split-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-
 .tab-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:middle}
-
 .fin-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
 .content-type-label{font-size:12.5px;font-weight:600;color:var(--text2);min-width:112px}
-
-.tracker-profiles{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
-.tracker-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tracker-profiles{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.tracker-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .profile-block-stats{display:flex;gap:8px;flex-wrap:wrap}
-@media(max-width:760px){.tracker-summary{grid-template-columns:1fr}.split-legend{gap:12px}}
+.fin-status.trimestrale{background:rgba(110,159,208,.13);color:var(--accent2)}
+.fin-status.ricorrente{background:rgba(177,140,255,.13);color:var(--purple)}
 
-/* ── Quick Add FAB ── */
-#fab-add{position:fixed;right:28px;bottom:28px;width:56px;height:56px;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 72%,white 8%);background:var(--accent);color:#fff;font-size:26px;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 28px rgba(141,120,255,.38),0 2px 8px rgba(0,0,0,.3);z-index:150;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
-#fab-add:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 14px 34px rgba(141,120,255,.46),0 2px 10px rgba(0,0,0,.32)}
+/* ── FAB Quick Add ── */
+#fab-add{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:999px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow-1);z-index:150;transition:opacity .15s ease,transform .12s ease}
+#fab-add svg{width:24px;height:24px}
+#fab-add:hover{opacity:.88}
 #fab-add:active{transform:scale(.94)}
-@media(max-width:760px){#fab-add{right:16px;bottom:86px;width:52px;height:52px;font-size:24px}}
-.qa-row{display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
-.qa-row label{font-family:var(--font-mono);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px;display:block}
-.qa-row select,.qa-row input{width:100%}
-.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:480px){.qa-grid{grid-template-columns:1fr}}
+
+/* ── Quick Add pills ── */
+.qa-row{margin-bottom:16px}
+.qa-row label{display:block;margin-bottom:9px}
+.qa-pills{display:flex;flex-wrap:wrap;gap:8px}
+.qa-pill{--pill-color:var(--text3);padding:10px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13.5px;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s,color .15s,transform .12s}
+.qa-pill:hover{border-color:var(--pill-color);color:var(--text)}
+.qa-pill:active{transform:scale(.96)}
+.qa-pill-sel{background:color-mix(in srgb,var(--pill-color) 16%,transparent);border-color:color-mix(in srgb,var(--pill-color) 55%,transparent);color:var(--pill-color)}
+.qa-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qa-status-grid .qa-pill{text-align:center;padding:10px 6px}
+.qa-collapsible{max-height:0;overflow:hidden;opacity:0;transform:translateY(-8px);margin-bottom:0;transition:max-height .26s cubic-bezier(.32,.72,0,1),opacity .2s ease,transform .26s cubic-bezier(.32,.72,0,1),margin-bottom .26s}
+.qa-collapsible.qa-open{max-height:220px;opacity:1;transform:none;margin-bottom:16px}
+
+/* ── Bottom nav mobile ── */
+.bn-badge{position:absolute;top:5px;right:calc(50% - 20px);background:var(--red);color:#fff;font-family:var(--font-mono);font-size:8px;font-weight:700;border-radius:999px;padding:1px 5px;min-width:14px;text-align:center;display:none}
+
+@media(max-width:760px){
+  .page,.main-panel,main{padding:20px 20px 110px}
+  #bottom-nav{display:block;position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(9,8,13,.88);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.06);padding-bottom:env(safe-area-inset-bottom)}
+  .bn-inner{height:64px;display:flex;align-items:center}
+  .bn-item{position:relative;height:100%;justify-content:center;gap:5px;color:var(--text3);font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+  .bn-item svg{width:22px;height:22px}
+  .bn-item.active{color:var(--accent)}
+  .bn-item.active::after{content:'';position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
+  #fab-add{bottom:calc(80px + env(safe-area-inset-bottom))}
+  .stats-grid,.stats-bar{grid-template-columns:repeat(2,1fr)}
+  .tracker-summary{grid-template-columns:1fr}
+  .qa-status-grid{grid-template-columns:repeat(2,1fr)}
+  .modal{padding:14px 18px 24px}
+  .btn-primary,.btn-add,.btn-ghost,.btn-sub{height:46px;font-size:14px}
+}
 
 </style>
 </head>
@@ -225,7 +293,9 @@ button:focus-visible,.tab:focus-visible,.tab-btn:focus-visible,.main-tab:focus-v
 </div>
 
 <!-- QUICK ADD globale -->
-<button id="fab-add" title="Aggiungi rapida" onclick="openQaModal()">+</button>
+<button id="fab-add" title="Aggiungi rapida" onclick="openQaModal()" aria-label="Quick Add">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
 <div class="modal-overlay" id="qa-modal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -234,25 +304,17 @@ button:focus-visible,.tab:focus-visible,.tab-btn:focus-visible,.main-tab:focus-v
       <label>Task</label>
       <input class="add-input" id="qa-name" placeholder="Descrizione task…" style="width:100%" onkeydown="if(event.key==='Enter') qaSubmit()"/>
     </div>
-    <div class="qa-grid">
-      <div class="qa-row">
-        <label>Gestionale</label>
-        <select class="sel" id="qa-g" style="width:100%;padding:10px 12px;font-size:13px" onchange="qaUpdateCompanies()"></select>
-      </div>
-      <div class="qa-row">
-        <label>Azienda</label>
-        <select class="sel" id="qa-c" style="width:100%;padding:10px 12px;font-size:13px"></select>
-      </div>
+    <div class="qa-row">
+      <label>Gestionale</label>
+      <div class="qa-pills" id="qa-g-pills"></div>
+    </div>
+    <div class="qa-row qa-collapsible" id="qa-c-wrap">
+      <label>Azienda</label>
+      <div class="qa-pills" id="qa-c-pills"></div>
     </div>
     <div class="qa-row">
       <label>Stato</label>
-      <select class="sel" id="qa-status" style="width:100%;padding:10px 12px;font-size:13px">
-        <option value="todo">Da fare</option>
-        <option value="inprogress">In corso</option>
-        <option value="done">Completata</option>
-        <option value="incomplete">Incompleto</option>
-        <option value="missingfiles">File mancanti</option>
-      </select>
+      <div class="qa-pills qa-status-grid" id="qa-status-pills"></div>
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeQaModal()">Annulla</button>
@@ -268,7 +330,7 @@ button:focus-visible,.tab:focus-visible,.tab-btn:focus-visible,.main-tab:focus-v
 <!-- SIDEBAR desktop -->
 <nav id="sidebar">
   <div class="sb-logo">
-    <div class="logo-mark">D<span>Y</span>RECTIO</div>
+    <div class="logo-mark"><span>D</span>YRECTIO</div>
     <div class="logo-sub">D is Direction. Everything follows.</div>
   </div>
   <div class="sb-section">Navigazione</div>
@@ -781,30 +843,70 @@ window.deleteTrainDay=async function(){
 };
 document.getElementById('train-modal').addEventListener('click',function(e){if(e.target===this)closeTrainModal();});
 
-// ── QUICK ADD globale ──
+// ── QUICK ADD globale (pill UI, popolato all'apertura del modal) ──
+const QA_STATI=[
+  {id:'todo',label:'Todo',color:'#85818c'},
+  {id:'inprogress',label:'In corso',color:'#e7bf66'},
+  {id:'done',label:'Completata',color:'#55d98a'},
+  {id:'incomplete',label:'Incompleto',color:'#e98a51'},
+  {id:'missingfiles',label:'File mancanti',color:'#b18cff'},
+];
+let qaSel={g:null,c:null,status:'todo'};
+
+function qaPillHTML(kind,id,label,color,selected){
+  const selCls=selected?' qa-pill-sel':'';
+  const style=color?' style="--pill-color:'+color+'"':'';
+  return '<button type="button" class="qa-pill'+selCls+'"'+style
+    +' onclick="qaPick(\''+kind+'\',\''+id+'\')">'+label+'</button>';
+}
+
+function qaRenderGestionali(){
+  document.getElementById('qa-g-pills').innerHTML=GESTIONALI
+    .map(g=>qaPillHTML('g',g.id,g.name,g.color,qaSel.g===g.id)).join('');
+}
+function qaRenderCompanies(){
+  const wrap=document.getElementById('qa-c-wrap');
+  const g=GESTIONALI.find(x=>x.id===qaSel.g);
+  if(!g){wrap.classList.remove('qa-open');document.getElementById('qa-c-pills').innerHTML='';return;}
+  document.getElementById('qa-c-pills').innerHTML=g.companies
+    .map(c=>qaPillHTML('c',c.id,c.name,c.color,qaSel.c===c.id)).join('');
+  wrap.classList.add('qa-open');
+}
+function qaRenderStati(){
+  document.getElementById('qa-status-pills').innerHTML=QA_STATI
+    .map(s=>qaPillHTML('s',s.id,s.label,s.color,qaSel.status===s.id)).join('');
+}
+
+window.qaPick=function(kind,id){
+  if(kind==='g'){
+    if(qaSel.g!==id){qaSel.g=id;qaSel.c=null;
+      const g=GESTIONALI.find(x=>x.id===id);
+      if(g&&g.companies.length===1)qaSel.c=g.companies[0].id;
+    }
+    qaRenderGestionali();qaRenderCompanies();
+  }else if(kind==='c'){
+    qaSel.c=id;qaRenderCompanies();
+  }else if(kind==='s'){
+    qaSel.status=id;qaRenderStati();
+  }
+};
+
 window.openQaModal=function(){
-  const gSel=document.getElementById('qa-g');
-  gSel.innerHTML=GESTIONALI.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
-  qaUpdateCompanies();
+  qaSel={g:null,c:null,status:'todo'};
   document.getElementById('qa-name').value='';
-  document.getElementById('qa-status').value='todo';
+  qaRenderGestionali();qaRenderCompanies();qaRenderStati();
   document.getElementById('qa-modal').classList.add('open');
   setTimeout(()=>document.getElementById('qa-name')?.focus(),80);
-};
-window.qaUpdateCompanies=function(){
-  const g=GESTIONALI.find(x=>x.id===document.getElementById('qa-g')?.value);
-  const cSel=document.getElementById('qa-c');if(!cSel||!g)return;
-  cSel.innerHTML=g.companies.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
 };
 window.closeQaModal=function(){document.getElementById('qa-modal').classList.remove('open');};
 window.qaSubmit=async function(){
   const name=document.getElementById('qa-name').value.trim();
-  const cid=document.getElementById('qa-c').value;
-  const status=document.getElementById('qa-status').value;
   if(!name){toast('Inserisci il nome della task');return;}
-  if(!cid||!db){toast('Errore: gestionale non disponibile');return;}
+  if(!qaSel.g){toast('Seleziona il gestionale');return;}
+  if(!qaSel.c){toast('Seleziona l\'azienda');return;}
+  if(!db){toast('Errore: database non disponibile');return;}
   try{
-    await window._fbPush(`tasks/${cid}`,{name,status,createdAt:Date.now()});
+    await window._fbPush(`tasks/${qaSel.c}`,{name,status:qaSel.status,createdAt:Date.now()});
     closeQaModal();
     toast('Task aggiunta ✓');
   }catch(e){toast('Errore: '+e.message);}
