@@ -227,6 +227,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .fin-status.trimestrale{background:rgba(110,159,208,.13);color:var(--accent2)}
 .fin-status.ricorrente{background:rgba(177,140,255,.13);color:var(--purple)}
 
+/* ── Badge task ferme ── */
+.badge-stale{margin-left:4px}
+.badge-stale-warn{background:rgba(233,138,81,.14);color:var(--orange)}
+.badge-stale-crit{background:rgba(239,104,104,.16);color:var(--red)}
+
 /* ── Apri gestionale singolo ── */
 .open-gestionale-btn{--gbtn-color:var(--accent);display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:10px 16px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb,var(--gbtn-color) 40%,var(--border));background:color-mix(in srgb,var(--gbtn-color) 12%,transparent);color:var(--gbtn-color);font-size:13px;font-weight:650;text-decoration:none;transition:background .15s ease,border-color .15s ease,transform .12s ease}
 .open-gestionale-btn svg{width:14px;height:14px;flex-shrink:0}
@@ -1043,6 +1048,18 @@ function renderProjPanel(gid,cid){
   const ccnt=document.getElementById(`ccnt-${cid}`);if(ccnt)ccnt.textContent=total;
 }
 
+const STALE_DAYS_WARN=20, STALE_DAYS_CRIT=30;
+function staleBadgeHTML(task){
+  const st=task.status||'todo';
+  if(st!=='todo'&&st!=='inprogress')return '';
+  if(!task.createdAt)return '';
+  const ageDays=Math.floor((Date.now()-task.createdAt)/86400000);
+  if(ageDays<STALE_DAYS_WARN)return '';
+  const isCrit=ageDays>=STALE_DAYS_CRIT;
+  const cls=isCrit?'badge-stale-crit':'badge-stale-warn';
+  return `<span class="badge badge-stale ${cls}" title="Ferma da ${ageDays} giorni">⏱ ${ageDays}g</span>`;
+}
+
 function renderTaskWrapper(cid,tid,task){
   const subs=task.subtasks?Object.entries(task.subtasks).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)):[];
   const sc=subs.length,ds=subs.filter(([,s])=>s.status==='done').length;
@@ -1055,7 +1072,7 @@ function renderTaskWrapper(cid,tid,task){
     <button class="${expCls}" id="expbtn-${tid}" onclick="toggleAcc('${tid}')"><span class="exp-arrow">▶</span><span class="exp-count">${sc}</span></button>
     ${isEditing?`<input class="edit-inp" id="tedit-${tid}" value="${esc(task.name)}" onkeydown="if(event.key==='Enter')saveTaskEdit('${cid}','${tid}');if(event.key==='Escape')cancelEdit()"/>`:`<span class="task-name">${esc(task.name)}</span>`}
     <div class="task-meta">
-      ${!isEditing?`<span class="badge badge-${task.status||'todo'}">${labels[task.status||'todo']}</span>`:''}
+      ${!isEditing?`<span class="badge badge-${task.status||'todo'}">${labels[task.status||'todo']}</span>${staleBadgeHTML(task)}`:''}
       <select class="sel" onchange="updateStatus('${cid}','${tid}',this.value)">
         <option value="todo" ${task.status==='todo'?'selected':''}>Da fare</option>
         <option value="inprogress" ${task.status==='inprogress'?'selected':''}>In corso</option>
