@@ -232,6 +232,34 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .badge-stale-warn{background:rgba(233,138,81,.14);color:var(--orange)}
 .badge-stale-crit{background:rgba(239,104,104,.16);color:var(--red)}
 
+/* ── Nota task bloccata ── */
+.task-note-block{display:flex;align-items:flex-start;gap:8px;padding:10px 13px;margin:6px 0 0 8px;background:var(--surface2);border:1px solid var(--border);border-left:2px solid var(--orange);border-radius:var(--radius-sm);font-size:12px;color:var(--text2)}
+.task-note-icon{flex-shrink:0}
+.task-note-text{flex:1;line-height:1.5;overflow-wrap:anywhere}
+.task-note-empty{background:transparent;border-style:dashed;border-left-style:dashed}
+
+/* ── Riepilogo settimanale dashboard ── */
+.weekly-row{display:flex;align-items:center;gap:8px}
+
+/* ── Compensi ── */
+.comp-cat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:10px;overflow:hidden}
+.comp-cat-header{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;background:transparent;border:0;cursor:pointer;text-align:left;color:var(--text)}
+.comp-cat-header:hover{background:var(--surface2)}
+.comp-cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.comp-cat-name{font-weight:650;font-size:14px}
+.comp-cat-info{flex:1;font-size:11px;color:var(--text3);min-width:0}
+.comp-cat-total{font-family:var(--font-mono);font-weight:700;font-size:15px;color:var(--green)}
+.comp-cat-arrow{transition:transform .18s var(--ease);color:var(--text3);font-size:11px}
+.comp-cat-arrow.open{transform:rotate(90deg)}
+.comp-cat-body{padding:0 16px 16px}
+.comp-auto-block{background:var(--surface3);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:12px}
+.comp-auto-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12.5px;color:var(--text2)}
+.comp-auto-row .pos{color:var(--green);font-weight:600}
+.comp-auto-total{border-top:1px solid var(--border);margin-top:4px;padding-top:9px;font-weight:650;color:var(--text)}
+.comp-listino{background:var(--surface3);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:12px;font-size:12px}
+.comp-listino summary{cursor:pointer;font-weight:600;color:var(--text2)}
+.comp-listino-row{display:flex;justify-content:space-between;padding:5px 0;color:var(--text3);border-top:1px solid var(--line-soft)}
+
 /* ── Apri gestionale singolo ── */
 .open-gestionale-btn{--gbtn-color:var(--accent);display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:10px 16px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb,var(--gbtn-color) 40%,var(--border));background:color-mix(in srgb,var(--gbtn-color) 12%,transparent);color:var(--gbtn-color);font-size:13px;font-weight:650;text-decoration:none;transition:background .15s ease,border-color .15s ease,transform .12s ease}
 .open-gestionale-btn svg{width:14px;height:14px;flex-shrink:0}
@@ -358,9 +386,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
       Training
     </button>
-    <button class="sb-item" onclick="showPage('finanze')">
+    <button class="sb-item" onclick="showPage('compensi')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
-      Finanze
+      Compensi
     </button>
   </div>
   <div class="sb-spacer"></div>
@@ -394,7 +422,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     </div>
     <div class="today-section"><h3>Da fare — priorità</h3><div id="dash-urgent" class="task-list"></div></div>
     <div class="today-section"><h3>In corso</h3><div id="dash-inprogress" class="task-list"></div></div>
-    <div class="today-section"><h3>Scadenze finanziarie</h3><div id="dash-fin-alerts"></div></div>
+    <div class="today-section"><h3>Questa settimana — completate per cliente</h3><div id="dash-weekly" class="task-list"></div></div>
+    <div class="today-section"><h3>Prossimi pagamenti</h3><div id="dash-payments" class="task-list"></div></div>
     <div class="today-section"><h3>Training — prossima sessione</h3><div id="dash-training"></div></div>
   </div>
 
@@ -427,50 +456,11 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
     <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;">🟢 A · 🟡 B · 🔵 C · Grigio = riposo</div>
   </div>
 
-  <!-- FINANZE -->
-  <div class="page" id="page-finanze">
-    <div class="ph"><h1>Finanze</h1><p>Entrate, uscite e abbonamenti — riepilogo mensile</p></div>
-    <section class="csv-import edit-only" aria-labelledby="csv-import-title">
-      <div class="csv-import__copy">
-        <div class="csv-import__icon">CSV</div>
-        <div>
-          <h3 id="csv-import-title">Importa estratto Revolut</h3>
-          <p>Carica il file mensile. Il componente è pronto per essere collegato al parser esistente senza cambiare il markup finanziario.</p>
-        </div>
-      </div>
-      <label class="csv-import__button" for="revolut-csv">Scegli file CSV</label>
-      <input id="revolut-csv" type="file" accept=".csv,text/csv" data-dyrectio-csv-import>
-    </section>
-    <div class="fin-grid" id="fin-summary"></div>
-    <div class="tabs">
-      <button class="tab active" onclick="showFinTab('entrate',this)">Entrate</button>
-      <button class="tab" onclick="showFinTab('uscite',this)">Uscite</button>
-      <button class="tab" onclick="showFinTab('abbonamenti',this)">Abbonamenti fissi</button>
-    </div>
-    <div id="fin-entrate" class="tab-panel active">
-      <div class="add-row edit-only">
-        <input class="add-input" id="fin-e-desc" placeholder="Descrizione (es. Fattura Magnetize luglio)"/>
-        <input class="add-input" id="fin-e-amt" placeholder="€ Importo" style="max-width:110px;"/>
-        <input type="text" class="add-input" id="fin-e-client" placeholder="Cliente" style="max-width:120px;"/>
-        <select class="sel" id="fin-e-status" style="font-size:0.75rem;padding:0.5rem 0.6rem;">
-          <option value="pagato">Pagato</option><option value="attesa">In attesa</option><option value="scaduto">Scaduto</option>
-        </select>
-        <button class="btn-primary" onclick="addFinEntry('entrate')">+ Aggiungi</button>
-      </div>
-      <div class="card" id="fin-entrate-list"></div>
-    </div>
-    <div id="fin-uscite" class="tab-panel">
-      <div class="add-row edit-only">
-        <input class="add-input" id="fin-u-desc" placeholder="Descrizione (es. Dominio, Hosting)"/>
-        <input class="add-input" id="fin-u-amt" placeholder="€ Importo" style="max-width:110px;"/>
-        <input type="text" class="add-input" id="fin-u-cat" placeholder="Categoria" style="max-width:120px;"/>
-        <button class="btn-primary" onclick="addFinEntry('uscite')">+ Aggiungi</button>
-      </div>
-      <div class="card" id="fin-uscite-list"></div>
-    </div>
-    <div id="fin-abbonamenti" class="tab-panel">
-      <div class="card" id="fin-abbonamenti-list"></div>
-    </div>
+  <!-- COMPENSI -->
+  <div class="page" id="page-compensi">
+    <div class="ph"><h1>Compensi</h1><p>Guadagni per cliente, mese corrente e storico completo</p></div>
+    <div class="fin-grid" id="comp-summary"></div>
+    <div id="comp-categories"></div>
   </div>
 
 </div><!-- /main -->
@@ -493,9 +483,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
       Training
     </button>
-    <button class="bn-item" id="bn-finanze" onclick="showPage('finanze')">
+    <button class="bn-item" id="bn-compensi" onclick="showPage('compensi')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
-      Finanze
+      Compensi
     </button>
     <button class="bn-item" id="bn-lock" onclick="toggleEdit()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
@@ -538,37 +528,29 @@ const SPLITS = [
     esercizi:['Lat Pulldown','Cable Row','Machine Row','Face Pull','Curl Machine / Cable Curl','Hammer Curl Dumbbell']},
 ];
 
-// Abbonamenti: rimossi Kling AI, CapCut, Skool — WINDTRE trimestrale
-const ABBONAMENTI_DEFAULT = [
-  {desc:'Adobe Creative Cloud',amt:79.96,cat:'Design',ogni:'mese',color:'#e63946'},
-  {desc:'WINDTRE',amt:45.00,cat:'Telefonia',ogni:'trimestre',color:'#ff7b00',trimestrale:true},
-  {desc:'iliad',amt:15.00,cat:'Telefonia',ogni:'mese',color:'#e63946'},
-  {desc:'Claude.ai',amt:21.96,cat:'AI',ogni:'mese',color:'#7d3c98'},
-  {desc:'Amazon Prime',amt:2.49,cat:'Shopping',ogni:'mese',color:'#457b9d'},
-  {desc:'Sharesub (Spotify)',amt:4.99,cat:'Musica',ogni:'mese',color:'#39d353'},
-  {desc:'Apple (iCloud/App)',amt:9.99,cat:'Apple',ogni:'mese',color:'#8a8a8a'},
-  {desc:'Pdfguru.com',amt:0.99,cat:'Utility',ogni:'mese',color:'#555'},
-  {desc:'Shopify Basic (SlabHub)',amt:32,cat:'E-commerce',ogni:'mese',color:'#2d6fa3'},
-  {desc:'GitHub Pages',amt:0,cat:'Dev',ogni:'mese',color:'#8a8a8a'},
+// Compensi: 3 categorie di guadagno, Luigi è parzialmente automatico (tracker pubblicazioni)
+const COMPENSI_CATEGORIES = [
+  {id:'antonio', name:'Antonio (Focacciamo)', color:'#c0392b', payDay:10, payInfo:'Paga di solito il 10 del mese', auto:false},
+  {id:'luigi', name:'Luigi Stips', color:'#d4a017', payDay:2, payInfo:'Paga di solito l’1-2 del mese', auto:true},
+  {id:'altro', name:'Altro', color:'#8d78ff', payDay:null, payInfo:'Nessuna scadenza fissa', auto:false},
 ];
 
-// Entrate reali da estratto conto Revolut apr-giu 2026
-const ENTRATE_SEED = [
-  {desc:'Pagamento Davide Scopelliti',amt:10,client:'SlabHub',status:'pagato',date:'2026-05-03'},
-  {desc:'Revolut Technologies Inc.',amt:718,client:'—',status:'pagato',date:'2026-05-09'},
-  {desc:'Pagamento Davide Scopelliti',amt:20,client:'SlabHub',status:'pagato',date:'2026-05-13'},
-  {desc:'Pagamento Flavio Tranchida',amt:9.50,client:'Kissene',status:'pagato',date:'2026-05-28'},
-  {desc:'Pagamento Flavio Tranchida',amt:5.50,client:'Kissene',status:'pagato',date:'2026-06-02'},
-  {desc:'Revolut Technologies Inc.',amt:335,client:'—',status:'pagato',date:'2026-06-04'},
-  {desc:'Pagamento Marco Parisi',amt:15,client:'—',status:'pagato',date:'2026-06-05'},
-  {desc:'Pagamento Marco Parisi',amt:5.50,client:'—',status:'pagato',date:'2026-06-07'},
-  {desc:'Pagamento Gabriele Spicuzza',amt:25,client:'—',status:'pagato',date:'2026-06-13'},
+// Listino prezzi produzione video Luigi (HeyGen) — riferimento statico
+const LUIGI_LISTINO = [
+  {label:'Video corto — script pronto (fino a 2min)', price:'5€'},
+  {label:'Video corto — script da creare (fino a 2min)', price:'9€'},
+  {label:'Video ads', price:'6€ (modifica: 3€)'},
+  {label:'Video con script da zero', price:'13€'},
+  {label:'Video lungo (7min+)', price:'7€ (min., da valutare)'},
+  {label:'VSL / Lip sync — standard', price:'60€'},
+  {label:'VSL / Lip sync — urgente/notturno', price:'100€'},
+  {label:'Formato complesso (scene multiple)', price:'20€/ora'},
 ];
 
 // STATE
-let db, _ref, _get, allTasks={}, finData={entrate:{},uscite:{},abbonamenti:{}}, trainLogs={};
+let db, _ref, _get, allTasks={}, compensiData={}, trainLogs={};
 let activeG=GESTIONALI[0].id, activeC={}, openAcc=new Set(), editingId=null, isEdit=false;
-let activeFinTab='entrate';
+let compensiOpen=new Set();
 GESTIONALI.forEach(g=>activeC[g.id]=g.companies[0].id);
 
 const today=new Date();
@@ -600,40 +582,14 @@ async function initFirebase() {
     onValue(ref(db,`tasks/${c.id}`),snap=>{allTasks[c.id]=snap.val()||{};refreshUI();});
   });
 
-  onValue(ref(db,'finanze'),snap=>{
-    finData=snap.val()||{entrate:{},uscite:{},abbonamenti:{}};
-    ['entrate','uscite','abbonamenti'].forEach(k=>{if(!finData[k])finData[k]={};});
-    renderFinanze(); renderDashboard();
-  });
+  onValue(ref(db,'compensi'),snap=>{compensiData=snap.val()||{};renderCompensi();renderDashboard();});
 
   onValue(ref(db,'training'),snap=>{trainLogs=snap.val()||{};renderTraining();renderDashboard();});
-
-  // Seed eseguito una volta sola dopo il primo caricamento dati
-  setTimeout(async ()=>{
-    if(window._seeded) return;
-    window._seeded = true;
-    try {
-      const snapFin = await get(ref(db,'finanze'));
-      const fin = snapFin.val()||{};
-      const entrate = fin.entrate||{};
-      const abbonamenti = fin.abbonamenti||{};
-      // Seed entrate se vuote
-      if(Object.keys(entrate).length===0){
-        for(const e of ENTRATE_SEED) await push(ref(db,'finanze/entrate'),{...e,createdAt:new Date(e.date).getTime()});
-      }
-      // Seed abbonamenti — resetta se duplicati
-      const abbCount=Object.keys(abbonamenti).length;
-      const abbTotal=Object.values(abbonamenti).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-      if(abbCount===0||abbCount>10||abbTotal>200){
-        await set(ref(db,'finanze/abbonamenti'),null);
-        for(const a of ABBONAMENTI_DEFAULT) await push(ref(db,'finanze/abbonamenti'),{...a,createdAt:Date.now()});
-      }
-    } catch(e){ console.error('Seed error:',e); }
-  }, 1500);
 
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
   buildProjUI(); buildSplitCards(); setDate(); dashBuildSelectors(); renderCalendar(); renderDashboard();
+  loadTrackerData(); // eager: serve al widget "Compenso Luigi" in dashboard
 }
 
 function setDate(){
@@ -688,26 +644,24 @@ function updateProjBadge(){
 }
 
 // ── DASHBOARD ──
-function renderDashboard(){renderDashStats();renderDashUrgent();renderDashFinAlerts();renderDashTraining();}
+function renderDashboard(){renderDashStats();renderDashUrgent();renderDashWeekly();renderDashPayments();renderDashTraining();}
 
 function renderDashStats(){
   const all=GESTIONALI.flatMap(g=>g.companies).flatMap(c=>Object.values(allTasks[c.id]||{}));
   const todo=all.filter(t=>t.status==='todo'||t.status==='inprogress').length;
   const done=all.filter(t=>t.status==='done').length;
   const pct=all.length>0?Math.round(done/all.length*100):0;
-  const entrate=Object.values(finData.entrate||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-  const uscite=Object.values(finData.uscite||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-  const abb=Object.values(finData.abbonamenti||{}).reduce((s,e)=>s+(e.trimestrale?(parseFloat(e.amt)||0)/3:(parseFloat(e.amt)||0)),0);
-  const saldo=entrate-uscite-abb;
+  const compensiTot=compensiGrandTotalMese();
+  const luigiTot=luigiTotalMese();
   const thisWeek=Object.values(trainLogs||{}).filter(l=>{
     const d=new Date(l.date),now=new Date(),start=new Date(now);
     start.setDate(now.getDate()-now.getDay());return d>=start;
   }).length;
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">Task attive</div><div class="stat-num" style="color:var(--accent)">${todo}</div><div class="stat-sub">${done} completate</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div></div>
-    <div class="stat-card"><div class="stat-label">Saldo mese</div><div class="stat-num" style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}€${Math.abs(saldo).toFixed(0)}</div><div class="stat-sub">Entrate €${entrate.toFixed(0)}</div></div>
+    <div class="stat-card"><div class="stat-label">Compensi mese</div><div class="stat-num" style="color:var(--green)">€${compensiTot.toFixed(0)}</div><div class="stat-sub">Antonio + Luigi + Altro</div></div>
     <div class="stat-card"><div class="stat-label">Sessioni sett.</div><div class="stat-num" style="color:var(--green)">${thisWeek}<span style="font-size:0.9rem;color:var(--text2)">/3</span></div><div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div></div>
-    <div class="stat-card"><div class="stat-label">Abbonamenti/mese</div><div class="stat-num" style="color:var(--orange)">€${abb.toFixed(0)}</div><div class="stat-sub">${Object.keys(finData.abbonamenti||{}).length} attivi</div></div>`;
+    <div class="stat-card"><div class="stat-label">Compenso Luigi</div><div class="stat-num" style="color:var(--yellow)">€${luigiTot.toFixed(0)}</div><div class="stat-sub">Reel+Storie fissi${luigiTot>190?' + extra':''}</div></div>`;
 }
 
 function renderDashUrgent(){
@@ -750,15 +704,50 @@ window.dashQuickAdd=async function(){
   catch(e){toast('Errore: '+e.message);}
 };
 
-function renderDashFinAlerts(){
-  const el=document.getElementById('dash-fin-alerts');
-  const attesa=Object.values(finData.entrate||{}).filter(e=>e.status==='attesa'||e.status==='scaduto');
-  el.innerHTML=attesa.length?attesa.map(e=>`<div class="task-row s-${e.status==='scaduto'?'incomplete':'inprogress'}">
-    <span class="task-name">${esc(e.desc)}</span>
-    <span class="badge badge-project">${esc(e.client||'')}</span>
-    <span class="fin-amt pos">+€${parseFloat(e.amt||0).toFixed(0)}</span>
-    <span class="fin-status ${e.status}">${e.status==='attesa'?'In attesa':'Scaduto'}</span>
-  </div>`).join(''):'<div class="empty">Nessuna scadenza pendente</div>';
+function renderDashWeekly(){
+  const el=document.getElementById('dash-weekly');
+  if(!el)return;
+  const now=new Date();
+  const dow=(now.getDay()+6)%7; // 0=lunedì
+  const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow,0,0,0,0);
+  const counts={};
+  GESTIONALI.forEach(g=>{
+    counts[g.id]=0;
+    g.companies.forEach(c=>{
+      Object.values(allTasks[c.id]||{}).forEach(t=>{
+        if(t.status==='done'&&t.completedAt&&t.completedAt>=monday.getTime())counts[g.id]++;
+      });
+    });
+  });
+  const rows=GESTIONALI.filter(g=>counts[g.id]>0).sort((a,b)=>counts[b.id]-counts[a.id]);
+  el.innerHTML=rows.length?rows.map(g=>`<div class="task-row">
+    <span class="tab-dot" style="background:${g.color}"></span>
+    <span class="task-name">${esc(g.name)}</span>
+    <span class="badge badge-project">${counts[g.id]} completate</span>
+  </div>`).join(''):'<div class="empty">Ancora nessuna task completata questa settimana</div>';
+}
+
+function daysUntilPayday(day){
+  if(!day)return null;
+  const today=new Date(); today.setHours(0,0,0,0);
+  let target=new Date(today.getFullYear(),today.getMonth(),day);
+  if(target<today)target=new Date(today.getFullYear(),today.getMonth()+1,day);
+  return Math.round((target-today)/86400000);
+}
+
+function renderDashPayments(){
+  const el=document.getElementById('dash-payments');
+  if(!el)return;
+  el.innerHTML=COMPENSI_CATEGORIES.map(cat=>{
+    const days=daysUntilPayday(cat.payDay);
+    const tot=categoryTotalMese(cat.id);
+    const dayLabel=days===null?'—':(days===0?'oggi':`tra ${days}g`);
+    return `<div class="task-row" style="border-left:2px solid ${cat.color}">
+      <span class="task-name">${esc(cat.name)}</span>
+      <span class="badge badge-project">${dayLabel}</span>
+      <span class="fin-amt pos">€${tot.toFixed(0)}</span>
+    </div>`;
+  }).join('');
 }
 
 function renderDashTraining(){
@@ -1060,6 +1049,30 @@ function staleBadgeHTML(task){
   return `<span class="badge badge-stale ${cls}" title="Ferma da ${ageDays} giorni">⏱ ${ageDays}g</span>`;
 }
 
+function noteBlockHTML(cid,tid,task){
+  const st=task.status;
+  if(st!=='incomplete'&&st!=='missingfiles')return '';
+  const isEditingNote=editingId?.type==='note'&&editingId?.tid===tid;
+  if(isEditingNote){
+    return `<div class="task-note-block">
+      <textarea class="modal-note" id="noteedit-${tid}" rows="2" placeholder="Perché è bloccata?…" style="margin:0">${esc(task.blockNote||'')}</textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn-primary" style="height:34px;font-size:12px;padding:0 14px" onclick="saveBlockNote('${cid}','${tid}')">Salva nota</button>
+        <button class="btn-ghost" style="height:34px;font-size:12px;padding:0 14px" onclick="cancelEdit()">Annulla</button>
+      </div>
+    </div>`;
+  }
+  if(task.blockNote){
+    return `<div class="task-note-block task-note-readonly">
+      <span class="task-note-icon">📝</span><span class="task-note-text">${esc(task.blockNote)}</span>
+      <button class="ibtn edit-only" style="margin-left:auto" onclick="startNoteEdit('${cid}','${tid}')">✏️</button>
+    </div>`;
+  }
+  return `<div class="task-note-block task-note-empty edit-only">
+    <button class="btn-ghost" style="height:30px;font-size:11px;padding:0 12px" onclick="startNoteEdit('${cid}','${tid}')">+ Aggiungi nota (perché è bloccata)</button>
+  </div>`;
+}
+
 function renderTaskWrapper(cid,tid,task){
   const subs=task.subtasks?Object.entries(task.subtasks).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)):[];
   const sc=subs.length,ds=subs.filter(([,s])=>s.status==='done').length;
@@ -1095,7 +1108,7 @@ function renderTaskWrapper(cid,tid,task){
       <button class="btn-ghost" onclick="addSubtask('${cid}','${tid}')">+ Sub</button>
     </div>
   </div>`;
-  return `<div class="task-wrapper" id="wrap-${tid}">${taskRow}${subPanel}</div>`;
+  return `<div class="task-wrapper" id="wrap-${tid}">${taskRow}${noteBlockHTML(cid,tid,task)}${subPanel}</div>`;
 }
 
 function renderSubRow(cid,tid,sid,sub){
@@ -1129,7 +1142,20 @@ window.toggleAcc=function(tid){
 };
 
 window.addTask=async function(cid){const inp=document.getElementById(`cinput-${cid}`);const name=inp.value.trim();if(!name||!db)return;try{await window._fbPush(`tasks/${cid}`,{name,status:'todo',createdAt:Date.now()});inp.value='';toast('Task aggiunta ✓');}catch(e){toast('Errore');}};
-window.updateStatus=async function(cid,tid,status){if(!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/status`,status);toast('Stato aggiornato ✓');}catch(e){toast('Errore');}};
+window.updateStatus=async function(cid,tid,status){
+  if(!db)return;
+  try{
+    await window._fbSet(`tasks/${cid}/${tid}/status`,status);
+    await window._fbSet(`tasks/${cid}/${tid}/completedAt`,status==='done'?Date.now():null);
+    toast('Stato aggiornato ✓');
+  }catch(e){toast('Errore');}
+};
+window.startNoteEdit=function(cid,tid){editingId={type:'note',cid,tid};renderProjPanel(activeG,cid);setTimeout(()=>document.getElementById(`noteedit-${tid}`)?.focus(),30);};
+window.saveBlockNote=async function(cid,tid){
+  const inp=document.getElementById(`noteedit-${tid}`);if(!inp||!db)return;
+  const note=inp.value.trim();
+  try{await window._fbSet(`tasks/${cid}/${tid}/blockNote`,note||null);editingId=null;toast('Nota salvata ✓');}catch(e){toast('Errore');}
+};
 window.deleteTask=async function(cid,tid){if(!db)return;const n=Object.keys(allTasks[cid]?.[tid]?.subtasks||{}).length;if(!confirm(n>0?`Eliminare task e ${n} sub-task?`:'Eliminare task?'))return;try{await window._fbRemove(`tasks/${cid}/${tid}`);openAcc.delete(tid);toast('Eliminata');}catch(e){toast('Errore');}};
 window.startTaskEdit=function(cid,tid){editingId={type:'task',cid,tid};renderProjPanel(activeG,cid);};
 window.saveTaskEdit=async function(cid,tid){const inp=document.getElementById(`tedit-${tid}`);if(!inp)return;const name=inp.value.trim();if(!name||!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/name`,name);editingId=null;toast('Modificata ✓');}catch(e){toast('Errore');}};
@@ -1140,76 +1166,116 @@ window.startSubEdit=function(cid,tid,sid){editingId={type:'subtask',cid,tid,sid}
 window.saveSubEdit=async function(cid,tid,sid){const inp=document.getElementById(`sedit-${sid}`);if(!inp)return;const name=inp.value.trim();if(!name||!db)return;try{await window._fbSet(`tasks/${cid}/${tid}/subtasks/${sid}/name`,name);editingId=null;toast('Modificata ✓');}catch(e){toast('Errore');}};
 window.cancelEdit=function(){const prev=editingId;editingId=null;if(prev)renderProjPanel(activeG,prev.cid);};
 
-// ── FINANZE ──
-window.showFinTab=function(tab,btn){
-  activeFinTab=tab;
-  document.querySelectorAll('#page-finanze .tab').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('#page-finanze .tab-panel').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');document.getElementById(`fin-${tab}`).classList.add('active');
-};
-
-function renderFinanze(){
-  const entrate=Object.values(finData.entrate||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-  const uscite=Object.values(finData.uscite||{}).reduce((s,e)=>s+(parseFloat(e.amt)||0),0);
-  const abb=Object.values(finData.abbonamenti||{}).reduce((s,e)=>s+(e.trimestrale?(parseFloat(e.amt)||0)/3:(parseFloat(e.amt)||0)),0);
-  const saldo=entrate-uscite-abb;
-  document.getElementById('fin-summary').innerHTML=`
-    <div class="fin-card"><div class="fin-label">Entrate</div><div class="fin-amount pos">+€${entrate.toFixed(2)}</div></div>
-    <div class="fin-card"><div class="fin-label">Uscite totali</div><div class="fin-amount neg">-€${(uscite+abb).toFixed(2)}</div></div>
-    <div class="fin-card"><div class="fin-label">Saldo netto</div><div class="fin-amount ${saldo>=0?'pos':'neg'}">${saldo>=0?'+':'-'}€${Math.abs(saldo).toFixed(2)}</div></div>
-    <div class="fin-card"><div class="fin-label">Abb. equiv/mese</div><div class="fin-amount neutral">€${abb.toFixed(2)}</div></div>`;
-
-  const eArr=Object.entries(finData.entrate||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  document.getElementById('fin-entrate-list').innerHTML=eArr.length?eArr.map(([eid,e])=>`
-    <div class="fin-row">
-      <div class="fin-dot" style="background:var(--green)"></div>
-      <div style="flex:1;min-width:0"><div class="fin-name">${esc(e.desc)}</div><div class="fin-client">${esc(e.client||'')}${e.date?' · '+e.date:''}</div></div>
-      <span class="fin-amt pos">+€${parseFloat(e.amt||0).toFixed(2)}</span>
-      <select class="fin-select edit-only" onchange="updateFinStatus('entrate','${eid}',this.value)">
-        <option value="pagato" ${e.status==='pagato'?'selected':''}>Pagato</option>
-        <option value="attesa" ${e.status==='attesa'?'selected':''}>In attesa</option>
-        <option value="scaduto" ${e.status==='scaduto'?'selected':''}>Scaduto</option>
-      </select>
-      <span class="fin-status ${e.status||'pagato'}">${{pagato:'Pagato',attesa:'In attesa',scaduto:'Scaduto'}[e.status||'pagato']}</span>
-      <button class="ibtn del edit-only" onclick="deleteFinEntry('entrate','${eid}')">🗑</button>
-    </div>`).join(''):'<div class="empty">Nessuna entrata registrata.</div>';
-
-  const uArr=Object.entries(finData.uscite||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  document.getElementById('fin-uscite-list').innerHTML=uArr.length?uArr.map(([uid,u])=>`
-    <div class="fin-row">
-      <div class="fin-dot" style="background:var(--red)"></div>
-      <div style="flex:1;min-width:0"><div class="fin-name">${esc(u.desc)}</div><div class="fin-client">${esc(u.cat||'')}</div></div>
-      <span class="fin-amt neg">-€${parseFloat(u.amt||0).toFixed(2)}</span>
-      <button class="ibtn del edit-only" onclick="deleteFinEntry('uscite','${uid}')">🗑</button>
-    </div>`).join(''):'<div class="empty">Nessuna uscita registrata.</div>';
-
-  const aArr=Object.entries(finData.abbonamenti||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  document.getElementById('fin-abbonamenti-list').innerHTML=aArr.length?aArr.map(([aid,a])=>{
-    const isTrim=a.trimestrale||a.ogni==='trimestre';
-    const amtStr=parseFloat(a.amt||0)>0?(isTrim?`-€${parseFloat(a.amt).toFixed(2)}/trim`:`-€${parseFloat(a.amt).toFixed(2)}`):'Gratis';
-    return `<div class="fin-row">
-      <div class="fin-dot" style="background:${a.color||'var(--purple)'}"></div>
-      <div style="flex:1;min-width:0"><div class="fin-name">${esc(a.desc)}</div><div class="fin-client">${esc(a.cat||'')} · ogni ${a.ogni||'mese'}</div></div>
-      <span class="fin-amt neg">${amtStr}</span>
-      <span class="fin-status ${isTrim?'trimestrale':'ricorrente'}">${isTrim?'Trimestrale':'Ricorrente'}</span>
-      <button class="ibtn del edit-only" onclick="deleteFinEntry('abbonamenti','${aid}')">🗑</button>
-    </div>`;}).join(''):'<div class="empty">Nessun abbonamento.</div>';
+// ── COMPENSI ──
+function compensiMonthEntries(catId){
+  const now=new Date();
+  return Object.entries(compensiData[catId]||{}).filter(([,e])=>{
+    if(!e.date)return false;
+    const d=new Date(e.date);
+    return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
+  });
+}
+function compensiMonthTotal(catId){
+  return compensiMonthEntries(catId).reduce((s,[,e])=>s+(parseFloat(e.amt)||0),0);
+}
+function luigiTotalMese(){
+  const now=new Date();
+  const tr=computeLuigiTrackerTotals(now.getFullYear(),now.getMonth(),trackerData||{});
+  return tr.compensoTot+compensiMonthTotal('luigi');
+}
+function categoryTotalMese(catId){
+  return catId==='luigi'?luigiTotalMese():compensiMonthTotal(catId);
+}
+function compensiGrandTotalMese(){
+  return COMPENSI_CATEGORIES.reduce((s,c)=>s+categoryTotalMese(c.id),0);
 }
 
-window.addFinEntry=async function(type){
-  if(!db)return;
-  if(type==='entrate'){
-    const desc=document.getElementById('fin-e-desc').value.trim(),amt=document.getElementById('fin-e-amt').value.trim(),client=document.getElementById('fin-e-client').value.trim(),status=document.getElementById('fin-e-status').value;
-    if(!desc||!amt)return;
-    try{await window._fbPush('finanze/entrate',{desc,amt:parseFloat(amt),client,status,createdAt:Date.now()});['fin-e-desc','fin-e-amt','fin-e-client'].forEach(id=>document.getElementById(id).value='');toast('Entrata aggiunta ✓');}catch(e){toast('Errore');}
-  }else{
-    const desc=document.getElementById('fin-u-desc').value.trim(),amt=document.getElementById('fin-u-amt').value.trim(),cat=document.getElementById('fin-u-cat').value.trim();
-    if(!desc||!amt)return;
-    try{await window._fbPush('finanze/uscite',{desc,amt:parseFloat(amt),cat,createdAt:Date.now()});['fin-u-desc','fin-u-amt','fin-u-cat'].forEach(id=>document.getElementById(id).value='');toast('Uscita aggiunta ✓');}catch(e){toast('Errore');}
-  }
+window.toggleCompCat=function(catId){
+  if(compensiOpen.has(catId))compensiOpen.delete(catId);else compensiOpen.add(catId);
+  renderCompensi();
 };
-window.updateFinStatus=async function(type,id,status){if(!db)return;try{await window._fbSet(`finanze/${type}/${id}/status`,status);toast('Aggiornato ✓');}catch(e){toast('Errore');}};
-window.deleteFinEntry=async function(type,id){if(!db||!confirm('Eliminare voce?'))return;try{await window._fbRemove(`finanze/${type}/${id}`);toast('Eliminata');}catch(e){toast('Errore');}};
+
+function compEntryRowHTML(cat,eid,e){
+  return `<div class="fin-row">
+    <div class="fin-dot" style="background:${cat.color}"></div>
+    <div style="flex:1;min-width:0">
+      <div class="fin-name">${esc(e.desc)}</div>
+      <div class="fin-client">${e.note?esc(e.note)+' · ':''}${e.date||''}</div>
+    </div>
+    <span class="fin-amt pos">+€${parseFloat(e.amt||0).toFixed(2)}</span>
+    <button class="ibtn del edit-only" onclick="deleteCompEntry('${cat.id}','${eid}')">🗑</button>
+  </div>`;
+}
+
+function compAutoBlockHTML(){
+  const now=new Date();
+  const tr=computeLuigiTrackerTotals(now.getFullYear(),now.getMonth(),trackerData||{});
+  return `<div class="comp-auto-block">
+    <div class="comp-auto-row"><span>🎬 Reel Luigi Stips (fisso)</span><span class="pos">+€${tr.compensoReel}</span></div>
+    <div class="comp-auto-row"><span>⏱ Storie Luigi Stips (fisso)</span><span class="pos">+€${tr.compensoStorie}</span></div>
+    <div class="comp-auto-row comp-auto-total"><span>Totale da tracker pubblicazioni</span><span class="pos">+€${tr.compensoTot}</span></div>
+  </div>`;
+}
+
+function compListinoHTML(){
+  const rows=LUIGI_LISTINO.map(l=>`<div class="comp-listino-row"><span>${esc(l.label)}</span><span>${esc(l.price)}</span></div>`).join('');
+  return `<details class="comp-listino"><summary>📋 Listino prezzi produzione video (riferimento)</summary>${rows}</details>`;
+}
+
+function compCategoryHTML(cat){
+  const isOpen=compensiOpen.has(cat.id);
+  const total=categoryTotalMese(cat.id);
+  const allEntries=Object.entries(compensiData[cat.id]||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  const entriesHTML=allEntries.length?allEntries.map(([eid,e])=>compEntryRowHTML(cat,eid,e)).join(''):'<div class="empty">Nessuna voce manuale.</div>';
+  const body=isOpen?`<div class="comp-cat-body">
+      ${cat.auto?compAutoBlockHTML():''}
+      ${cat.id==='luigi'?compListinoHTML():''}
+      ${entriesHTML}
+      <div class="add-row edit-only" style="margin-top:10px;flex-wrap:wrap">
+        <input class="add-input" id="comp-desc-${cat.id}" placeholder="Descrizione" style="min-width:160px"/>
+        <input class="add-input" id="comp-note-${cat.id}" placeholder="Nota (opzionale)" style="min-width:140px"/>
+        <input class="add-input" id="comp-amt-${cat.id}" placeholder="€" style="max-width:80px"/>
+        <input type="date" class="add-input" id="comp-date-${cat.id}" style="max-width:150px"/>
+        <button class="btn-primary" onclick="addCompEntry('${cat.id}')">+ Aggiungi</button>
+      </div>
+    </div>`:'';
+  return `<div class="comp-cat-card">
+    <button class="comp-cat-header" onclick="toggleCompCat('${cat.id}')">
+      <span class="comp-cat-dot" style="background:${cat.color}"></span>
+      <span class="comp-cat-name">${esc(cat.name)}</span>
+      <span class="comp-cat-info">${cat.payInfo?esc(cat.payInfo):''}</span>
+      <span class="comp-cat-total">€${total.toFixed(0)}</span>
+      <span class="comp-cat-arrow${isOpen?' open':''}">▶</span>
+    </button>
+    ${body}
+  </div>`;
+}
+
+function renderCompensi(){
+  const summaryEl=document.getElementById('comp-summary');
+  if(!summaryEl)return;
+  const grandTotal=compensiGrandTotalMese();
+  summaryEl.innerHTML=`
+    <div class="fin-card"><div class="fin-label">Totale mese</div><div class="fin-amount pos">€${grandTotal.toFixed(0)}</div></div>
+    ${COMPENSI_CATEGORIES.map(cat=>`<div class="fin-card"><div class="fin-label">${esc(cat.name)}</div><div class="fin-amount" style="color:${cat.color}">€${categoryTotalMese(cat.id).toFixed(0)}</div></div>`).join('')}`;
+  document.getElementById('comp-categories').innerHTML=COMPENSI_CATEGORIES.map(cat=>compCategoryHTML(cat)).join('');
+}
+
+window.addCompEntry=async function(catId){
+  if(!db)return;
+  const descEl=document.getElementById(`comp-desc-${catId}`),noteEl=document.getElementById(`comp-note-${catId}`),amtEl=document.getElementById(`comp-amt-${catId}`),dateEl=document.getElementById(`comp-date-${catId}`);
+  const desc=descEl.value.trim(),note=noteEl.value.trim(),amt=amtEl.value.trim(),date=dateEl.value||new Date().toISOString().split('T')[0];
+  if(!desc||!amt)return;
+  try{
+    await window._fbPush(`compensi/${catId}`,{desc,note,amt:parseFloat(amt),date,createdAt:Date.now()});
+    descEl.value='';noteEl.value='';amtEl.value='';dateEl.value='';
+    toast('Compenso aggiunto ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+window.deleteCompEntry=async function(catId,eid){
+  if(!db||!confirm('Eliminare voce?'))return;
+  try{await window._fbRemove(`compensi/${catId}/${eid}`);toast('Eliminata');}catch(e){toast('Errore');}
+};
 
 // ── UTILS ──
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -1219,10 +1285,8 @@ window.toast=toast;
 
 
 // ── TRACKER LUIGI STIPS ──────────────────────────────────────
+// Grow With Luigi rimosso da luglio 2026 — Gabriele non pubblica più su quel profilo
 const TRACKER_PROFILES = [
-  {id:'grow_with_luigi', name:'Grow With Luigi', types:[
-    {id:'reel', label:'🎬 Reel'},
-  ]},
   {id:'luigi_stips', name:'Luigi Stips', types:[
     {id:'reel', label:'🎬 Reel'},
     {id:'storia', label:'⏱ Storia'},
@@ -1232,6 +1296,28 @@ const TRACKER_MONTHS = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
 let trackerYear=new Date().getFullYear(), trackerMonth=new Date().getMonth();
 let trackerData={};
 let trackerLoaded=false;
+
+// Calcolo condiviso (usato dal tracker E dal widget Compensi/Dashboard)
+function computeLuigiTrackerTotals(year,month,data){
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  let reelCount=0, storiaCount=0;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const kr=('luigi_stips_reel_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
+    const ks=('luigi_stips_storia_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
+    if(data[kr])reelCount++;
+    if(data[ks])storiaCount++;
+  }
+  const lsR=reelCount*6, lsS=storiaCount*4;
+  const targetLsReel=6*daysInMonth, targetLsStorie=4*daysInMonth;
+  const compensoReel=150, compensoStorie=40;
+  return {
+    daysInMonth, lsR, lsS, targetLsReel, targetLsStorie,
+    pctLsR:Math.min(100,Math.round(lsR/targetLsReel*100)),
+    pctLsS:Math.min(100,Math.round(lsS/targetLsStorie*100)),
+    compensoReel, compensoStorie, compensoTot:compensoReel+compensoStorie,
+  };
+}
 
 window.luigiSwitchTab=function(tab, btn){
   document.querySelectorAll('.tracker-tab').forEach(b=>b.classList.remove('active'));
@@ -1255,7 +1341,10 @@ async function loadTrackerData(){
     const snap=await _get(_ref(db,'tracker/luigi'));
     trackerData=snap.val()||{};
   }catch(e){trackerData={};}
+  trackerLoaded=true;
   renderTracker();
+  renderDashboard();
+  renderCompensi();
 }
 
 window.trackerToggleDay=async function(profileId,typeId,dateStr){
@@ -1267,6 +1356,8 @@ window.trackerToggleDay=async function(profileId,typeId,dateStr){
   try{
     await window._fbSet('tracker/luigi/'+key, newVal||null);
     renderTracker();
+    renderDashboard();
+    renderCompensi();
     toast(newVal?'✓ Pubblicazione segnata':'Pubblicazione rimossa');
   }catch(e){toast('Errore: '+e.message);}
 };
@@ -1278,24 +1369,9 @@ function renderTracker(){
   const el=document.getElementById('luigi-tracker-content');
   if(!el)return;
   const todayStr=new Date().toISOString().split('T')[0];
-  const daysInMonth=new Date(trackerYear,trackerMonth+1,0).getDate();
-
-  // Moltiplicatori: LS reel=6/g, LS storia=4/g, GWL reel=1
-  const MULT={'luigi_stips_reel':6,'luigi_stips_storia':4,'grow_with_luigi_reel':1};
-  const getMult=(pid,tid)=>MULT[pid+'_'+tid]||1;
-  const totals={};
-  TRACKER_PROFILES.forEach(p=>{
-    totals[p.id]={};
-    p.types.forEach(t=>{
-      let count=0;
-      for(let d=1;d<=daysInMonth;d++){
-        const ds=trackerYear+'-'+String(trackerMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-        const k=(p.id+'_'+t.id+'_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
-        if(trackerData[k])count++;
-      }
-      totals[p.id][t.id]=count*getMult(p.id,t.id);
-    });
-  });
+  const tr=computeLuigiTrackerTotals(trackerYear,trackerMonth,trackerData);
+  const daysInMonth=tr.daysInMonth;
+  const MULT={reel:6,storia:4};
 
   const profilesHTML=TRACKER_PROFILES.map(p=>{
     const typesHTML=p.types.map(t=>{
@@ -1318,9 +1394,9 @@ function renderTracker(){
     }).join('');
 
     const statsHTML=p.types.map(t=>{
-      const m=getMult(p.id,t.id);
-      const sub=m>1?' ('+m+'/g)':'';
-      return '<span class="profile-stat-pill">'+t.label+sub+': <span>'+totals[p.id][t.id]+'</span></span>';
+      const m=MULT[t.id]||1;
+      const val=t.id==='reel'?tr.lsR:tr.lsS;
+      return '<span class="profile-stat-pill">'+t.label+' ('+m+'/g): <span>'+val+'</span></span>';
     }).join('');
 
     return `<div class="profile-block">
@@ -1331,28 +1407,6 @@ function renderTracker(){
       <div>${typesHTML}</div>
     </div>`;
   }).join('');
-
-  let grandTotal=0;
-  TRACKER_PROFILES.forEach(p=>p.types.forEach(t=>{grandTotal+=totals[p.id][t.id];}));
-  const gwlR=totals['grow_with_luigi']?.reel||0;
-  const lsR=totals['luigi_stips']?.reel||0;
-  const lsS=totals['luigi_stips']?.storia||0;
-
-  // Target mensili
-  const targetLsReel=6*daysInMonth;
-  const targetLsStorie=4*daysInMonth;
-  const targetGwl=Math.floor(daysInMonth/2); // 1 ogni 2 giorni
-
-  // Compenso
-  const compensoReel=150;
-  const compensoStorie=40;
-  const compensoGwl=gwlR>=15?15:0;
-  const compensoTot=compensoReel+compensoStorie+compensoGwl;
-
-  // Percentuali progresso
-  const pctLsR=Math.min(100,Math.round(lsR/targetLsReel*100));
-  const pctLsS=Math.min(100,Math.round(lsS/targetLsStorie*100));
-  const pctGwl=Math.min(100,Math.round(gwlR/targetGwl*100));
 
   el.innerHTML=`
     <div class="tracker-wrap">
@@ -1369,22 +1423,16 @@ function renderTracker(){
       <div style="margin-top:1.2rem;margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);">Progresso target mensile</div>
       <div class="tracker-summary" style="margin-bottom:1.4rem;">
         <div class="tracker-sum-card">
-          <div class="tracker-sum-label">LS · Reel <span style="color:var(--text3)">/${targetLsReel}</span></div>
-          <div class="tracker-sum-num">${lsR}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${pctLsR}%;background:var(--yellow);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${targetLsReel-lsR>0?targetLsReel-lsR+' mancanti':'✓ Target raggiunto'}</div>
+          <div class="tracker-sum-label">LS · Reel <span style="color:var(--text3)">/${tr.targetLsReel}</span></div>
+          <div class="tracker-sum-num">${tr.lsR}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${tr.pctLsR}%;background:var(--yellow);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${tr.targetLsReel-tr.lsR>0?tr.targetLsReel-tr.lsR+' mancanti':'✓ Target raggiunto'}</div>
         </div>
         <div class="tracker-sum-card">
-          <div class="tracker-sum-label">LS · Storie <span style="color:var(--text3)">/${targetLsStorie}</span></div>
-          <div class="tracker-sum-num">${lsS}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${pctLsS}%;background:var(--green);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${targetLsStorie-lsS>0?targetLsStorie-lsS+' mancanti':'✓ Target raggiunto'}</div>
-        </div>
-        <div class="tracker-sum-card">
-          <div class="tracker-sum-label">GWL · Reel <span style="color:var(--text3)">/${targetGwl}</span></div>
-          <div class="tracker-sum-num">${gwlR}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${pctGwl}%;background:var(--accent2);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${targetGwl-gwlR>0?targetGwl-gwlR+' mancanti':'✓ Target raggiunto'}</div>
+          <div class="tracker-sum-label">LS · Storie <span style="color:var(--text3)">/${tr.targetLsStorie}</span></div>
+          <div class="tracker-sum-num">${tr.lsS}</div>
+          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${tr.pctLsS}%;background:var(--green);border-radius:2px;transition:width 0.4s"></div></div>
+          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${tr.targetLsStorie-tr.lsS>0?tr.targetLsStorie-tr.lsS+' mancanti':'✓ Target raggiunto'}</div>
         </div>
       </div>
 
@@ -1392,21 +1440,18 @@ function renderTracker(){
       <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:1.2rem;">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
           <span style="font-size:0.82rem;font-weight:500">🎬 Reel Luigi Stips <span style="font-size:0.65rem;color:var(--text3)">(6/g · fisso mensile)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€150</span>
+          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€${tr.compensoReel}</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
           <span style="font-size:0.82rem;font-weight:500">⏱ Storie Luigi Stips <span style="font-size:0.65rem;color:var(--text3)">(4/g · fisso mensile)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€40</span>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
-          <span style="font-size:0.82rem;font-weight:500">🎬 Reel Grow With Luigi <span style="font-size:0.65rem;color:var(--text3)">(1 ogni 2gg · ≥15/mese · fisso €15)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:${compensoGwl>0?'var(--green)':'var(--text3)'}">${compensoGwl>0?'+€15':gwlR+'/15 — non raggiunto'}</span>
+          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€${tr.compensoStorie}</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--s2);">
-          <span style="font-size:0.88rem;font-weight:700">Totale</span>
-          <span style="font-size:1.1rem;font-weight:700;color:var(--green)">+€${compensoTot}</span>
+          <span style="font-size:0.88rem;font-weight:700">Totale fisso</span>
+          <span style="font-size:1.1rem;font-weight:700;color:var(--green)">+€${tr.compensoTot}</span>
         </div>
       </div>
+      <div style="font-size:0.65rem;color:var(--text3);margin-top:-0.8rem;margin-bottom:1rem;">Altri compensi extra (es. video HeyGen) si aggiungono in Compensi → Luigi Stips</div>
 
     </div>`;
 }
