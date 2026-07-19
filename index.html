@@ -259,6 +259,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .comp-listino{background:var(--surface3);border-radius:var(--radius-sm);padding:10px 13px;margin-bottom:12px;font-size:12px}
 .comp-listino summary{cursor:pointer;font-weight:600;color:var(--text2)}
 .comp-listino-row{display:flex;justify-content:space-between;padding:5px 0;color:var(--text3);border-top:1px solid var(--line-soft)}
+.comp-cat-countdown{font-family:var(--font-mono);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);background:var(--surface3);border-radius:999px;padding:3px 8px;flex-shrink:0}
+.comp-section-title{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin:14px 0 8px}
+.stat-card-link{cursor:pointer;transition:transform .18s var(--ease),border-color .18s var(--ease)}
+.stat-card-link:hover{transform:translateY(-2px);border-color:var(--yellow)}
+.stat-card-link:active{transform:scale(.98)}
+
+/* ── Totale complessivo ── */
+.comp-total-card{background:linear-gradient(155deg,rgba(255,255,255,.06),rgba(255,255,255,.015)),var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:22px 24px;margin-top:8px}
+.comp-total-label{font-family:var(--font-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
+.comp-total-num{font-size:38px;font-weight:750;letter-spacing:-.03em;color:var(--green);margin-bottom:16px}
+.comp-total-breakdown{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line-soft);padding-top:12px}
+.comp-total-row{display:flex;align-items:center;gap:10px;padding:8px 0}
+.comp-total-name{flex:1;font-size:13px;color:var(--text2)}
+.comp-total-countdown{font-family:var(--font-mono);font-size:10px;color:var(--text3)}
+.comp-total-amt{font-family:var(--font-mono);font-weight:700;font-size:14px;min-width:60px;text-align:right}
 
 /* ── Apri gestionale singolo ── */
 .open-gestionale-btn{--gbtn-color:var(--accent);display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:10px 16px;border-radius:var(--radius-pill);border:1px solid color-mix(in srgb,var(--gbtn-color) 40%,var(--border));background:color-mix(in srgb,var(--gbtn-color) 12%,transparent);color:var(--gbtn-color);font-size:13px;font-weight:650;text-decoration:none;transition:background .15s ease,border-color .15s ease,transform .12s ease}
@@ -639,6 +654,7 @@ header{
     <div class="ph"><h1>Compensi</h1><p>Guadagni per cliente, mese corrente e storico completo</p></div>
     <div class="fin-grid" id="comp-summary"></div>
     <div id="comp-categories"></div>
+    <div id="comp-total-section"></div>
   </div>
 
 </div><!-- /main -->
@@ -708,8 +724,8 @@ const SPLITS = [
 
 // Compensi: 3 categorie di guadagno, Luigi è parzialmente automatico (tracker pubblicazioni)
 const COMPENSI_CATEGORIES = [
-  {id:'antonio', name:'Antonio (Focacciamo)', color:'#c0392b', payDay:10, payInfo:'Paga di solito il 10 del mese', auto:false},
-  {id:'luigi', name:'Luigi Stips', color:'#d4a017', payDay:2, payInfo:'Paga di solito l’1-2 del mese', auto:true},
+  {id:'antonio', name:'Antonio', color:'#c0392b', payDay:10, payInfo:'Paga di solito il 10 del mese', auto:false},
+  {id:'luigi', name:'Luigi Stips', color:'#d4a017', payDay:1, payInfo:'Paga di solito l’1 del mese', auto:true},
   {id:'altro', name:'Altro', color:'#8d78ff', payDay:null, payInfo:'Nessuna scadenza fissa', auto:false},
 ];
 
@@ -829,17 +845,17 @@ function renderDashStats(){
   const todo=all.filter(t=>t.status==='todo'||t.status==='inprogress').length;
   const done=all.filter(t=>t.status==='done').length;
   const pct=all.length>0?Math.round(done/all.length*100):0;
-  const compensiTot=compensiGrandTotalMese();
-  const luigiTot=luigiTotalMese();
+  const compensiTot=compensiGrandTotal();
+  const luigiTot=luigiTotal();
   const thisWeek=Object.values(trainLogs||{}).filter(l=>{
     const d=new Date(l.date),now=new Date(),start=new Date(now);
     start.setDate(now.getDate()-now.getDay());return d>=start;
   }).length;
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">Task attive</div><div class="stat-num" style="color:var(--accent)">${todo}</div><div class="stat-sub">${done} completate</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div></div>
-    <div class="stat-card"><div class="stat-label">Compensi mese</div><div class="stat-num" style="color:var(--green)">€${compensiTot.toFixed(0)}</div><div class="stat-sub">Antonio + Luigi + Altro</div></div>
+    <div class="stat-card"><div class="stat-label">Compensi totali</div><div class="stat-num" style="color:var(--green)">€${compensiTot.toFixed(0)}</div><div class="stat-sub">Antonio + Luigi + Altro</div></div>
     <div class="stat-card"><div class="stat-label">Sessioni sett.</div><div class="stat-num" style="color:var(--green)">${thisWeek}<span style="font-size:0.9rem;color:var(--text2)">/3</span></div><div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div></div>
-    <div class="stat-card"><div class="stat-label">Compenso Luigi</div><div class="stat-num" style="color:var(--yellow)">€${luigiTot.toFixed(0)}</div><div class="stat-sub">Reel+Storie fissi${luigiTot>190?' + extra':''}</div></div>`;
+    <div class="stat-card stat-card-link" onclick="goToLuigiCompensi()" title="Apri Compensi → Luigi Stips"><div class="stat-label">Compenso Luigi</div><div class="stat-num" style="color:var(--yellow)">€${luigiTot.toFixed(0)}</div><div class="stat-sub">${luigiTot>190?'Fissi + extra HeyGen':'Reel+Storie fissi'} →</div></div>`;
 }
 
 function renderDashUrgent(){
@@ -918,7 +934,7 @@ function renderDashPayments(){
   if(!el)return;
   el.innerHTML=COMPENSI_CATEGORIES.map(cat=>{
     const days=daysUntilPayday(cat.payDay);
-    const tot=categoryTotalMese(cat.id);
+    const tot=categoryTotal(cat.id);
     const dayLabel=days===null?'—':(days===0?'oggi':`tra ${days}g`);
     return `<div class="task-row" style="border-left:2px solid ${cat.color}">
       <span class="task-name">${esc(cat.name)}</span>
@@ -1345,32 +1361,38 @@ window.saveSubEdit=async function(cid,tid,sid){const inp=document.getElementById
 window.cancelEdit=function(){const prev=editingId;editingId=null;if(prev)renderProjPanel(activeG,prev.cid);};
 
 // ── COMPENSI ──
-function compensiMonthEntries(catId){
+function compensiEntries(catId){
+  return Object.entries(compensiData[catId]||{});
+}
+function compensiManualTotal(catId){
+  return compensiEntries(catId).reduce((s,[,e])=>s+(parseFloat(e.amt)||0),0);
+}
+function luigiTrackerTotal(){
   const now=new Date();
-  return Object.entries(compensiData[catId]||{}).filter(([,e])=>{
-    if(!e.date)return false;
-    const d=new Date(e.date);
-    return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
-  });
+  return computeLuigiTrackerTotals(now.getFullYear(),now.getMonth(),trackerData||{}).compensoTot;
 }
-function compensiMonthTotal(catId){
-  return compensiMonthEntries(catId).reduce((s,[,e])=>s+(parseFloat(e.amt)||0),0);
+function luigiTotal(){
+  return luigiTrackerTotal()+compensiManualTotal('luigi');
 }
-function luigiTotalMese(){
-  const now=new Date();
-  const tr=computeLuigiTrackerTotals(now.getFullYear(),now.getMonth(),trackerData||{});
-  return tr.compensoTot+compensiMonthTotal('luigi');
+function categoryTotal(catId){
+  return catId==='luigi'?luigiTotal():compensiManualTotal(catId);
 }
-function categoryTotalMese(catId){
-  return catId==='luigi'?luigiTotalMese():compensiMonthTotal(catId);
-}
-function compensiGrandTotalMese(){
-  return COMPENSI_CATEGORIES.reduce((s,c)=>s+categoryTotalMese(c.id),0);
+function compensiGrandTotal(){
+  return COMPENSI_CATEGORIES.reduce((s,c)=>s+categoryTotal(c.id),0);
 }
 
 window.toggleCompCat=function(catId){
   if(compensiOpen.has(catId))compensiOpen.delete(catId);else compensiOpen.add(catId);
   renderCompensi();
+};
+
+window.goToLuigiCompensi=function(){
+  showPage('compensi');
+  compensiOpen.add('luigi');
+  renderCompensi();
+  setTimeout(()=>{
+    document.getElementById('comp-cat-luigi')?.scrollIntoView({behavior:'smooth',block:'start'});
+  },80);
 };
 
 function compEntryRowHTML(cat,eid,e){
@@ -1402,26 +1424,32 @@ function compListinoHTML(){
 
 function compCategoryHTML(cat){
   const isOpen=compensiOpen.has(cat.id);
-  const total=categoryTotalMese(cat.id);
+  const total=categoryTotal(cat.id);
+  const isLuigi=cat.id==='luigi';
   const allEntries=Object.entries(compensiData[cat.id]||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
-  const entriesHTML=allEntries.length?allEntries.map(([eid,e])=>compEntryRowHTML(cat,eid,e)).join(''):'<div class="empty">Nessuna voce manuale.</div>';
+  const entriesHTML=allEntries.length?allEntries.map(([eid,e])=>compEntryRowHTML(cat,eid,e)).join(''):'<div class="empty">Nessuna voce ancora.</div>';
+  const descPlaceholder=isLuigi?'Descrizione video (es. 3 organici USA)':'Descrizione';
   const body=isOpen?`<div class="comp-cat-body">
       ${cat.auto?compAutoBlockHTML():''}
-      ${cat.id==='luigi'?compListinoHTML():''}
+      ${isLuigi?compListinoHTML():''}
+      ${isLuigi?'<div class="comp-section-title">🎬 Video generati (HeyGen)</div>':''}
       ${entriesHTML}
       <div class="add-row edit-only" style="margin-top:10px;flex-wrap:wrap">
-        <input class="add-input" id="comp-desc-${cat.id}" placeholder="Descrizione" style="min-width:160px"/>
+        <input class="add-input" id="comp-desc-${cat.id}" placeholder="${descPlaceholder}" style="min-width:160px"/>
         <input class="add-input" id="comp-note-${cat.id}" placeholder="Nota (opzionale)" style="min-width:140px"/>
         <input class="add-input" id="comp-amt-${cat.id}" placeholder="€" style="max-width:80px"/>
         <input type="date" class="add-input" id="comp-date-${cat.id}" style="max-width:150px"/>
         <button class="btn-primary" onclick="addCompEntry('${cat.id}')">+ Aggiungi</button>
       </div>
     </div>`:'';
-  return `<div class="comp-cat-card">
+  const days=daysUntilPayday(cat.payDay);
+  const countdownLabel=days===null?'':(days===0?'Oggi':`tra ${days}g`);
+  return `<div class="comp-cat-card" id="comp-cat-${cat.id}">
     <button class="comp-cat-header" onclick="toggleCompCat('${cat.id}')">
       <span class="comp-cat-dot" style="background:${cat.color}"></span>
       <span class="comp-cat-name">${esc(cat.name)}</span>
       <span class="comp-cat-info">${cat.payInfo?esc(cat.payInfo):''}</span>
+      ${countdownLabel?`<span class="comp-cat-countdown">${countdownLabel}</span>`:''}
       <span class="comp-cat-total">€${total.toFixed(0)}</span>
       <span class="comp-cat-arrow${isOpen?' open':''}">▶</span>
     </button>
@@ -1429,14 +1457,35 @@ function compCategoryHTML(cat){
   </div>`;
 }
 
+function compTotalSectionHTML(){
+  const grandTotal=compensiGrandTotal();
+  const rows=COMPENSI_CATEGORIES.map(cat=>{
+    const days=daysUntilPayday(cat.payDay);
+    const countdownLabel=days===null?'—':(days===0?'oggi':`tra ${days}g`);
+    return `<div class="comp-total-row">
+      <span class="comp-cat-dot" style="background:${cat.color}"></span>
+      <span class="comp-total-name">${esc(cat.name)}</span>
+      <span class="comp-total-countdown">${countdownLabel}</span>
+      <span class="comp-total-amt" style="color:${cat.color}">€${categoryTotal(cat.id).toFixed(0)}</span>
+    </div>`;
+  }).join('');
+  return `<div class="comp-total-card">
+    <div class="comp-total-label">Totale complessivo</div>
+    <div class="comp-total-num">€${grandTotal.toFixed(0)}</div>
+    <div class="comp-total-breakdown">${rows}</div>
+  </div>`;
+}
+
 function renderCompensi(){
   const summaryEl=document.getElementById('comp-summary');
   if(!summaryEl)return;
-  const grandTotal=compensiGrandTotalMese();
+  const grandTotal=compensiGrandTotal();
   summaryEl.innerHTML=`
-    <div class="fin-card"><div class="fin-label">Totale mese</div><div class="fin-amount pos">€${grandTotal.toFixed(0)}</div></div>
-    ${COMPENSI_CATEGORIES.map(cat=>`<div class="fin-card"><div class="fin-label">${esc(cat.name)}</div><div class="fin-amount" style="color:${cat.color}">€${categoryTotalMese(cat.id).toFixed(0)}</div></div>`).join('')}`;
+    <div class="fin-card"><div class="fin-label">Totale</div><div class="fin-amount pos">€${grandTotal.toFixed(0)}</div></div>
+    ${COMPENSI_CATEGORIES.map(cat=>`<div class="fin-card"><div class="fin-label">${esc(cat.name)}</div><div class="fin-amount" style="color:${cat.color}">€${categoryTotal(cat.id).toFixed(0)}</div></div>`).join('')}`;
   document.getElementById('comp-categories').innerHTML=COMPENSI_CATEGORIES.map(cat=>compCategoryHTML(cat)).join('');
+  const totalSection=document.getElementById('comp-total-section');
+  if(totalSection)totalSection.innerHTML=compTotalSectionHTML();
 }
 
 window.addCompEntry=async function(catId){
