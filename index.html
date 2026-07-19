@@ -1469,7 +1469,7 @@ function renderTaskWrapper(cid,tid,task){
   const labels={todo:'Da fare',inprogress:'In corso',done:'Completata',incomplete:'Incompleto',missingfiles:'File mancanti'};
   const date=task.createdAt?new Date(task.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}):'';
   const expCls=`exp-btn${hasInc?' has-inc':''}${allDone?' all-done':''}`;
-  const taskRow=`<div class="task-row s-${task.status||'todo'}${openAcc.has(tid)?' open-top':''}" id="trow-${tid}">
+  const taskRowInner=`<div class="task-row s-${task.status||'todo'}${openAcc.has(tid)?' open-top':''}" id="trow-${tid}">
     <button class="${expCls}" id="expbtn-${tid}" onclick="toggleAcc('${tid}')"><span class="exp-arrow">▶</span><span class="exp-count">${sc}</span></button>
     ${isEditing?`<input class="edit-inp" id="tedit-${tid}" value="${esc(task.name)}" onkeydown="if(event.key==='Enter')saveTaskEdit('${cid}','${tid}');if(event.key==='Escape')cancelEdit()"/>`:`<span class="task-name">${esc(task.name)}</span>`}
     <div class="task-meta">
@@ -1488,6 +1488,7 @@ function renderTaskWrapper(cid,tid,task){
       ${date?`<span style="font-size:0.6rem;color:var(--text3)">${date}</span>`:''}
     </div>
   </div>`;
+  const taskRow=`<div class="swipe-row"><div class="swipe-bg swipe-bg-left"><span>✓ Completa</span></div>${taskRowInner}</div>`;
   const subRows=subs.map(([sid,s])=>renderSubRow(cid,tid,sid,s)).join('');
   const subPanel=`<div class="subtask-panel" id="subpanel-${tid}">
     <div style="display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.5rem">${sc===0?'<div style="font-size:0.7rem;color:var(--text3)">Nessuna sub-task.</div>':subRows}</div>
@@ -1919,22 +1920,6 @@ initFirebase();
     row.style.transform = 'translateX(0)';
   }
 
-  function ensureWrapped(wrapper){
-    let row = wrapper.querySelector(':scope > .swipe-row > :last-child');
-    if(row) return row;
-    row = wrapper.firstElementChild;
-    if(!row) return null;
-    const container = document.createElement('div');
-    container.className = 'swipe-row';
-    row.parentNode.insertBefore(container, row);
-    const bgLeft = document.createElement('div');
-    bgLeft.className = 'swipe-bg swipe-bg-left';
-    bgLeft.innerHTML = '<span>✓ Completa</span>';
-    container.appendChild(bgLeft);
-    container.appendChild(row);
-    return row;
-  }
-
   function isVisible(el){
     return !!el && el.offsetParent !== null;
   }
@@ -1944,9 +1929,9 @@ initFirebase();
     if(e.target.closest('select,button,input,textarea,a,.qa-pill')) return;
     const wrapper = e.target.closest('.task-wrapper');
     if(!wrapper) return;
-    if(active) resetRow(active.row); // pulizia difensiva di un'interazione precedente rimasta aperta
-    const row = wrapper.firstElementChild;
+    const row = wrapper.querySelector(':scope > .swipe-row > :last-child');
     if(!row) return;
+    if(active) resetRow(active.row); // pulizia difensiva di un'interazione precedente rimasta aperta
     active = { wrapper, row, startX:e.clientX, startY:e.clientY, curX:0, dragging:false, pointerId:e.pointerId };
   }
 
@@ -1957,9 +1942,6 @@ initFirebase();
       if(Math.abs(dx) < DEADZONE && Math.abs(dy) < DEADZONE) return;
       if(Math.abs(dy) >= Math.abs(dx)){ active = null; return; } // scroll verticale: non intercettare mai
       if(dx < 0){ active = null; return; } // swipe a sinistra: ignorato, nessuna azione
-      const wrapped = ensureWrapped(active.wrapper);
-      if(!wrapped){ active = null; return; }
-      active.row = wrapped;
       active.dragging = true;
       active.row.style.transition = 'none';
     }
