@@ -276,6 +276,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .stat-card-link:hover{transform:translateY(-2px);border-color:var(--yellow)}
 .stat-card-link:active{transform:scale(.98)}
 
+/* ── Dashboard: mini card compensi (Antonio / Luigi / Totale) ── */
+.comp-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.comp-mini-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px}
+.comp-mini-label{font-family:var(--font-mono);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comp-mini-num{font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+.comp-mini-sub{font-family:var(--font-mono);font-size:9.5px;color:var(--text3);margin-top:5px}
+.comp-mini-link{cursor:pointer;transition:transform .18s var(--ease),border-color .18s var(--ease)}
+.comp-mini-link:hover{transform:translateY(-2px);border-color:var(--yellow)}
+.comp-mini-link:active{transform:scale(.97)}
+@media(max-width:480px){.comp-mini-grid{grid-template-columns:1fr}}
+
 /* ── Totale complessivo ── */
 .comp-total-card{background:linear-gradient(155deg,rgba(255,255,255,.06),rgba(255,255,255,.015)),var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:22px 24px;margin-top:8px}
 .comp-total-label{font-family:var(--font-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px}
@@ -705,6 +716,7 @@ header{
       <p id="dash-date">—</p>
     </div></div></div>
     <div class="stats-grid" id="dash-stats"></div>
+    <div class="today-section"><h3>Compensi</h3><div class="comp-mini-grid" id="dash-compensi"></div></div>
     <div class="today-section edit-only">
       <h3>Aggiungi task rapida</h3>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
@@ -717,7 +729,6 @@ header{
     <div class="today-section"><h3>Da fare — priorità</h3><div id="dash-urgent" class="task-list"></div></div>
     <div class="today-section"><h3>In corso</h3><div id="dash-inprogress" class="task-list"></div></div>
     <div class="today-section"><h3>Questa settimana — completate per cliente</h3><div id="dash-weekly" class="task-list"></div></div>
-    <div class="today-section"><h3>Prossimi pagamenti</h3><div id="dash-payments" class="task-list"></div></div>
     <div class="today-section"><h3>Training — prossima sessione</h3><div id="dash-training"></div></div>
   </div>
 
@@ -952,29 +963,50 @@ function updateProjBadge(){
 }
 
 // ── DASHBOARD ──
-function renderDashboard(){renderDashStats();renderDashUrgent();renderDashWeekly();renderDashPayments();renderDashTraining();}
+function renderDashboard(){renderDashStats();renderDashCompensi();renderDashUrgent();renderDashWeekly();renderDashTraining();}
 
 function renderDashStats(){
   const all=GESTIONALI.flatMap(g=>g.companies).flatMap(c=>Object.values(allTasks[c.id]||{}));
   const todo=all.filter(t=>t.status==='todo'||t.status==='inprogress').length;
   const done=all.filter(t=>t.status==='done').length;
   const pct=all.length>0?Math.round(done/all.length*100):0;
-  const compensiTot=compensiGrandTotal();
-  const luigiTot=luigiTotal();
   const thisWeek=Object.values(trainLogs||{}).filter(l=>{
     const d=new Date(l.date),now=new Date(),start=new Date(now);
     start.setDate(now.getDate()-now.getDay());return d>=start;
   }).length;
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat-card"><div class="stat-label">Task attive</div><div class="stat-num" style="color:var(--accent)"><span id="sn-todo">0</span></div><div class="stat-sub">${done} completate</div><div class="progress-bar"><div class="progress-fill" id="sn-todo-bar" style="width:0%;background:var(--accent)"></div></div></div>
-    <div class="stat-card"><div class="stat-label">Compensi totali</div><div class="stat-num" style="color:var(--green)">€<span id="sn-comp">0</span></div><div class="stat-sub">Antonio + Luigi + Altro</div></div>
-    <div class="stat-card"><div class="stat-label">Sessioni sett.</div><div class="stat-num" style="color:var(--green)"><span id="sn-week">0</span><span style="font-size:0.9rem;color:var(--text2)">/3</span></div><div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div></div>
-    <div class="stat-card stat-card-link" onclick="goToLuigiCompensi()" title="Apri Compensi → Luigi Stips"><div class="stat-label">Compenso Luigi</div><div class="stat-num" style="color:var(--yellow)">€<span id="sn-luigi">0</span></div><div class="stat-sub">${luigiTot>190?'Fissi + extra HeyGen':'Reel+Storie fissi'} →</div></div>`;
+    <div class="stat-card"><div class="stat-label">Sessioni sett.</div><div class="stat-num" style="color:var(--green)"><span id="sn-week">0</span><span style="font-size:0.9rem;color:var(--text2)">/3</span></div><div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div></div>`;
   animateNumber(document.getElementById('sn-todo'),todo,{duration:600});
-  animateNumber(document.getElementById('sn-comp'),compensiTot,{duration:800});
   animateNumber(document.getElementById('sn-week'),thisWeek,{duration:500});
-  animateNumber(document.getElementById('sn-luigi'),luigiTot,{duration:800});
   requestAnimationFrame(()=>{const bar=document.getElementById('sn-todo-bar');if(bar)bar.style.width=pct+'%';});
+}
+
+function renderDashCompensi(){
+  const el=document.getElementById('dash-compensi');
+  if(!el)return;
+  const antonioTot=categoryTotal('antonio');
+  const luigiTot=categoryTotal('luigi');
+  const combinedTot=antonioTot+luigiTot;
+  const antonioDays=daysUntilPayday(10);
+  const luigiDays=daysUntilPayday(1);
+  const dayLabel=d=>d===null?'—':(d===0?'oggi':`tra ${d}g`);
+  el.innerHTML=`
+    <div class="comp-mini-card" style="border-left:2px solid #c0392b">
+      <div class="comp-mini-label">Antonio</div>
+      <div class="comp-mini-num">€${antonioTot.toFixed(0)}</div>
+      <div class="comp-mini-sub">${dayLabel(antonioDays)}</div>
+    </div>
+    <div class="comp-mini-card comp-mini-link" onclick="goToLuigiCompensi()" style="border-left:2px solid #d4a017">
+      <div class="comp-mini-label">Luigi →</div>
+      <div class="comp-mini-num" style="color:var(--yellow)">€${luigiTot.toFixed(0)}</div>
+      <div class="comp-mini-sub">${dayLabel(luigiDays)}</div>
+    </div>
+    <div class="comp-mini-card" style="border-left:2px solid var(--accent)">
+      <div class="comp-mini-label">Luigi + Antonio</div>
+      <div class="comp-mini-num" style="color:var(--green)">€${combinedTot.toFixed(0)}</div>
+      <div class="comp-mini-sub">totale complessivo</div>
+    </div>`;
 }
 
 function renderDashUrgent(){
@@ -1055,21 +1087,6 @@ function daysUntilPayday(day){
   let target=new Date(today.getFullYear(),today.getMonth(),day);
   if(target<today)target=new Date(today.getFullYear(),today.getMonth()+1,day);
   return Math.round((target-today)/86400000);
-}
-
-function renderDashPayments(){
-  const el=document.getElementById('dash-payments');
-  if(!el)return;
-  el.innerHTML=COMPENSI_CATEGORIES.map(cat=>{
-    const days=daysUntilPayday(cat.payDay);
-    const tot=categoryTotal(cat.id);
-    const dayLabel=days===null?'—':(days===0?'oggi':`tra ${days}g`);
-    return `<div class="task-row" style="border-left:2px solid ${cat.color}">
-      <span class="task-name">${esc(cat.name)}</span>
-      <span class="badge badge-project">${dayLabel}</span>
-      <span class="fin-amt pos">€${tot.toFixed(0)}</span>
-    </div>`;
-  }).join('');
 }
 
 function renderDashTraining(){
