@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>DYRECTIO</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:opsz,wght@12..72,400;12..72,500;12..72,600;12..72,700&display=swap');
@@ -16,7 +16,8 @@
   --border:#292731; --border2:#3a3744; --line-soft:rgba(255,255,255,.06);
   --text:#f7f6f8; --text2:#a7a3ad; --text3:#6f6a78; --muted:var(--text3);
   --silver:#c9c6ce; --accent:#8d78ff; --accent-rgb:141,120,255; --accent-dim:rgba(var(--accent-rgb),.12);
-  --company-color:var(--accent); --company-dim:var(--accent-dim);
+  --neutral:#a8a3ae;
+  --company-color:var(--neutral); --company-dim:color-mix(in srgb,var(--company-color) 12%,transparent);
   --green:#55d98a; --yellow:#e7bf66; --orange:#e98a51; --purple:#b18cff; --red:#ef6868; --accent2:#6e9fd0;
   --todo:#85818c; --inprogress:var(--yellow); --done:var(--green); --incomplete:var(--orange); --missingfiles:var(--purple);
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-7:32px; --space-8:40px; --space-9:48px; --space-10:64px;
@@ -473,7 +474,8 @@ header{
 /* ── Bottom nav mobile: capsula di vetro fluttuante ── */
 @media(max-width:760px){
   #bottom-nav{
-    left:12px;right:12px;bottom:12px;
+    left:12px;right:12px;
+    bottom:calc(env(safe-area-inset-bottom) + 10px);
     border-radius:28px;
     background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02)),rgba(9,8,13,.6);
     backdrop-filter:blur(34px) saturate(1.9);
@@ -486,8 +488,20 @@ header{
   .bn-item.active::before{background:color-mix(in srgb,var(--company-color) 20%,transparent)}
   .bn-item.active{color:var(--company-color)}
   #main{padding-bottom:0}
-  .page,.main-panel,main{padding-bottom:128px}
-  #fab-add{bottom:calc(96px + env(safe-area-inset-bottom))}
+  .page,.main-panel,main{padding-top:calc(env(safe-area-inset-top) + 20px);padding-bottom:calc(env(safe-area-inset-bottom) + 128px)}
+  #fab-add{bottom:calc(env(safe-area-inset-bottom) + 84px)}
+  #toast{bottom:calc(env(safe-area-inset-bottom) + 92px)}
+
+  /* comp-cat-header: evita overflow orizzontale su schermi stretti */
+  .comp-cat-header{flex-wrap:wrap;row-gap:6px}
+  .comp-cat-info{flex-basis:100%;order:3}
+  .comp-cat-countdown{order:2}
+
+  /* touch target e leggibilità */
+  .ibtn,.icon-btn{min-width:34px;min-height:34px}
+  .task-row,.task-item{padding:14px}
+  .stat-card,.stat{padding:18px}
+  .stat-num{font-size:28px}
 }
 
 /* ── Streak / calendario: leggero effetto vetro sulle celle attive ── */
@@ -783,6 +797,7 @@ async function initFirebase() {
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
   buildProjUI(); buildSplitCards(); setDate(); dashBuildSelectors(); renderCalendar(); renderDashboard();
+  applyProjColor(NEUTRAL_COLOR); // buildProjUI ha impostato il colore sull'ultimo progetto pre-renderizzato: si riparte neutri sulla Dashboard
   loadTrackerData(); // eager: serve al widget "Compenso Luigi" in dashboard
 }
 
@@ -796,6 +811,11 @@ function setDate(){
 }
 
 // ── NAVIGATION ──
+function applyProjColor(hex){
+  document.documentElement.style.setProperty('--company-color', hex);
+}
+const NEUTRAL_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--neutral').trim() || '#a8a3ae';
+
 window.showPage=function(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
@@ -803,6 +823,13 @@ window.showPage=function(id){
   document.getElementById(`page-${id}`).classList.add('active');
   document.querySelector(`.sb-item[onclick*="${id}"]`)?.classList.add('active');
   document.getElementById(`bn-${id}`)?.classList.add('active');
+  if(id==='progetti'){
+    const g=GESTIONALI.find(x=>x.id===activeG);
+    const c=g?.companies.find(x=>x.id===activeC[activeG]);
+    applyProjColor(c?.color||g?.color||NEUTRAL_COLOR);
+  }else{
+    applyProjColor(NEUTRAL_COLOR);
+  }
 };
 
 // ── EDIT TOGGLE ──
@@ -905,20 +932,29 @@ function renderDashWeekly(){
   const dow=(now.getDay()+6)%7; // 0=lunedì
   const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow,0,0,0,0);
   const counts={};
+  let doneWithoutTimestamp=0;
   GESTIONALI.forEach(g=>{
     counts[g.id]=0;
     g.companies.forEach(c=>{
       Object.values(allTasks[c.id]||{}).forEach(t=>{
-        if(t.status==='done'&&t.completedAt&&t.completedAt>=monday.getTime())counts[g.id]++;
+        if(t.status!=='done')return;
+        if(!t.completedAt){doneWithoutTimestamp++;return;}
+        if(t.completedAt>=monday.getTime())counts[g.id]++;
       });
     });
   });
   const rows=GESTIONALI.filter(g=>counts[g.id]>0).sort((a,b)=>counts[b.id]-counts[a.id]);
-  el.innerHTML=rows.length?rows.map(g=>`<div class="task-row">
-    <span class="tab-dot" style="background:${g.color}"></span>
-    <span class="task-name">${esc(g.name)}</span>
-    <span class="badge badge-project">${counts[g.id]} completate</span>
-  </div>`).join(''):'<div class="empty">Ancora nessuna task completata questa settimana</div>';
+  if(rows.length){
+    el.innerHTML=rows.map(g=>`<div class="task-row">
+      <span class="tab-dot" style="background:${g.color}"></span>
+      <span class="task-name">${esc(g.name)}</span>
+      <span class="badge badge-project">${counts[g.id]} completate</span>
+    </div>`).join('');
+  }else if(doneWithoutTimestamp>0){
+    el.innerHTML=`<div class="empty">Nessuna task completata da quando è attivo il conteggio — le ${doneWithoutTimestamp} completate prima non avevano una data di completamento salvata. Da ora in poi il riepilogo si popola da solo.</div>`;
+  }else{
+    el.innerHTML='<div class="empty">Ancora nessuna task completata questa settimana</div>';
+  }
 }
 
 function daysUntilPayday(day){
@@ -1205,6 +1241,8 @@ window.switchProjC=function(gid,cid){
   g.companies.forEach(c=>{document.getElementById(`cpanel-${c.id}`)?.classList.remove('active');document.getElementById(`ctab-${c.id}`)?.classList.remove('active');});
   document.getElementById(`cpanel-${cid}`)?.classList.add('active');
   document.getElementById(`ctab-${cid}`)?.classList.add('active');
+  const c=g.companies.find(x=>x.id===cid);
+  applyProjColor(c?.color||g.color||NEUTRAL_COLOR);
   renderProjPanel(gid,cid);
 };
 
