@@ -286,6 +286,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .undo-toast.show{transform:translateX(-50%) translateY(0)}
 .undo-toast button{background:transparent;border:0;color:var(--company-color);font-weight:700;cursor:pointer;font-size:12.5px}
 
+.cal-week-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
+.cal-day-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;color:var(--text2);transition:.15s;position:relative}
+.cal-day-btn:hover{border-color:var(--border2)}
+.cal-day-btn.today{border-color:var(--company-color)}
+.cal-day-btn.selected{background:var(--company-dim);border-color:var(--company-color);color:var(--text)}
+.cal-day-name{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.cal-day-num{font-size:17px;font-weight:700}
+.cal-day-dot{width:5px;height:5px;border-radius:50%;background:var(--company-color)}
+.cal-event-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px}
+.cal-event-time{font-family:var(--font-mono);font-size:11px;color:var(--text3);flex-shrink:0;width:56px}
+.cal-event-title{font-size:14px;overflow-wrap:anywhere}
+.cal-now-marker{display:flex;align-items:center;gap:8px;margin:10px 0;font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--company-color)}
+.cal-now-marker span{flex:1;height:1px;background:var(--company-color);opacity:.4}
+
 .today3-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:24px}
 .today3-card{text-align:left;background:linear-gradient(155deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.014) 40%,rgba(255,255,255,.008) 100%),rgba(23,22,29,.5);border:1px solid rgba(255,255,255,.09);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:.15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
 .today3-card:hover{border-color:var(--company-color);transform:translateY(-1px)}
@@ -774,6 +788,10 @@ header{
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
       Obiettivi
     </button>
+    <button class="sb-item" onclick="showPage('calendario')">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/><path d="M1.5 6h13"/><path d="M4.5 1.5v2M11.5 1.5v2"/></svg>
+      Calendario
+    </button>
   </div>
   <div class="sb-spacer"></div>
   <div class="sb-footer">
@@ -873,6 +891,13 @@ header{
     </div>
   </div>
 
+  <!-- CALENDARIO -->
+  <div class="page" id="page-calendario">
+    <div class="ph"><h1>Calendario</h1><p>Da Google Calendar, sincronizzato ogni 5 minuti</p></div>
+    <div class="cal-week-strip" id="cal-week-strip"></div>
+    <div id="cal-day-events"></div>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /app-body -->
 </div><!-- /app -->
@@ -900,6 +925,10 @@ header{
     <button class="bn-item" id="bn-obiettivi" onclick="showPage('obiettivi')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
       Obiettivi
+    </button>
+    <button class="bn-item" id="bn-calendario" onclick="showPage('calendario')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/><path d="M1.5 6h13"/><path d="M4.5 1.5v2M11.5 1.5v2"/></svg>
+      Calendario
     </button>
     <button class="bn-item" id="bn-lock" onclick="toggleEdit()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
@@ -1029,6 +1058,7 @@ window.showPage=function(id){
   }else{
     applyProjColor(NEUTRAL_COLOR);
   }
+  if(id==='calendario')loadCalendarPage();
 };
 
 // ── EDIT TOGGLE ──
@@ -2277,6 +2307,70 @@ window.removeObiettivo=async function(list,id){
   if(!db||!confirm('Rimuovere questo obiettivo?'))return;
   try{await window._fbRemove(`obiettivi/${list}/${id}`);toast('Rimosso');}catch(e){toast('Errore: '+e.message);}
 };
+
+// ── CALENDARIO (Google Calendar via iCal, backend Vercel) ──
+const CALENDAR_API='https://dyrectio-api.vercel.app/api/calendar';
+let calendarEvents=null, calendarLoaded=false, calSelectedDate=null;
+async function loadCalendarPage(){
+  if(!calendarLoaded){
+    calendarLoaded=true;
+    document.getElementById('cal-week-strip').innerHTML='<div class="empty">Caricamento…</div>';
+    try{
+      const resp=await fetch(CALENDAR_API);
+      const data=await resp.json();
+      calendarEvents=data.events||[];
+      if(data.error)toast(data.error);
+    }catch(e){
+      calendarEvents=[];
+      toast('Errore nel caricare il calendario');
+    }
+  }
+  if(!calSelectedDate)calSelectedDate=new Date().toISOString().split('T')[0];
+  renderCalendarWeek();
+}
+function renderCalendarWeek(){
+  const strip=document.getElementById('cal-week-strip');
+  const todayStr=new Date().toISOString().split('T')[0];
+  const now=new Date();
+  const dow=(now.getDay()+6)%7; // 0=lunedì
+  const monday=new Date(now); monday.setDate(now.getDate()-dow);
+  const dayNames=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+  const days=[];
+  for(let i=0;i<7;i++){const d=new Date(monday); d.setDate(monday.getDate()+i); days.push(d);}
+  strip.innerHTML=days.map((d,i)=>{
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const hasEvents=(calendarEvents||[]).some(e=>e.start.slice(0,10)===ds);
+    const isToday=ds===todayStr, isSelected=ds===calSelectedDate;
+    return `<button class="cal-day-btn${isToday?' today':''}${isSelected?' selected':''}" onclick="selectCalDay('${ds}')">
+      <span class="cal-day-name">${dayNames[i]}</span>
+      <span class="cal-day-num">${d.getDate()}</span>
+      ${hasEvents?'<span class="cal-day-dot"></span>':''}
+    </button>`;
+  }).join('');
+  renderCalDayEvents();
+}
+window.selectCalDay=function(ds){calSelectedDate=ds; renderCalendarWeek();};
+function renderCalDayEvents(){
+  const el=document.getElementById('cal-day-events');
+  const todayStr=new Date().toISOString().split('T')[0];
+  const dayEvents=(calendarEvents||[]).filter(e=>e.start.slice(0,10)===calSelectedDate).sort((a,b)=>new Date(a.start)-new Date(b.start));
+  if(!dayEvents.length){el.innerHTML='<div class="empty">Nessun appuntamento.</div>';return;}
+  const isToday=calSelectedDate===todayStr;
+  const nowMs=Date.now();
+  let nowMarkerInserted=false;
+  const rows=[];
+  dayEvents.forEach(e=>{
+    if(isToday && !nowMarkerInserted && new Date(e.start).getTime()>nowMs){
+      rows.push('<div class="cal-now-marker"><span></span>adesso<span></span></div>');
+      nowMarkerInserted=true;
+    }
+    const start=new Date(e.start);
+    const timeStr=e.allDay?'Tutto il giorno':start.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    rows.push(`<div class="cal-event-row"><span class="cal-event-time">${timeStr}</span><span class="cal-event-title">${esc(e.title)}</span></div>`);
+  });
+  if(isToday && !nowMarkerInserted)rows.push('<div class="cal-now-marker"><span></span>adesso<span></span></div>');
+  el.innerHTML=rows.join('');
+}
 
 
 // ── TRACKER LUIGI STIPS ──────────────────────────────────────
