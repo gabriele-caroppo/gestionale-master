@@ -835,18 +835,6 @@ const COMPENSI_CATEGORIES = [
   {id:'altro', name:'Altro', color:'#8d78ff', payDay:null, payInfo:'Nessuna scadenza fissa', auto:false},
 ];
 
-// Listino prezzi produzione video Luigi (HeyGen) — riferimento statico
-const LUIGI_LISTINO = [
-  {label:'Video corto — script pronto (fino a 2min)', price:'5€'},
-  {label:'Video corto — script da creare (fino a 2min)', price:'9€'},
-  {label:'Video ads', price:'6€ (modifica: 3€)'},
-  {label:'Video con script da zero', price:'13€'},
-  {label:'Video lungo (7min+)', price:'7€ (min., da valutare)'},
-  {label:'VSL / Lip sync — standard', price:'60€'},
-  {label:'VSL / Lip sync — urgente/notturno', price:'100€'},
-  {label:'Formato complesso (scene multiple)', price:'20€/ora'},
-];
-
 // STATE
 let db, _ref, _get, allTasks={}, compensiData={}, trainLogs={};
 let activeG=GESTIONALI[0].id, activeC={}, openAcc=new Set(), editingId=null, isEdit=false;
@@ -1605,15 +1593,8 @@ function compAutoBlockHTML(){
   const now=new Date();
   const tr=computeLuigiTrackerTotals(now.getFullYear(),now.getMonth(),trackerData||{});
   return `<div class="comp-auto-block">
-    <div class="comp-auto-row"><span>🎬 Reel Luigi Stips (fisso)</span><span class="pos">+€${tr.compensoReel}</span></div>
-    <div class="comp-auto-row"><span>⏱ Storie Luigi Stips (fisso)</span><span class="pos">+€${tr.compensoStorie}</span></div>
-    <div class="comp-auto-row comp-auto-total"><span>Totale da tracker pubblicazioni</span><span class="pos">+€${tr.compensoTot}</span></div>
+    <div class="comp-auto-row comp-auto-total"><span>🎬 Reel di prova Luigi Stips (fisso)</span><span class="pos">+€${tr.compensoTot}</span></div>
   </div>`;
-}
-
-function compListinoHTML(){
-  const rows=LUIGI_LISTINO.map(l=>`<div class="comp-listino-row"><span>${esc(l.label)}</span><span>${esc(l.price)}</span></div>`).join('');
-  return `<details class="comp-listino"><summary>📋 Listino prezzi produzione video (riferimento)</summary>${rows}</details>`;
 }
 
 function compCategoryHTML(cat){
@@ -1622,11 +1603,10 @@ function compCategoryHTML(cat){
   const isLuigi=cat.id==='luigi';
   const allEntries=Object.entries(compensiData[cat.id]||{}).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
   const entriesHTML=allEntries.length?allEntries.map(([eid,e])=>compEntryRowHTML(cat,eid,e)).join(''):'<div class="empty">Nessuna voce ancora.</div>';
-  const descPlaceholder=isLuigi?'Descrizione video (es. 3 organici USA)':'Descrizione';
+  const descPlaceholder=isLuigi?'Descrizione (es. extra una tantum)':'Descrizione';
   const body=isOpen?`<div class="comp-cat-body">
       ${cat.auto?compAutoBlockHTML():''}
-      ${isLuigi?compListinoHTML():''}
-      ${isLuigi?'<div class="comp-section-title">🎬 Video generati (HeyGen)</div>':''}
+      ${isLuigi?'<div class="comp-section-title">Extra compensi</div>':''}
       ${entriesHTML}
       <div class="add-row edit-only" style="margin-top:10px;flex-wrap:wrap">
         <input class="add-input" id="comp-desc-${cat.id}" placeholder="${descPlaceholder}" style="min-width:160px"/>
@@ -1727,10 +1707,10 @@ window.toast=toast;
 
 // ── TRACKER LUIGI STIPS ──────────────────────────────────────
 // Grow With Luigi rimosso da luglio 2026 — Gabriele non pubblica più su quel profilo
+// Storia rimossa e compenso ridotto ad agosto 2026 — Luigi fa solo reel di prova, niente più HeyGen
 const TRACKER_PROFILES = [
   {id:'luigi_stips', name:'Luigi Stips', types:[
-    {id:'reel', label:'🎬 Reel'},
-    {id:'storia', label:'⏱ Storia'},
+    {id:'reel', label:'🎬 Reel di prova'},
   ]},
 ];
 const TRACKER_MONTHS = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
@@ -1741,22 +1721,19 @@ let trackerLoaded=false;
 // Calcolo condiviso (usato dal tracker E dal widget Compensi/Dashboard)
 function computeLuigiTrackerTotals(year,month,data){
   const daysInMonth=new Date(year,month+1,0).getDate();
-  let reelCount=0, storiaCount=0;
+  let reelCount=0;
   for(let d=1;d<=daysInMonth;d++){
     const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const kr=('luigi_stips_reel_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
-    const ks=('luigi_stips_storia_'+ds).replace(/[^a-zA-Z0-9_]/g,'_');
     if(data[kr])reelCount++;
-    if(data[ks])storiaCount++;
   }
-  const lsR=reelCount*6, lsS=storiaCount*4;
-  const targetLsReel=6*daysInMonth, targetLsStorie=4*daysInMonth;
-  const compensoReel=150, compensoStorie=40;
+  const lsR=reelCount*6;
+  const targetLsReel=6*daysInMonth;
+  const compensoReel=150;
   return {
-    daysInMonth, lsR, lsS, targetLsReel, targetLsStorie,
+    daysInMonth, lsR, targetLsReel,
     pctLsR:Math.min(100,Math.round(lsR/targetLsReel*100)),
-    pctLsS:Math.min(100,Math.round(lsS/targetLsStorie*100)),
-    compensoReel, compensoStorie, compensoTot:compensoReel+compensoStorie,
+    compensoReel, compensoTot:compensoReel,
   };
 }
 
@@ -1812,7 +1789,7 @@ function renderTracker(){
   const todayStr=new Date().toISOString().split('T')[0];
   const tr=computeLuigiTrackerTotals(trackerYear,trackerMonth,trackerData);
   const daysInMonth=tr.daysInMonth;
-  const MULT={reel:6,storia:4};
+  const MULT={reel:6};
 
   const profilesHTML=TRACKER_PROFILES.map(p=>{
     const typesHTML=p.types.map(t=>{
@@ -1836,7 +1813,7 @@ function renderTracker(){
 
     const statsHTML=p.types.map(t=>{
       const m=MULT[t.id]||1;
-      const val=t.id==='reel'?tr.lsR:tr.lsS;
+      const val=tr.lsR;
       return '<span class="profile-stat-pill">'+t.label+' ('+m+'/g): <span>'+val+'</span></span>';
     }).join('');
 
@@ -1864,35 +1841,21 @@ function renderTracker(){
       <div style="margin-top:1.2rem;margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);">Progresso target mensile</div>
       <div class="tracker-summary" style="margin-bottom:1.4rem;">
         <div class="tracker-sum-card">
-          <div class="tracker-sum-label">LS · Reel <span style="color:var(--text3)">/${tr.targetLsReel}</span></div>
+          <div class="tracker-sum-label">LS · Reel di prova <span style="color:var(--text3)">/${tr.targetLsReel}</span></div>
           <div class="tracker-sum-num">${tr.lsR}</div>
           <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${tr.pctLsR}%;background:var(--yellow);border-radius:2px;transition:width 0.4s"></div></div>
           <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${tr.targetLsReel-tr.lsR>0?tr.targetLsReel-tr.lsR+' mancanti':'✓ Target raggiunto'}</div>
-        </div>
-        <div class="tracker-sum-card">
-          <div class="tracker-sum-label">LS · Storie <span style="color:var(--text3)">/${tr.targetLsStorie}</span></div>
-          <div class="tracker-sum-num">${tr.lsS}</div>
-          <div style="height:2px;background:var(--border);border-radius:2px;margin-top:0.5rem;overflow:hidden"><div style="height:100%;width:${tr.pctLsS}%;background:var(--green);border-radius:2px;transition:width 0.4s"></div></div>
-          <div style="font-size:0.6rem;color:var(--text3);margin-top:0.3rem">${tr.targetLsStorie-tr.lsS>0?tr.targetLsStorie-tr.lsS+' mancanti':'✓ Target raggiunto'}</div>
         </div>
       </div>
 
       <div style="margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);">Compenso mese</div>
       <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:1.2rem;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
-          <span style="font-size:0.82rem;font-weight:500">🎬 Reel Luigi Stips <span style="font-size:0.65rem;color:var(--text3)">(6/g · fisso mensile)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€${tr.compensoReel}</span>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 1rem;border-bottom:1px solid var(--border);">
-          <span style="font-size:0.82rem;font-weight:500">⏱ Storie Luigi Stips <span style="font-size:0.65rem;color:var(--text3)">(4/g · fisso mensile)</span></span>
-          <span style="font-size:0.88rem;font-weight:700;color:var(--green)">+€${tr.compensoStorie}</span>
-        </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--s2);">
-          <span style="font-size:0.88rem;font-weight:700">Totale fisso</span>
+          <span style="font-size:0.88rem;font-weight:700">🎬 Reel di prova Luigi Stips <span style="font-size:0.65rem;color:var(--text3);font-weight:400">(6/g · fisso mensile)</span></span>
           <span style="font-size:1.1rem;font-weight:700;color:var(--green)">+€${tr.compensoTot}</span>
         </div>
       </div>
-      <div style="font-size:0.65rem;color:var(--text3);margin-top:-0.8rem;margin-bottom:1rem;">Altri compensi extra (es. video HeyGen) si aggiungono in Compensi → Luigi Stips</div>
+      <div style="font-size:0.65rem;color:var(--text3);margin-top:-0.8rem;margin-bottom:1rem;">Eventuali compensi extra si aggiungono in Compensi → Luigi Stips</div>
 
     </div>`;
 }
