@@ -162,8 +162,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tab:hover,.tab-btn:hover,.main-tab:hover,.tracker-tab:hover{color:var(--text)}
 .tab.active,.tab-btn.active,.main-tab.active,.tracker-tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
 .tab.active .tab-count,.active>.tab-count{background:var(--accent);color:#fff}
-.tab-add{opacity:.5;font-weight:400;padding:12px 12px}
-.tab-add:hover{opacity:1}
+.mg-trigger-btn{flex-shrink:0;height:38px;padding:0 16px;border-radius:var(--radius-pill);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:600}
+.mg-trigger-btn:hover{background:var(--surface3);color:var(--text)}
 
 /* ── Modale gestisci gestionali ── */
 .modal-manage-gest{max-height:82vh;display:flex;flex-direction:column}
@@ -800,7 +800,10 @@ header{
 
   <!-- PROGETTI -->
   <div class="page" id="page-progetti">
-    <div class="ph"><h1>Progetti</h1><p>Task e sub-task per tutti i clienti e collaborazioni</p></div>
+    <div class="ph"><div class="ph-row">
+      <div><h1>Progetti</h1><p>Task e sub-task per tutti i clienti e collaborazioni</p></div>
+      <button class="mg-trigger-btn" onclick="openManageGestModal()" title="Gestisci gestionali e aziende">⚙ Gestisci</button>
+    </div></div>
     <div class="tabs" id="proj-tabs"></div>
     <div id="proj-panels"></div>
   </div>
@@ -1556,7 +1559,7 @@ function buildProjUI(){
   document.getElementById('proj-tabs').innerHTML=GESTIONALI.map(g=>`
     <button class="tab" id="ptab-${g.id}" onclick="switchProjG('${g.id}')">
       <span class="tab-dot" style="background:${g.color}"></span>${g.name}
-    </button>`).join('')+`<button class="tab tab-add" onclick="openManageGestModal()" title="Gestisci gestionali e aziende">⚙</button>`;
+    </button>`).join('');
   document.getElementById('proj-panels').innerHTML=GESTIONALI.map(g=>`
     <div class="tab-panel" id="ppanel-${g.id}">
       ${g.url?`<a class="open-gestionale-btn" href="${g.url}" target="_blank" rel="noopener" style="--gbtn-color:${g.color}">
