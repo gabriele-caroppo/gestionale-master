@@ -248,6 +248,57 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .task-note-icon{flex-shrink:0}
 .task-note-text{flex:1;line-height:1.5;overflow-wrap:anywhere}
 .task-note-empty{background:transparent;border-style:dashed;border-left-style:dashed}
+.temp-btn{background:transparent;border:0;cursor:pointer;font-size:13px;line-height:1;padding:2px 4px;border-radius:6px;color:var(--text3);transition:.15s}
+.temp-btn:hover{background:var(--surface3)}
+.temp-btn.temp-empty{opacity:.4;font-size:10px}
+
+.mic-btn{width:40px;height:40px;flex-shrink:0;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;display:grid;place-items:center;font-size:16px;transition:.15s}
+.mic-btn:hover{border-color:var(--company-color);color:var(--text)}
+.mic-btn.listening{background:var(--red);color:#fff;border-color:var(--red);animation:micPulse 1.2s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,104,104,.5)}50%{box-shadow:0 0 0 9px rgba(239,104,104,0)}}
+.task-selchk{width:20px;height:20px;flex-shrink:0;border-radius:6px;border:2px solid var(--border2);background:transparent;color:transparent;cursor:pointer;display:grid;place-items:center;font-size:11px;font-weight:700;transition:.15s}
+.task-selchk.checked{background:var(--company-color);border-color:var(--company-color);color:#fff}
+.bulk-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120%);display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02)),rgba(17,16,22,.92);backdrop-filter:blur(24px) saturate(1.6);border:1px solid rgba(255,255,255,.12);border-radius:999px;box-shadow:0 14px 40px rgba(0,0,0,.4);z-index:150;transition:transform .25s var(--ease-spring,ease)}
+.bulk-bar.show{transform:translateX(-50%) translateY(0)}
+.bulk-count{font-size:12px;font-weight:700;color:var(--text2);padding-right:4px}
+.bulk-bar .btn-ghost{height:36px;padding:0 14px;font-size:12px}
+.undo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120%);display:flex;align-items:center;gap:14px;padding:12px 18px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02)),rgba(17,16,22,.92);backdrop-filter:blur(24px) saturate(1.6);border:1px solid rgba(255,255,255,.12);border-radius:999px;box-shadow:0 14px 40px rgba(0,0,0,.4);z-index:150;font-size:12.5px;color:var(--text2);transition:transform .25s var(--ease-spring,ease)}
+.undo-toast.show{transform:translateX(-50%) translateY(0)}
+.undo-toast button{background:transparent;border:0;color:var(--company-color);font-weight:700;cursor:pointer;font-size:12.5px}
+
+.today3-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:24px}
+.today3-card{text-align:left;background:linear-gradient(155deg,rgba(255,255,255,.055) 0%,rgba(255,255,255,.014) 40%,rgba(255,255,255,.008) 100%),rgba(23,22,29,.5);border:1px solid rgba(255,255,255,.09);border-radius:var(--radius-lg);padding:16px;cursor:pointer;transition:.15s;box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
+.today3-card:hover{border-color:var(--company-color);transform:translateY(-1px)}
+.today3-name{font-size:14px;font-weight:600;margin-bottom:10px;overflow-wrap:anywhere}
+.today3-meta{display:flex;gap:6px;flex-wrap:wrap}
+@keyframes taskHighlightPulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--company-color) 55%,transparent)}70%{box-shadow:0 0 0 16px color-mix(in srgb,var(--company-color) 0%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
+.task-highlight{animation:taskHighlightPulse 1.4s var(--ease-out,ease)}
+
+.proj-view-toggle{display:flex;gap:4px;margin-bottom:14px}
+.proj-view-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;transition:.15s}
+.proj-view-btn.active{background:var(--company-color);color:#fff;border-color:var(--company-color)}
+.kanban-board-inner{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px}
+.kanban-col{flex:0 0 240px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);display:flex;flex-direction:column;max-height:72vh;transition:border-color .15s,background .15s}
+.kanban-col.drag-over{border-color:var(--company-color);background:var(--company-dim)}
+.kanban-col-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--text2)}
+.kanban-col-count{font-family:var(--font-mono);font-size:10px;color:var(--text3);background:var(--surface3);border-radius:999px;padding:2px 7px}
+.kanban-col-body{padding:8px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;min-height:40px}
+.kanban-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 11px;cursor:grab;font-size:13px}
+.kanban-card:active{cursor:grabbing}
+.kanban-card.dragging{opacity:.35}
+.kanban-card-name{margin-bottom:6px;overflow-wrap:anywhere}
+.kanban-card-meta{display:flex;gap:4px;align-items:center}
+@media(max-width:760px){.kanban-col{flex:0 0 78vw}}
+
+.obiettivo-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;transition:.15s}
+.obiettivo-check{width:22px;height:22px;flex-shrink:0;border-radius:50%;border:2px solid var(--border2);background:transparent;color:transparent;cursor:pointer;display:grid;place-items:center;font-size:12px;font-weight:700;transition:.15s}
+.obiettivo-row.done .obiettivo-check{background:var(--green);border-color:var(--green);color:#fff}
+.obiettivo-name{flex:1;font-size:14px;min-width:0;overflow-wrap:anywhere}
+.obiettivo-row.done .obiettivo-name{text-decoration:line-through;color:var(--text3)}
+.obiettivo-progress{font-family:var(--font-mono);font-size:11px;color:var(--text3);background:var(--surface3);padding:2px 9px;border-radius:999px;white-space:nowrap}
+.obiettivo-remove{opacity:0;background:transparent;border:0;color:var(--text3);cursor:pointer;font-size:15px;padding:4px;transition:.15s;flex-shrink:0}
+.obiettivo-row:hover .obiettivo-remove{opacity:1}
+@media(max-width:760px){.obiettivo-remove{opacity:1}}
 
 /* ── Riepilogo settimanale dashboard ── */
 .weekly-row{display:flex;align-items:center;gap:8px}
@@ -689,6 +740,10 @@ header{
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
       Compensi
     </button>
+    <button class="sb-item" onclick="showPage('obiettivi')">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
+      Obiettivi
+    </button>
   </div>
   <div class="sb-spacer"></div>
   <div class="sb-footer">
@@ -709,12 +764,14 @@ header{
       <h1 id="dash-greeting">Ciao, Gabriele 👋</h1>
       <p id="dash-date">—</p>
     </div></div></div>
+    <div class="today-section"><h3>Le 3 cose che contano oggi</h3><div class="today3-grid" id="dash-today3"></div></div>
     <div class="stats-grid" id="dash-stats"></div>
     <div class="today-section"><h3>Compensi</h3><div class="comp-mini-grid" id="dash-compensi"></div></div>
     <div class="today-section edit-only">
       <h3>Aggiungi task rapida</h3>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
         <input class="add-input" id="dash-quick-name" placeholder="Descrizione task…" style="flex:2;min-width:180px;" onkeydown="if(event.key==='Enter') dashQuickAdd()"/>
+        <button class="mic-btn" id="mic-btn" onclick="toggleVoiceCapture()" title="Detta con il microfono">🎙️</button>
         <select class="sel" id="dash-quick-g" style="font-size:0.75rem;padding:0.5rem 0.7rem;" onchange="dashUpdateCompanies()"></select>
         <select class="sel" id="dash-quick-c" style="font-size:0.75rem;padding:0.5rem 0.7rem;"></select>
         <button class="btn-primary" onclick="dashQuickAdd()">+ Aggiungi</button>
@@ -763,6 +820,29 @@ header{
     <div id="comp-total-section"></div>
   </div>
 
+  <!-- OBIETTIVI -->
+  <div class="page" id="page-obiettivi">
+    <div class="ph"><h1>Obiettivi</h1><p>Quello che ti sei promesso — non spariscono mai da soli</p></div>
+    <div class="today-section">
+      <h3>Questa settimana</h3>
+      <div class="task-list" id="obiettivi-settimana-list"></div>
+      <div class="add-row edit-only" style="margin-top:10px">
+        <input class="add-input" id="obiettivo-settimana-input" placeholder="Nuovo obiettivo…" style="flex:2;min-width:160px" onkeydown="if(event.key==='Enter')addObiettivo('settimana')"/>
+        <input class="add-input" id="obiettivo-settimana-progress" placeholder="Progresso (es. 3/5, opzionale)" style="max-width:180px"/>
+        <button class="btn-primary" onclick="addObiettivo('settimana')">+ Aggiungi</button>
+      </div>
+    </div>
+    <div class="today-section">
+      <h3>Questo mese</h3>
+      <div class="task-list" id="obiettivi-mese-list"></div>
+      <div class="add-row edit-only" style="margin-top:10px">
+        <input class="add-input" id="obiettivo-mese-input" placeholder="Nuovo obiettivo…" style="flex:2;min-width:160px" onkeydown="if(event.key==='Enter')addObiettivo('mese')"/>
+        <input class="add-input" id="obiettivo-mese-progress" placeholder="Progresso (es. 3/5, opzionale)" style="max-width:180px"/>
+        <button class="btn-primary" onclick="addObiettivo('mese')">+ Aggiungi</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /app-body -->
 </div><!-- /app -->
@@ -786,6 +866,10 @@ header{
     <button class="bn-item" id="bn-compensi" onclick="showPage('compensi')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
       Compensi
+    </button>
+    <button class="bn-item" id="bn-obiettivi" onclick="showPage('obiettivi')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
+      Obiettivi
     </button>
     <button class="bn-item" id="bn-lock" onclick="toggleEdit()">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="8" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
@@ -839,6 +923,9 @@ const COMPENSI_CATEGORIES = [
 let db, _ref, _get, allTasks={}, compensiData={}, trainLogs={};
 let activeG=GESTIONALI[0].id, activeC={}, openAcc=new Set(), editingId=null, isEdit=false;
 let compensiOpen=new Set();
+let obiettiviData={settimana:{},mese:{}};
+let selectedTasks=new Set();
+let lastBulkUndo=null;
 GESTIONALI.forEach(g=>activeC[g.id]=g.companies[0].id);
 
 const today=new Date();
@@ -873,6 +960,8 @@ async function initFirebase() {
   onValue(ref(db,'compensi'),snap=>{compensiData=snap.val()||{};renderCompensi();renderDashboard();});
 
   onValue(ref(db,'training'),snap=>{trainLogs=snap.val()||{};renderTraining();renderDashboard();});
+
+  onValue(ref(db,'obiettivi'),snap=>{obiettiviData=snap.val()||{settimana:{},mese:{}};renderObiettivi();});
 
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -945,7 +1034,55 @@ function updateProjBadge(){
 }
 
 // ── DASHBOARD ──
-function renderDashboard(){renderDashStats();renderDashCompensi();renderDashUrgent();renderDashWeekly();renderDashTraining();}
+function renderDashboard(){renderDashStats();renderDashCompensi();renderDashToday3();renderDashUrgent();renderDashWeekly();renderDashTraining();}
+
+// ── 3 task di oggi: bloccate > in corso > da fare, poi temperatura, poi ordine kanban ──
+function computeTopTasks(n){
+  const tierOrder={incomplete:0,missingfiles:0,inprogress:1,todo:2};
+  const tempOrder={caldo:0,tiepido:1,freddo:2};
+  const statusLabel={incomplete:'Bloccato',missingfiles:'File mancanti',inprogress:'In corso',todo:'Da fare'};
+  const arr=[];
+  GESTIONALI.forEach(g=>{
+    g.companies.forEach(c=>{
+      Object.entries(allTasks[c.id]||{}).forEach(([tid,t])=>{
+        const tier=tierOrder[t.status];
+        if(tier===undefined)return;
+        arr.push({tid,cid:c.id,gid:g.id,name:t.name,project:c.name,status:t.status,
+          statusLabel:statusLabel[t.status],temp:t.temp||null,tier,
+          tempRank:tempOrder[t.temp]??3, pos:t.kpos??t.createdAt??0});
+      });
+    });
+  });
+  arr.sort((a,b)=>a.tier-b.tier||a.tempRank-b.tempRank||a.pos-b.pos);
+  return arr.slice(0,n);
+}
+function renderDashToday3(){
+  const el=document.getElementById('dash-today3');
+  if(!el)return;
+  const items=computeTopTasks(3);
+  if(!items.length){el.innerHTML='<div class="empty">Niente di urgente oggi 🎉</div>';return;}
+  el.innerHTML=items.map(it=>`
+    <button class="today3-card" onclick="goToTask('${it.gid}','${it.cid}','${it.tid}')">
+      <div class="today3-name">${it.temp?TEMP_ICON[it.temp]+' ':''}${esc(it.name)}</div>
+      <div class="today3-meta">
+        <span class="badge badge-project">${esc(it.project)}</span>
+        <span class="badge badge-${it.status}">${it.statusLabel}</span>
+      </div>
+    </button>`).join('');
+}
+window.goToTask=function(gid,cid,tid){
+  showPage('progetti');
+  switchProjG(gid);
+  switchProjC(gid,cid);
+  setTimeout(()=>{
+    const wrap=document.getElementById(`wrap-${tid}`);
+    if(wrap){
+      wrap.scrollIntoView({behavior:'smooth',block:'center'});
+      wrap.classList.add('task-highlight');
+      setTimeout(()=>wrap.classList.remove('task-highlight'),1400);
+    }
+  },80);
+};
 
 function renderDashStats(){
   const all=GESTIONALI.flatMap(g=>g.companies).flatMap(c=>Object.values(allTasks[c.id]||{}));
@@ -1265,6 +1402,12 @@ function renderTraining(){
 }
 
 // ── PROGETTI ──
+function viewToggleHTML(cid){
+  return `<div class="proj-view-toggle">
+    <button class="proj-view-btn" id="viewbtn-list-${cid}" onclick="setProjView('list')">☰ Lista</button>
+    <button class="proj-view-btn" id="viewbtn-kanban-${cid}" onclick="setProjView('kanban')">▦ Kanban</button>
+  </div>`;
+}
 function companyPanelHTML(c){
   if(c.id==='luigi_luigi'){
     return '<div class="tab-panel" id="cpanel-luigi_luigi">'
@@ -1278,7 +1421,9 @@ function companyPanelHTML(c){
       +'<input class="add-input" id="cinput-luigi_luigi" placeholder="Nuova task…" onkeydown="if(event.key===\'Enter\') addTask(\'luigi_luigi\')"\/>'
       +'<button class="btn-primary" onclick="addTask(\'luigi_luigi\')">+ Aggiungi<\/button>'
       +'<\/div>'
+      +viewToggleHTML('luigi_luigi')
       +'<div class="task-list" id="clist-luigi_luigi"><\/div>'
+      +'<div class="kanban-board" id="kanban-luigi_luigi" style="display:none"><\/div>'
       +'<\/div>'
       +'<div id="luigi-tracker-panel" style="display:none;">'
       +'<div id="luigi-tracker-content"><\/div>'
@@ -1291,7 +1436,9 @@ function companyPanelHTML(c){
     +'<input class="add-input" id="cinput-'+c.id+'" placeholder="Nuova task…" onkeydown="if(event.key===\'Enter\') addTask(\''+c.id+'\')"\/>'
     +'<button class="btn-primary" onclick="addTask(\''+c.id+'\')">+ Aggiungi<\/button>'
     +'<\/div>'
+    +viewToggleHTML(c.id)
     +'<div class="task-list" id="clist-'+c.id+'"><\/div>'
+    +'<div class="kanban-board" id="kanban-'+c.id+'" style="display:none"><\/div>'
     +'<\/div>';
 }
 
@@ -1328,6 +1475,8 @@ window.switchProjG=function(gid){
 
 window.switchProjC=function(gid,cid){
   activeC[gid]=cid;
+  selectedTasks.clear();
+  renderBulkBar();
   const g=GESTIONALI.find(x=>x.id===gid);
   g.companies.forEach(c=>{document.getElementById(`cpanel-${c.id}`)?.classList.remove('active');document.getElementById(`ctab-${c.id}`)?.classList.remove('active');});
   document.getElementById(`cpanel-${cid}`)?.classList.add('active');
@@ -1383,6 +1532,144 @@ function archiveFoldersHTML(cid,archived){
   </div>`;
 }
 
+// ── MULTI-SELEZIONE + AZIONI IN BLOCCO + UNDO ────────────────
+window.toggleTaskSelect=function(cid,tid){
+  const key=cid+':'+tid;
+  if(selectedTasks.has(key))selectedTasks.delete(key);else selectedTasks.add(key);
+  const btn=document.querySelector(`.task-selchk[onclick*="'${cid}','${tid}'"]`);
+  if(btn){btn.classList.toggle('checked',selectedTasks.has(key));btn.textContent=selectedTasks.has(key)?'✓':'';}
+  renderBulkBar();
+};
+window.clearSelection=function(){selectedTasks.clear();renderBulkBar();renderProjPanel(activeG,activeC[activeG]);};
+function renderBulkBar(){
+  let bar=document.getElementById('bulk-action-bar');
+  if(!bar){bar=document.createElement('div');bar.id='bulk-action-bar';bar.className='bulk-bar';document.body.appendChild(bar);}
+  if(selectedTasks.size===0){bar.classList.remove('show');return;}
+  bar.classList.add('show');
+  bar.innerHTML=`<span class="bulk-count">${selectedTasks.size} selezionat${selectedTasks.size===1?'a':'e'}</span>
+    <button class="btn-ghost" onclick="bulkComplete()">✓ Completa</button>
+    <button class="btn-ghost" onclick="bulkDelete()" style="color:var(--red)">🗑 Elimina</button>
+    <button class="btn-ghost" onclick="clearSelection()">Deseleziona</button>`;
+}
+window.bulkComplete=async function(){
+  if(!db||selectedTasks.size===0)return;
+  const items=Array.from(selectedTasks).map(k=>{const[cid,tid]=k.split(':');return{cid,tid,prevStatus:allTasks[cid]?.[tid]?.status||'todo'};});
+  try{
+    await Promise.all(items.map(it=>window._fbSet(`tasks/${it.cid}/${it.tid}/status`,'done')));
+    lastBulkUndo={type:'complete',items};
+    selectedTasks.clear();renderBulkBar();
+    showUndoToast(`${items.length} task completate`,undoBulkComplete);
+  }catch(e){toast('Errore: '+e.message);}
+};
+window.bulkDelete=async function(){
+  if(!db||selectedTasks.size===0)return;
+  if(!confirm(`Eliminare ${selectedTasks.size} task selezionate?`))return;
+  const items=Array.from(selectedTasks).map(k=>{const[cid,tid]=k.split(':');return{cid,tid,data:allTasks[cid]?.[tid]};});
+  try{
+    await Promise.all(items.map(it=>window._fbRemove(`tasks/${it.cid}/${it.tid}`)));
+    lastBulkUndo={type:'delete',items};
+    selectedTasks.clear();renderBulkBar();
+    showUndoToast(`${items.length} task eliminate`,undoBulkDelete);
+  }catch(e){toast('Errore: '+e.message);}
+};
+async function undoBulkComplete(){
+  if(!lastBulkUndo||lastBulkUndo.type!=='complete')return;
+  try{await Promise.all(lastBulkUndo.items.map(it=>window._fbSet(`tasks/${it.cid}/${it.tid}/status`,it.prevStatus)));toast('Annullato ✓');}
+  catch(e){toast('Errore: '+e.message);}
+  lastBulkUndo=null;
+}
+async function undoBulkDelete(){
+  if(!lastBulkUndo||lastBulkUndo.type!=='delete')return;
+  try{await Promise.all(lastBulkUndo.items.map(it=>window._fbSet(`tasks/${it.cid}/${it.tid}`,it.data)));toast('Ripristinato ✓');}
+  catch(e){toast('Errore: '+e.message);}
+  lastBulkUndo=null;
+}
+let undoToastTimer;
+function showUndoToast(msg,undoFn){
+  clearTimeout(undoToastTimer);
+  let el=document.getElementById('undo-toast');
+  if(!el){el=document.createElement('div');el.id='undo-toast';el.className='undo-toast';document.body.appendChild(el);}
+  el.innerHTML=`<span>${esc(msg)}</span><button onclick="runUndo()">Annulla</button>`;
+  el.classList.add('show');
+  window._pendingUndo=undoFn;
+  undoToastTimer=setTimeout(()=>{el.classList.remove('show');window._pendingUndo=null;},10000);
+}
+window.runUndo=function(){
+  if(window._pendingUndo)window._pendingUndo();
+  document.getElementById('undo-toast')?.classList.remove('show');
+  window._pendingUndo=null;
+  clearTimeout(undoToastTimer);
+};
+
+// ── KANBAN ─────────────────────────────────────────────────
+let projView=localStorage.getItem('projView')||'list';
+window.setProjView=function(view){
+  projView=view;
+  localStorage.setItem('projView',view);
+  renderProjPanel(activeG,activeC[activeG]);
+};
+const KANBAN_COLS=[
+  {id:'todo',label:'Da fare'},
+  {id:'inprogress',label:'In corso'},
+  {id:'incomplete',label:'Incompleto'},
+  {id:'missingfiles',label:'File mancanti'},
+  {id:'done',label:'Completata'},
+];
+function kanbanCardHTML(cid,tid,t){
+  return `<div class="kanban-card" draggable="true" data-tid="${tid}" data-cid="${cid}" ondragstart="kanbanDragStart(event)" ondragend="kanbanDragEnd(event)">
+    <div class="kanban-card-name">${esc(t.name)}</div>
+    <div class="kanban-card-meta">${tempBtnHTML(cid,tid,t.temp)}${staleBadgeHTML(t)}</div>
+  </div>`;
+}
+function renderKanban(cid){
+  const el=document.getElementById(`kanban-${cid}`);
+  if(!el)return;
+  const tasks=allTasks[cid]||{};
+  const active=Object.entries(tasks).filter(([,t])=>!isArchivableTask(t));
+  const colsHTML=KANBAN_COLS.map(col=>{
+    const items=active.filter(([,t])=>(t.status||'todo')===col.id)
+      .sort((a,b)=>(a[1].kpos??a[1].createdAt??0)-(b[1].kpos??b[1].createdAt??0));
+    return `<div class="kanban-col" data-status="${col.id}" data-cid="${cid}" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event)">
+      <div class="kanban-col-header"><span>${col.label}</span><span class="kanban-col-count">${items.length}</span></div>
+      <div class="kanban-col-body">${items.map(([tid,t])=>kanbanCardHTML(cid,tid,t)).join('')}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML=`<div class="kanban-board-inner">${colsHTML}</div>`;
+}
+let kanbanDragged=null;
+window.kanbanDragStart=function(e){
+  kanbanDragged={tid:e.target.dataset.tid,cid:e.target.dataset.cid};
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+};
+window.kanbanDragEnd=function(e){e.target.classList.remove('dragging');};
+window.kanbanDragOver=function(e){e.preventDefault();e.currentTarget.classList.add('drag-over');};
+window.kanbanDragLeave=function(e){e.currentTarget.classList.remove('drag-over');};
+window.kanbanDrop=async function(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!kanbanDragged||!db)return;
+  const{tid,cid}=kanbanDragged;
+  if(cid!==e.currentTarget.dataset.cid){kanbanDragged=null;return;}
+  const newStatus=e.currentTarget.dataset.status;
+  const body=e.currentTarget.querySelector('.kanban-col-body');
+  const cardEls=Array.from(body.querySelectorAll('.kanban-card')).filter(c=>c.dataset.tid!==tid);
+  let insertIndex=cardEls.length;
+  for(let i=0;i<cardEls.length;i++){
+    const rect=cardEls[i].getBoundingClientRect();
+    if(e.clientY<rect.top+rect.height/2){insertIndex=i;break;}
+  }
+  const orderedIds=cardEls.map(c=>c.dataset.tid);
+  orderedIds.splice(insertIndex,0,tid);
+  try{
+    if((allTasks[cid]?.[tid]?.status||'todo')!==newStatus){
+      await window._fbSet(`tasks/${cid}/${tid}/status`,newStatus);
+    }
+    await Promise.all(orderedIds.map((id,i)=>window._fbSet(`tasks/${cid}/${id}/kpos`,i)));
+  }catch(err){toast('Errore: '+err.message);}
+  kanbanDragged=null;
+};
+
 function renderProjPanel(gid,cid){
   const tasks=allTasks[cid]||{};
   const order={inprogress:0,incomplete:1,missingfiles:2,todo:3,done:4};
@@ -1394,7 +1681,20 @@ function renderProjPanel(gid,cid){
     <div class="stat-card"><div class="stat-label">In corso</div><div class="stat-num" style="color:var(--yellow)">${inprog}</div></div>
     <div class="stat-card"><div class="stat-label">Completate</div><div class="stat-num" style="color:var(--green)">${done}</div></div>
     <div class="stat-card"><div class="stat-label">Progresso</div><div class="stat-num" style="color:var(--accent)">${pct}%</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent)"></div></div></div>`;
-  const listEl=document.getElementById(`clist-${cid}`);if(!listEl)return;
+  const listBtn=document.getElementById(`viewbtn-list-${cid}`),kanbanBtn=document.getElementById(`viewbtn-kanban-${cid}`);
+  listBtn?.classList.toggle('active',projView==='list');
+  kanbanBtn?.classList.toggle('active',projView==='kanban');
+  const listEl=document.getElementById(`clist-${cid}`),kanbanEl=document.getElementById(`kanban-${cid}`);
+  if(!listEl)return;
+  if(projView==='kanban'){
+    listEl.style.display='none';
+    if(kanbanEl)kanbanEl.style.display='';
+    renderKanban(cid);
+    const ccnt=document.getElementById(`ccnt-${cid}`);if(ccnt)ccnt.textContent=total;
+    return;
+  }
+  listEl.style.display='';
+  if(kanbanEl)kanbanEl.style.display='none';
   const active=arr.filter(([,t])=>!isArchivableTask(t));
   const archived=arr.filter(([,t])=>isArchivableTask(t));
   if(active.length===0&&archived.length===0){listEl.innerHTML='<div class="empty">Nessuna task.</div>';return;}
@@ -1419,6 +1719,22 @@ function staleBadgeHTML(task){
   const cls=isCrit?'badge-stale-crit':'badge-stale-warn';
   return `<span class="badge badge-stale ${cls}" title="Ferma da ${ageDays} giorni">⏱ ${ageDays}g</span>`;
 }
+
+// ── Temperatura (caldo/tiepido/freddo) ──────────────────────
+const TEMP_ORDER=[null,'caldo','tiepido','freddo'];
+const TEMP_ICON={caldo:'🔥',tiepido:'🌤️',freddo:'🧊'};
+const TEMP_LABEL={caldo:'Caldo',tiepido:'Tiepido',freddo:'Freddo'};
+function tempBtnHTML(cid,tid,temp){
+  const icon=TEMP_ICON[temp]||'';
+  const label=temp?TEMP_LABEL[temp]:'Nessuna temperatura';
+  return `<button class="temp-btn${temp?'':' temp-empty'} edit-only" title="Temperatura: ${label} (clicca per cambiare)" onclick="cycleTaskTemp('${cid}','${tid}')">${icon||'○'}</button>`;
+}
+window.cycleTaskTemp=async function(cid,tid){
+  if(!db)return;
+  const cur=allTasks[cid]?.[tid]?.temp||null;
+  const next=TEMP_ORDER[(TEMP_ORDER.indexOf(cur)+1)%TEMP_ORDER.length];
+  try{await window._fbSet(`tasks/${cid}/${tid}/temp`,next);}catch(e){toast('Errore: '+e.message);}
+};
 
 function noteBlockHTML(cid,tid,task){
   const st=task.status;
@@ -1452,11 +1768,14 @@ function renderTaskWrapper(cid,tid,task){
   const labels={todo:'Da fare',inprogress:'In corso',done:'Completata',incomplete:'Incompleto',missingfiles:'File mancanti'};
   const date=task.createdAt?new Date(task.createdAt).toLocaleDateString('it-IT',{day:'2-digit',month:'short'}):'';
   const expCls=`exp-btn${hasInc?' has-inc':''}${allDone?' all-done':''}`;
+  const selKey=cid+':'+tid;
   const taskRowInner=`<div class="task-row s-${task.status||'todo'}${openAcc.has(tid)?' open-top':''}" id="trow-${tid}">
+    <button class="task-selchk edit-only${selectedTasks.has(selKey)?' checked':''}" onclick="toggleTaskSelect('${cid}','${tid}')" title="Seleziona">${selectedTasks.has(selKey)?'✓':''}</button>
     <button class="${expCls}" id="expbtn-${tid}" onclick="toggleAcc('${tid}')"><span class="exp-arrow">▶</span><span class="exp-count">${sc}</span></button>
     ${isEditing?`<input class="edit-inp" id="tedit-${tid}" value="${esc(task.name)}" onkeydown="if(event.key==='Enter')saveTaskEdit('${cid}','${tid}');if(event.key==='Escape')cancelEdit()"/>`:`<span class="task-name">${esc(task.name)}</span>`}
     <div class="task-meta">
       ${!isEditing?`<span class="badge badge-${task.status||'todo'}">${labels[task.status||'todo']}</span>${staleBadgeHTML(task)}`:''}
+      ${tempBtnHTML(cid,tid,task.temp)}
       <select class="sel" onchange="updateStatus('${cid}','${tid}',this.value)">
         <option value="todo" ${task.status==='todo'?'selected':''}>Da fare</option>
         <option value="inprogress" ${task.status==='inprogress'?'selected':''}>In corso</option>
@@ -1703,6 +2022,70 @@ function animateNumber(el,target,opts){
 let toastT;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2200);}
 window.toast=toast;
+
+// ── INPUT VOCALE (Web Speech API del browser, nessun servizio esterno) ──
+let voiceRecognition=null, voiceRecognizing=false;
+window.toggleVoiceCapture=function(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Riconoscimento vocale non supportato in questo browser (funziona su Chrome)');return;}
+  const btn=document.getElementById('mic-btn');
+  if(voiceRecognizing){voiceRecognition?.stop();return;}
+  voiceRecognition=new SR();
+  voiceRecognition.lang='it-IT';
+  voiceRecognition.continuous=false;
+  voiceRecognition.interimResults=false;
+  voiceRecognition.onstart=()=>{voiceRecognizing=true;btn?.classList.add('listening');};
+  voiceRecognition.onend=()=>{voiceRecognizing=false;btn?.classList.remove('listening');};
+  voiceRecognition.onerror=(e)=>{voiceRecognizing=false;btn?.classList.remove('listening');if(e.error!=='aborted')toast('Errore microfono: '+e.error);};
+  voiceRecognition.onresult=(e)=>{
+    const transcript=e.results[0][0].transcript;
+    const inp=document.getElementById('dash-quick-name');
+    if(inp)inp.value=transcript;
+  };
+  voiceRecognition.start();
+};
+
+
+// ── OBIETTIVI (settimana/mese, non si azzerano mai da soli) ──
+function obiettivoRowHTML(list,id,o){
+  return `<div class="obiettivo-row${o.done?' done':''}" id="ob-${id}">
+    <button class="obiettivo-check" onclick="toggleObiettivo('${list}','${id}')">${o.done?'✓':''}</button>
+    <span class="obiettivo-name">${esc(o.name)}</span>
+    ${o.progress?`<span class="obiettivo-progress">${esc(o.progress)}</span>`:''}
+    <button class="obiettivo-remove edit-only" onclick="removeObiettivo('${list}','${id}')">✕</button>
+  </div>`;
+}
+function renderObiettivi(){
+  ['settimana','mese'].forEach(list=>{
+    const el=document.getElementById(`obiettivi-${list}-list`);
+    if(!el)return;
+    const entries=Object.entries(obiettiviData[list]||{}).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
+    el.innerHTML=entries.length?entries.map(([id,o])=>obiettivoRowHTML(list,id,o)).join(''):'<div class="empty">Nessun obiettivo ancora.</div>';
+  });
+}
+window.addObiettivo=async function(list){
+  if(!db)return;
+  const inp=document.getElementById(`obiettivo-${list}-input`);
+  const progInp=document.getElementById(`obiettivo-${list}-progress`);
+  const name=inp.value.trim();
+  if(!name)return;
+  const progress=progInp.value.trim();
+  try{
+    await window._fbPush(`obiettivi/${list}`,{name,done:false,progress:progress||null,createdAt:Date.now()});
+    inp.value='';progInp.value='';
+    toast('Obiettivo aggiunto ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+window.toggleObiettivo=async function(list,id){
+  if(!db)return;
+  const cur=obiettiviData[list]?.[id];
+  if(!cur)return;
+  try{await window._fbSet(`obiettivi/${list}/${id}/done`,!cur.done);}catch(e){toast('Errore: '+e.message);}
+};
+window.removeObiettivo=async function(list,id){
+  if(!db||!confirm('Rimuovere questo obiettivo?'))return;
+  try{await window._fbRemove(`obiettivi/${list}/${id}`);toast('Rimosso');}catch(e){toast('Errore: '+e.message);}
+};
 
 
 // ── TRACKER LUIGI STIPS ──────────────────────────────────────
