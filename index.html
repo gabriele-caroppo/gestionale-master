@@ -252,6 +252,26 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .temp-btn:hover{background:var(--surface3)}
 .temp-btn.temp-empty{opacity:.4;font-size:10px}
 
+/* ── Barra di cattura fissa ── */
+.capture-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(560px,calc(100vw - 40px));display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02)),rgba(17,16,22,.88);backdrop-filter:blur(28px) saturate(1.7);-webkit-backdrop-filter:blur(28px) saturate(1.7);border:1px solid rgba(255,255,255,.12);border-radius:999px;box-shadow:0 16px 44px rgba(0,0,0,.42);z-index:140}
+.capture-input{flex:1;min-width:0;background:transparent;border:0;outline:none;color:var(--text);font-size:14px;padding:8px 0}
+.capture-input::placeholder{color:var(--text3)}
+.capture-mic-btn,.capture-send-btn{flex-shrink:0;width:36px;height:36px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;font-size:15px;transition:.15s}
+.capture-mic-btn{background:var(--surface2);color:var(--text2)}
+.capture-mic-btn.listening{background:var(--red);color:#fff;animation:micPulse 1.2s ease-in-out infinite}
+.capture-send-btn{background:var(--company-color);color:#fff}
+.capture-send-btn:hover{filter:brightness(1.08)}
+.capture-bar.state-processing .capture-input{opacity:.6}
+@media(max-width:760px){.capture-bar{bottom:calc(88px + env(safe-area-inset-bottom))}}
+.capture-confirm-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end;justify-content:center;background:rgba(3,2,6,.72);backdrop-filter:blur(8px)}
+.capture-confirm-overlay.open{display:flex}
+.capture-confirm-sheet{width:min(100%,480px);padding:14px 22px 26px;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.016)),rgba(17,16,22,.94);backdrop-filter:blur(30px) saturate(1.7);border:1px solid rgba(255,255,255,.13);border-bottom:0;border-radius:24px 24px 0 0;box-shadow:0 -8px 60px rgba(0,0,0,.4)}
+.capture-confirm-type{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--company-color);margin-bottom:10px}
+.capture-field-label{display:block;font-size:11px;color:var(--text3);margin:10px 0 6px}
+.capture-via-note{margin-top:12px;font-size:11px;color:var(--yellow)}
+.capture-answer-q{font-size:15px;font-weight:600;margin-bottom:12px}
+.capture-answer-text{font-size:13.5px;line-height:1.6;color:var(--text2);max-height:50vh;overflow-y:auto}
+
 .mic-btn{width:40px;height:40px;flex-shrink:0;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;display:grid;place-items:center;font-size:16px;transition:.15s}
 .mic-btn:hover{border-color:var(--company-color);color:var(--text)}
 .mic-btn.listening{background:var(--red);color:#fff;border-color:var(--red);animation:micPulse 1.2s ease-in-out infinite}
@@ -660,6 +680,16 @@ header{
 
 <div id="loading"><div class="spinner"></div><p>Caricamento…</p></div>
 <div id="toast"></div>
+
+<!-- BARRA DI CATTURA (testo o voce, smistamento AI) -->
+<div id="capture-bar" class="capture-bar edit-only">
+  <button id="capture-mic" class="capture-mic-btn" onclick="captureVoiceToggle()" title="Detta">🎙️</button>
+  <input type="text" id="capture-input" class="capture-input" placeholder="Scrivi o detta qualcosa…" onkeydown="if(event.key==='Enter')captureSubmit()"/>
+  <button class="capture-send-btn" onclick="captureSubmit()" title="Invia">➤</button>
+</div>
+<div id="capture-confirm" class="capture-confirm-overlay" onclick="if(event.target===this)closeCaptureConfirm()">
+  <div class="capture-confirm-sheet" id="capture-confirm-sheet"></div>
+</div>
 
 <!-- MODAL TRAINING -->
 <div class="modal-overlay" id="train-modal">
@@ -2044,6 +2074,165 @@ window.toggleVoiceCapture=function(){
   };
   voiceRecognition.start();
 };
+
+// ── BARRA DI CATTURA: testo/voce → smistamento AI → conferma → scrittura ──
+// Se il testo è una domanda, va invece alla rotta delle domande (stessa barra, riconosce da sola).
+const CAPTURE_API='https://dyrectio-api.vercel.app/api/classify';
+const ASK_API='https://dyrectio-api.vercel.app/api/ask';
+function looksLikeQuestion(text){
+  const t=text.trim().toLowerCase();
+  if(t.endsWith('?'))return true;
+  const starters=['chi ','cosa ','che cosa','quando ','dove ','come ','quanto ','quanti ','quante ','perché ','perche ','quale ','quali '];
+  return starters.some(s=>t.startsWith(s));
+}
+function buildAskContext(){
+  const tasks=[];
+  GESTIONALI.forEach(g=>g.companies.forEach(c=>{
+    Object.entries(allTasks[c.id]||{}).forEach(([tid,t])=>{
+      if(t.status==='done')return; // le completate non servono a rispondere su cosa fare
+      tasks.push({company:c.name,name:t.name,status:t.status||'todo',temp:t.temp||null});
+    });
+  }));
+  const obiettivi={
+    settimana:Object.values(obiettiviData.settimana||{}).map(o=>({name:o.name,done:!!o.done,progress:o.progress||null})),
+    mese:Object.values(obiettiviData.mese||{}).map(o=>({name:o.name,done:!!o.done,progress:o.progress||null})),
+  };
+  const compensi={};
+  COMPENSI_CATEGORIES.forEach(cat=>{compensi[cat.name]=categoryTotal(cat.id);});
+  return{tasks,obiettivi,compensi};
+}
+function openCaptureAnswer(question,answer){
+  const overlay=document.getElementById('capture-confirm');
+  const sheet=document.getElementById('capture-confirm-sheet');
+  sheet.innerHTML=`
+    <div class="modal-handle"></div>
+    <div class="capture-confirm-type">Domanda</div>
+    <div class="capture-answer-q">${esc(question)}</div>
+    <div class="capture-answer-text">${esc(answer).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-primary" onclick="closeCaptureConfirm()">Chiudi</button>
+    </div>`;
+  overlay.classList.add('open');
+}
+let captureRecognition=null, captureRecognizing=false, captureLastResult=null;
+function setCaptureState(state){
+  const bar=document.getElementById('capture-bar');
+  bar?.classList.remove('state-idle','state-listening','state-processing');
+  bar?.classList.add('state-'+state);
+}
+window.captureVoiceToggle=function(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast('Riconoscimento vocale non supportato in questo browser (funziona su Chrome)');return;}
+  const btn=document.getElementById('capture-mic');
+  if(captureRecognizing){captureRecognition?.stop();return;}
+  captureRecognition=new SR();
+  captureRecognition.lang='it-IT';
+  captureRecognition.continuous=false;
+  captureRecognition.interimResults=false;
+  captureRecognition.onstart=()=>{captureRecognizing=true;btn?.classList.add('listening');setCaptureState('listening');};
+  captureRecognition.onend=()=>{captureRecognizing=false;btn?.classList.remove('listening');if(document.getElementById('capture-bar')?.classList.contains('state-listening'))setCaptureState('idle');};
+  captureRecognition.onerror=(e)=>{captureRecognizing=false;btn?.classList.remove('listening');setCaptureState('idle');if(e.error!=='aborted')toast('Errore microfono: '+e.error);};
+  captureRecognition.onresult=(e)=>{
+    document.getElementById('capture-input').value=e.results[0][0].transcript;
+    captureSubmit();
+  };
+  captureRecognition.start();
+};
+window.captureSubmit=async function(){
+  const input=document.getElementById('capture-input');
+  const text=input.value.trim();
+  if(!text)return;
+  setCaptureState('processing');
+  if(looksLikeQuestion(text)){
+    try{
+      const resp=await fetch(ASK_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text,context:buildAskContext()})});
+      const data=await resp.json();
+      input.value='';
+      setCaptureState('idle');
+      openCaptureAnswer(text,data.answer||'Nessuna risposta.');
+    }catch(e){
+      setCaptureState('idle');
+      toast('Errore di rete — riprova');
+    }
+    return;
+  }
+  try{
+    const resp=await fetch(CAPTURE_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+    const data=await resp.json();
+    captureLastResult={...data,rawText:text};
+    input.value='';
+    setCaptureState('idle');
+    openCaptureConfirm(captureLastResult);
+  }catch(e){
+    setCaptureState('idle');
+    toast('Errore di rete — riprova');
+  }
+};
+function allCompaniesFlat(){return GESTIONALI.flatMap(g=>g.companies);}
+function companyNameById(cid){return allCompaniesFlat().find(c=>c.id===cid)?.name||cid;}
+function openCaptureConfirm(result){
+  const overlay=document.getElementById('capture-confirm');
+  const sheet=document.getElementById('capture-confirm-sheet');
+  const typeLabels={task:'Task',obiettivo_settimana:'Obiettivo — questa settimana',obiettivo_mese:'Obiettivo — questo mese',compenso:'Compenso',unclear:'Non chiaro — task generica'};
+  let extraFieldsHTML='';
+  if(result.type==='task'||result.type==='unclear'){
+    const companyOptions=allCompaniesFlat().map(c=>`<option value="${c.id}" ${c.id===result.company_id?'selected':''}>${esc(c.name)}</option>`).join('');
+    extraFieldsHTML=`<label class="capture-field-label">Progetto</label>
+      <select class="sel" id="capture-company-select" style="width:100%">
+        <option value="">— scegli —</option>
+        ${companyOptions}
+      </select>`;
+  }else if(result.type==='compenso'){
+    extraFieldsHTML=`<label class="capture-field-label">Categoria</label>
+      <select class="sel" id="capture-compcat-select" style="width:100%">
+        <option value="antonio" ${result.compenso_category==='antonio'?'selected':''}>Antonio</option>
+        <option value="luigi" ${result.compenso_category==='luigi'?'selected':''}>Luigi Stips</option>
+        <option value="altro" ${result.compenso_category==='altro'?'selected':''}>Altro</option>
+      </select>
+      <label class="capture-field-label">Importo (€)</label>
+      <input class="add-input" id="capture-amount-input" value="${result.compenso_amount||''}" style="width:100%"/>`;
+  }
+  sheet.innerHTML=`
+    <div class="modal-handle"></div>
+    <div class="capture-confirm-type">${typeLabels[result.type]||'Task'}</div>
+    <input class="add-input" id="capture-title-input" value="${esc(result.title)}" style="width:100%"/>
+    ${extraFieldsHTML}
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="btn-ghost" onclick="closeCaptureConfirm()">Annulla</button>
+      <button class="btn-primary" onclick="commitCapture()">Salva</button>
+    </div>
+    ${result.via==='regole'?'<div class="capture-via-note">⚠️ Smistato con regole semplici (il modello non ha risposto)</div>':''}`;
+  overlay.classList.add('open');
+}
+window.closeCaptureConfirm=function(){
+  document.getElementById('capture-confirm').classList.remove('open');
+  captureLastResult=null;
+};
+window.commitCapture=async function(){
+  if(!db||!captureLastResult)return;
+  const result=captureLastResult;
+  const title=document.getElementById('capture-title-input').value.trim();
+  if(!title)return;
+  try{
+    if(result.type==='task'||result.type==='unclear'){
+      const cid=document.getElementById('capture-company-select').value;
+      if(!cid){toast('Scegli un progetto');return;}
+      await window._fbPush(`tasks/${cid}`,{name:title,status:'todo',createdAt:Date.now()});
+      toast(`Aggiunta a ${companyNameById(cid)} ✓`);
+    }else if(result.type==='obiettivo_settimana'||result.type==='obiettivo_mese'){
+      const list=result.type==='obiettivo_mese'?'mese':'settimana';
+      await window._fbPush(`obiettivi/${list}`,{name:title,done:false,progress:null,createdAt:Date.now()});
+      toast(`Obiettivo aggiunto (${list}) ✓`);
+    }else if(result.type==='compenso'){
+      const cat=document.getElementById('capture-compcat-select').value;
+      const amt=parseFloat(document.getElementById('capture-amount-input').value)||0;
+      await window._fbPush(`compensi/${cat}`,{desc:title,note:'',amt,date:new Date().toISOString().split('T')[0],createdAt:Date.now()});
+      toast('Compenso aggiunto ✓');
+    }
+    closeCaptureConfirm();
+  }catch(e){toast('Errore: '+e.message);}
+};
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&document.getElementById('capture-confirm')?.classList.contains('open'))closeCaptureConfirm();});
 
 
 // ── OBIETTIVI (settimana/mese, non si azzerano mai da soli) ──
