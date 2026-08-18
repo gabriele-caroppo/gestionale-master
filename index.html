@@ -1068,9 +1068,11 @@ function renderDashboard(){renderDashStats();renderDashCompensi();renderDashToda
 
 // ── 3 task di oggi: bloccate > in corso > da fare, poi temperatura, poi ordine kanban ──
 function computeTopTasks(n){
-  const tierOrder={incomplete:0,missingfiles:0,inprogress:1,todo:2};
+  // Solo task davvero azionabili oggi: le bloccate (incomplete/missingfiles) non ci vanno mai,
+  // perché "urgente" qui significa "puoi lavorarci adesso", non "qualcosa non va".
+  const tierOrder={inprogress:0,todo:1};
   const tempOrder={caldo:0,tiepido:1,freddo:2};
-  const statusLabel={incomplete:'Bloccato',missingfiles:'File mancanti',inprogress:'In corso',todo:'Da fare'};
+  const statusLabel={inprogress:'In corso',todo:'Da fare'};
   const arr=[];
   GESTIONALI.forEach(g=>{
     g.companies.forEach(c=>{
@@ -1702,7 +1704,7 @@ window.kanbanDrop=async function(e){
 
 function renderProjPanel(gid,cid){
   const tasks=allTasks[cid]||{};
-  const order={inprogress:0,incomplete:1,missingfiles:2,todo:3,done:4};
+  const order={inprogress:0,todo:1,incomplete:2,missingfiles:2,done:3};
   const arr=Object.entries(tasks).sort((a,b)=>{const so=(order[a[1].status]??3)-(order[b[1].status]??3);return so||(a[1].createdAt||0)-(b[1].createdAt||0);});
   const total=arr.length,done=arr.filter(([,t])=>t.status==='done').length,pct=total>0?Math.round(done/total*100):0,inprog=arr.filter(([,t])=>t.status==='inprogress').length;
   const statsEl=document.getElementById(`cstats-${cid}`);
