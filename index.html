@@ -388,24 +388,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .open-gestionale-btn:hover{background:color-mix(in srgb,var(--gbtn-color) 20%,transparent);border-color:var(--gbtn-color)}
 .open-gestionale-btn:active{transform:scale(.97)}
 
-/* ── FAB Quick Add ── */
-#fab-add{position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:999px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow-1);z-index:150;transition:opacity .15s ease,transform .12s ease}
-#fab-add svg{width:24px;height:24px}
-#fab-add:hover{opacity:.88}
-#fab-add:active{transform:scale(.94)}
-
-/* ── Quick Add pills ── */
-.qa-row{margin-bottom:16px}
-.qa-row label{display:block;margin-bottom:9px}
-.qa-pills{display:flex;flex-wrap:wrap;gap:8px}
-.qa-pill{--pill-color:var(--text3);padding:10px 15px;border-radius:999px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13.5px;font-weight:600;cursor:pointer;transition:border-color .15s,background .15s,color .15s,transform .12s}
-.qa-pill:hover{border-color:var(--pill-color);color:var(--text)}
-.qa-pill:active{transform:scale(.96)}
-.qa-pill-sel{background:color-mix(in srgb,var(--pill-color) 16%,transparent);border-color:color-mix(in srgb,var(--pill-color) 55%,transparent);color:var(--pill-color)}
-.qa-status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.qa-status-grid .qa-pill{text-align:center;padding:10px 6px}
-.qa-collapsible{max-height:0;overflow:hidden;opacity:0;transform:translateY(-8px);margin-bottom:0;transition:max-height .26s cubic-bezier(.32,.72,0,1),opacity .2s ease,transform .26s cubic-bezier(.32,.72,0,1),margin-bottom .26s}
-.qa-collapsible.qa-open{max-height:220px;opacity:1;transform:none;margin-bottom:16px}
 
 /* ── Bottom nav mobile ── */
 .bn-badge{position:absolute;top:5px;right:calc(50% - 20px);background:var(--red);color:#fff;font-family:var(--font-mono);font-size:8px;font-weight:700;border-radius:999px;padding:1px 5px;min-width:14px;text-align:center;display:none}
@@ -418,7 +400,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   .bn-item svg{width:22px;height:22px}
   .bn-item.active{color:var(--accent)}
   .bn-item.active::after{content:'';position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
-  #fab-add{bottom:calc(80px + env(safe-area-inset-bottom))}
   .stats-grid,.stats-bar{grid-template-columns:repeat(2,1fr)}
   .tracker-summary{grid-template-columns:1fr}
   .qa-status-grid{grid-template-columns:repeat(2,1fr)}
@@ -541,7 +522,7 @@ header{
 .add-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(14px)}
 
 /* ── Badge/pill: vetro sottile ── */
-.badge,.status-badge,.fin-status,.profile-stat-pill,.tab-count,.sb-badge,.exp-count,.sub-count,.qa-pill{
+.badge,.status-badge,.fin-status,.profile-stat-pill,.tab-count,.sb-badge,.exp-count,.sub-count{
   backdrop-filter:blur(8px);
   border:1px solid rgba(255,255,255,.05);
 }
@@ -566,16 +547,6 @@ header{
   border-radius:26px 26px 0 0;
 }
 .modal-handle{background:rgba(255,255,255,.22)}
-.qa-pill{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
-.qa-pill-sel{box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
-
-/* ── FAB: orb di vetro con glow ── */
-#fab-add{
-  background:radial-gradient(circle at 32% 26%,color-mix(in srgb,var(--accent) 85%,white 22%),var(--accent));
-  border:1px solid rgba(255,255,255,.28);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 18px color-mix(in srgb,var(--accent) 55%,transparent),0 12px 36px rgba(0,0,0,.42);
-}
-#fab-add:hover{filter:brightness(1.06)}
 
 /* ── Bottom nav mobile: capsula di vetro fluttuante ── */
 @media(max-width:760px){
@@ -595,7 +566,6 @@ header{
   .bn-item.active{color:var(--company-color)}
   #main{padding-bottom:0}
   .page,.main-panel,main{padding-top:calc(env(safe-area-inset-top) + 20px);padding-bottom:calc(env(safe-area-inset-bottom) + 128px)}
-  #fab-add{bottom:calc(env(safe-area-inset-bottom) + 84px)}
   #toast{bottom:calc(env(safe-area-inset-bottom) + 92px)}
 
   /* comp-cat-header: evita overflow orizzontale su schermi stretti */
@@ -653,11 +623,6 @@ header{
 /* ── Riempimento barre di progresso animato ── */
 .progress-fill,.stat-bar-fill{transition:width .9s var(--ease-out)}
 
-/* ── FAB: respiro continuo, si ferma al tocco ── */
-@keyframes fabBreathe{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 18px color-mix(in srgb,var(--accent) 55%,transparent),0 12px 36px rgba(0,0,0,.42)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 26px color-mix(in srgb,var(--accent) 78%,transparent),0 14px 40px rgba(0,0,0,.42)}}
-#fab-add{animation:fabBreathe 3.4s ease-in-out infinite}
-#fab-add:hover,#fab-add:active{animation-play-state:paused}
-
 /* ── Toast: entrata a molla ── */
 #toast{transition:transform .5s var(--ease-spring),opacity .25s ease}
 
@@ -681,8 +646,7 @@ header{
 /* ── Rispetta chi preferisce meno movimento ── */
 @media(prefers-reduced-motion:reduce){
   .page.active,.main-panel.active,.tab-panel.active,.company-panel.active,
-  .task-wrapper,.stats-grid .stat-card,.stats-bar .stat,
-  #fab-add{animation:none!important}
+  .task-wrapper,.stats-grid .stat-card,.stats-bar .stat{animation:none!important}
   *{transition-duration:.01ms!important}
 }
 
@@ -725,37 +689,6 @@ header{
   </div>
 </div>
 
-<!-- QUICK ADD globale -->
-<button id="fab-add" title="Aggiungi rapida" onclick="openQaModal()" aria-label="Quick Add">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-</button>
-<div class="modal-overlay" id="qa-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title">⚡ Quick Add</div>
-    <div class="qa-row">
-      <label>Task</label>
-      <input class="add-input" id="qa-name" placeholder="Descrizione task…" style="width:100%" onkeydown="if(event.key==='Enter') qaSubmit()"/>
-    </div>
-    <div class="qa-row">
-      <label>Gestionale</label>
-      <div class="qa-pills" id="qa-g-pills"></div>
-    </div>
-    <div class="qa-row qa-collapsible" id="qa-c-wrap">
-      <label>Azienda</label>
-      <div class="qa-pills" id="qa-c-pills"></div>
-    </div>
-    <div class="qa-row">
-      <label>Stato</label>
-      <div class="qa-pills qa-status-grid" id="qa-status-pills"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeQaModal()">Annulla</button>
-      <button class="btn-primary" onclick="qaSubmit()">+ Aggiungi</button>
-    </div>
-  </div>
-</div>
-
 <div id="app" style="display:none;flex-direction:column;min-height:100vh;">
 <div id="edit-banner">✏️ Modalità modifica attiva</div>
 <div id="app-body">
@@ -779,10 +712,6 @@ header{
     <button class="sb-item" onclick="showPage('training')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
       Training
-    </button>
-    <button class="sb-item" onclick="showPage('compensi')">
-      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
-      Compensi
     </button>
     <button class="sb-item" onclick="showPage('obiettivi')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
@@ -814,7 +743,7 @@ header{
     </div></div></div>
     <div class="today-section"><h3>Le 3 cose che contano oggi</h3><div class="today3-grid" id="dash-today3"></div></div>
     <div class="stats-grid" id="dash-stats"></div>
-    <div class="today-section"><h3>Compensi</h3><div class="comp-mini-grid" id="dash-compensi"></div></div>
+    <div class="today-section"><h3>Compenso Luigi</h3><div class="comp-mini-grid" id="dash-compensi"></div></div>
     <div class="today-section edit-only">
       <h3>Aggiungi task rapida</h3>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
@@ -917,10 +846,6 @@ header{
     <button class="bn-item" id="bn-training" onclick="showPage('training')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
       Training
-    </button>
-    <button class="bn-item" id="bn-compensi" onclick="showPage('compensi')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10l4-4 3 3 5-5"/><path d="M12 4h2v2"/></svg>
-      Compensi
     </button>
     <button class="bn-item" id="bn-obiettivi" onclick="showPage('obiettivi')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
@@ -1164,29 +1089,17 @@ function renderDashStats(){
 }
 
 function renderDashCompensi(){
+  // Sezione compensi generale (Antonio/Altro) rimossa dalla dashboard per ora — resta solo Luigi.
   const el=document.getElementById('dash-compensi');
   if(!el)return;
-  const antonioTot=categoryTotal('antonio');
   const luigiTot=categoryTotal('luigi');
-  const combinedTot=antonioTot+luigiTot;
-  const antonioDays=daysUntilPayday(10);
   const luigiDays=daysUntilPayday(1);
   const dayLabel=d=>d===null?'—':(d===0?'oggi':`tra ${d}g`);
   el.innerHTML=`
-    <div class="comp-mini-card" style="border-left:2px solid #c0392b">
-      <div class="comp-mini-label">Antonio</div>
-      <div class="comp-mini-num">€${antonioTot.toFixed(0)}</div>
-      <div class="comp-mini-sub">${dayLabel(antonioDays)}</div>
-    </div>
     <div class="comp-mini-card comp-mini-link" onclick="goToLuigiCompensi()" style="border-left:2px solid #d4a017">
       <div class="comp-mini-label">Luigi →</div>
       <div class="comp-mini-num" style="color:var(--yellow)">€${luigiTot.toFixed(0)}</div>
       <div class="comp-mini-sub">${dayLabel(luigiDays)}</div>
-    </div>
-    <div class="comp-mini-card" style="border-left:2px solid var(--accent)">
-      <div class="comp-mini-label">Luigi + Antonio</div>
-      <div class="comp-mini-num" style="color:var(--green)">€${combinedTot.toFixed(0)}</div>
-      <div class="comp-mini-sub">totale complessivo</div>
     </div>`;
 }
 
@@ -1362,76 +1275,6 @@ window.deleteTrainDay=async function(){
   catch(e){toast('Errore');}
 };
 document.getElementById('train-modal').addEventListener('click',function(e){if(e.target===this)closeTrainModal();});
-
-// ── QUICK ADD globale (pill UI, popolato all'apertura del modal) ──
-const QA_STATI=[
-  {id:'todo',label:'Todo',color:'#85818c'},
-  {id:'inprogress',label:'In corso',color:'#e7bf66'},
-  {id:'done',label:'Completata',color:'#55d98a'},
-  {id:'incomplete',label:'Incompleto',color:'#e98a51'},
-  {id:'missingfiles',label:'File mancanti',color:'#b18cff'},
-];
-let qaSel={g:null,c:null,status:'todo'};
-
-function qaPillHTML(kind,id,label,color,selected){
-  const selCls=selected?' qa-pill-sel':'';
-  const style=color?' style="--pill-color:'+color+'"':'';
-  return '<button type="button" class="qa-pill'+selCls+'"'+style
-    +' onclick="qaPick(\''+kind+'\',\''+id+'\')">'+label+'</button>';
-}
-
-function qaRenderGestionali(){
-  document.getElementById('qa-g-pills').innerHTML=GESTIONALI
-    .map(g=>qaPillHTML('g',g.id,g.name,g.color,qaSel.g===g.id)).join('');
-}
-function qaRenderCompanies(){
-  const wrap=document.getElementById('qa-c-wrap');
-  const g=GESTIONALI.find(x=>x.id===qaSel.g);
-  if(!g){wrap.classList.remove('qa-open');document.getElementById('qa-c-pills').innerHTML='';return;}
-  document.getElementById('qa-c-pills').innerHTML=g.companies
-    .map(c=>qaPillHTML('c',c.id,c.name,c.color,qaSel.c===c.id)).join('');
-  wrap.classList.add('qa-open');
-}
-function qaRenderStati(){
-  document.getElementById('qa-status-pills').innerHTML=QA_STATI
-    .map(s=>qaPillHTML('s',s.id,s.label,s.color,qaSel.status===s.id)).join('');
-}
-
-window.qaPick=function(kind,id){
-  if(kind==='g'){
-    if(qaSel.g!==id){qaSel.g=id;qaSel.c=null;
-      const g=GESTIONALI.find(x=>x.id===id);
-      if(g&&g.companies.length===1)qaSel.c=g.companies[0].id;
-    }
-    qaRenderGestionali();qaRenderCompanies();
-  }else if(kind==='c'){
-    qaSel.c=id;qaRenderCompanies();
-  }else if(kind==='s'){
-    qaSel.status=id;qaRenderStati();
-  }
-};
-
-window.openQaModal=function(){
-  qaSel={g:null,c:null,status:'todo'};
-  document.getElementById('qa-name').value='';
-  qaRenderGestionali();qaRenderCompanies();qaRenderStati();
-  document.getElementById('qa-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('qa-name')?.focus(),80);
-};
-window.closeQaModal=function(){document.getElementById('qa-modal').classList.remove('open');};
-window.qaSubmit=async function(){
-  const name=document.getElementById('qa-name').value.trim();
-  if(!name){toast('Inserisci il nome della task');return;}
-  if(!qaSel.g){toast('Seleziona il gestionale');return;}
-  if(!qaSel.c){toast('Seleziona l\'azienda');return;}
-  if(!db){toast('Errore: database non disponibile');return;}
-  try{
-    await window._fbPush(`tasks/${qaSel.c}`,{name,status:qaSel.status,createdAt:Date.now()});
-    closeQaModal();
-    toast('Task aggiunta ✓');
-  }catch(e){toast('Errore: '+e.message);}
-};
-document.getElementById('qa-modal').addEventListener('click',function(e){if(e.target===this)closeQaModal();});
 
 // ── TRAINING RENDER ──
 function buildSplitCards(){
