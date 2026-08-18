@@ -162,6 +162,26 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .tab:hover,.tab-btn:hover,.main-tab:hover,.tracker-tab:hover{color:var(--text)}
 .tab.active,.tab-btn.active,.main-tab.active,.tracker-tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
 .tab.active .tab-count,.active>.tab-count{background:var(--accent);color:#fff}
+.tab-add{opacity:.5;font-weight:400;padding:12px 12px}
+.tab-add:hover{opacity:1}
+
+/* ── Modale gestisci gestionali ── */
+.modal-manage-gest{max-height:82vh;display:flex;flex-direction:column}
+.mg-hint{font-size:12px;color:var(--text3);margin-bottom:14px}
+.mg-body{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px}
+.mg-gest{border:1px solid var(--border);border-radius:14px;padding:12px}
+.mg-gest.mg-hidden,.mg-comp-row.mg-hidden{opacity:.45}
+.mg-gest-row,.mg-comp-row{display:flex;align-items:center;gap:8px;padding:6px 0}
+.mg-comp-row{padding-left:15px}
+.mg-name{flex:1;font-size:14px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mg-gest-row .mg-name{font-weight:650}
+.mg-actions{display:flex;gap:4px;flex-shrink:0}
+.mg-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:12px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.mg-btn:hover{background:var(--surface3);color:var(--text)}
+.mg-btn:disabled{opacity:.3}
+.mg-companies{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.mg-add-comp{margin-top:6px;margin-left:15px;font-size:12px;color:var(--accent);background:none;border:0;padding:6px 0;text-align:left}
+.mg-add-gest{width:100%;padding:12px;border-radius:12px;border:1px dashed var(--border2);background:none;color:var(--accent);font-size:13px;font-weight:600}
 
 /* ── Bottoni ── */
 .btn-primary,.btn-add{height:48px;padding:0 22px;border:0;border-radius:var(--radius-pill);background:var(--accent);color:#fff;font-size:15px;font-weight:700;box-shadow:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s ease,transform .12s ease}
@@ -702,6 +722,19 @@ header{
   </div>
 </div>
 
+<!-- MODAL GESTISCI GESTIONALI -->
+<div class="modal-overlay" id="manage-gest-modal">
+  <div class="modal modal-manage-gest">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⚙ Gestisci gestionali</div>
+    <div class="mg-hint">Tocca un nome per rinominarlo. 🗑 nasconde senza cancellare le task.</div>
+    <div class="mg-body" id="manage-gest-body"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="closeManageGestModal()">Chiudi</button>
+    </div>
+  </div>
+</div>
+
 <div id="app" style="display:none;flex-direction:column;min-height:100vh;">
 <div id="edit-banner">✏️ Modalità modifica attiva</div>
 <div id="app-body">
@@ -854,7 +887,7 @@ header{
 
 <script type="module">
 
-const GESTIONALI = [
+const BASE_GESTIONALI = [
   {id:'antonio',name:'Antonio',color:'#c0392b',url:'https://gabriele-caroppo.github.io/gestionale-aziende/',companies:[
     {id:'focacciamo',name:'Focacciamo',color:'#c0392b'},
     {id:'lamancha',name:'Mancha',color:'#ff7b00'},
@@ -876,6 +909,191 @@ const GESTIONALI = [
     {id:'luigi_luigi',name:'Luigi Stips',color:'#d4a017'},
   ]},
 ];
+// GESTIONALI parte come i soli gruppi fissi; mergeGestionali() ci innesta sopra
+// i gestionali/aziende aggiunti da UI (Firebase), senza toccare il resto del codice
+// che legge GESTIONALI ovunque.
+let GESTIONALI = BASE_GESTIONALI;
+let customGestionaliData={}, customCompaniesData={}, gestManageData={}, manageModalOpen=false;
+const CUSTOM_COLOR_PALETTE=['#e07a5f','#3d5a80','#81b29a','#f2cc8f','#6d597a','#118ab2','#ef476f','#06d6a0','#ffd166','#8338ec'];
+function pickCustomColor(seedIndex){return CUSTOM_COLOR_PALETTE[seedIndex%CUSTOM_COLOR_PALETTE.length];}
+
+// Combina BASE_GESTIONALI + gestionali/aziende custom aggiunti da UI, applica rinomini e ordinamento custom,
+// ma SENZA nascondere nulla — usata dalla modale "Gestisci" così anche le voci nascoste restano visibili lì (con opzione ripristina).
+function mergeGestionaliRaw(){
+  const merged=BASE_GESTIONALI.map(g=>({...g,companies:[...g.companies]}));
+  Object.entries(customCompaniesData).forEach(([gid,comps])=>{
+    let g=merged.find(x=>x.id===gid);
+    if(g){
+      Object.entries(comps||{}).forEach(([cid,c])=>{
+        if(!g.companies.some(x=>x.id===cid))g.companies.push({id:cid,name:c.name,color:c.color});
+      });
+    }
+  });
+  Object.entries(customGestionaliData).forEach(([gid,g])=>{
+    if(merged.some(x=>x.id===gid))return;
+    const companies=Object.entries(g.companies||{}).map(([cid,c])=>({id:cid,name:c.name,color:c.color}));
+    const extra=customCompaniesData[gid]||{};
+    Object.entries(extra).forEach(([cid,c])=>{
+      if(!companies.some(x=>x.id===cid))companies.push({id:cid,name:c.name,color:c.color});
+    });
+    merged.push({id:gid,name:g.name,color:g.color,url:null,companies});
+  });
+  const nameOverridesG=(gestManageData.nameOverrides||{}).gestionali||{};
+  const nameOverridesC=(gestManageData.nameOverrides||{}).companies||{};
+  merged.forEach(g=>{
+    if(nameOverridesG[g.id])g.name=nameOverridesG[g.id];
+    g.companies.forEach(c=>{ if(nameOverridesC[c.id])c.name=nameOverridesC[c.id]; });
+  });
+  const orderG=(gestManageData.order||{}).gestionali||null;
+  const orderC=(gestManageData.order||{}).companies||{};
+  if(orderG){
+    merged.sort((a,b)=>{const ia=orderG.indexOf(a.id),ib=orderG.indexOf(b.id);return (ia===-1?9999:ia)-(ib===-1?9999:ib);});
+  }
+  merged.forEach(g=>{
+    const order=orderC[g.id];
+    if(order)g.companies.sort((a,b)=>{const ia=order.indexOf(a.id),ib=order.indexOf(b.id);return (ia===-1?9999:ia)-(ib===-1?9999:ib);});
+  });
+  return merged;
+}
+function mergeGestionali(){
+  const raw=mergeGestionaliRaw();
+  const hiddenG=(gestManageData.hidden||{}).gestionali||{};
+  const hiddenC=(gestManageData.hidden||{}).companies||{};
+  let merged=raw.filter(g=>!hiddenG[g.id]).map(g=>({...g,companies:g.companies.filter(c=>!hiddenC[c.id])}));
+  merged=merged.filter(g=>g.companies.length>0); // un gestionale senza aziende visibili romperebbe la selezione tab
+  GESTIONALI=merged;
+}
+
+window.addNewGestionale=async function(){
+  if(!db)return;
+  const name=(prompt('Nome del nuovo gestionale (es. nome del cliente):')||'').trim();
+  if(!name)return;
+  const firstCompanyName=(prompt(`Nome della prima azienda/persona dentro "${name}":`,name)||'').trim();
+  if(!firstCompanyName)return;
+  try{
+    const color=pickCustomColor(BASE_GESTIONALI.length+Object.keys(customGestionaliData).length);
+    const newRef=window._fbPush('customGestionali',{name,color});
+    const gid=newRef.key;
+    // company id generato via push per garantire unicità globale (i task sono indicizzati per company id su tasks/{cid})
+    await window._fbPush(`customGestionali/${gid}/companies`,{name:firstCompanyName,color});
+    toast('Gestionale aggiunto ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+
+window.addNewCompany=async function(gid){
+  if(!db)return;
+  const name=(prompt('Nome della nuova azienda/persona:')||'').trim();
+  if(!name)return;
+  try{
+    const seed=(customCompaniesData[gid]?Object.keys(customCompaniesData[gid]).length:0)+(GESTIONALI.find(g=>g.id===gid)?.companies.length||0);
+    const color=pickCustomColor(seed);
+    await window._fbPush(`customCompanies/${gid}`,{name,color});
+    toast('Aggiunta ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+
+function findRawCompany(cid){
+  for(const g of mergeGestionaliRaw()){const c=g.companies.find(x=>x.id===cid); if(c)return c;}
+  return null;
+}
+window.renameGestionale=async function(gid){
+  if(!db)return;
+  const g=mergeGestionaliRaw().find(x=>x.id===gid); if(!g)return;
+  const name=(prompt('Nuovo nome:',g.name)||'').trim();
+  if(!name||name===g.name)return;
+  await window._fbSet(`gestManage/nameOverrides/gestionali/${gid}`,name);
+  toast('Rinominato ✓');
+};
+window.renameCompany=async function(cid){
+  if(!db)return;
+  const c=findRawCompany(cid); if(!c)return;
+  const name=(prompt('Nuovo nome:',c.name)||'').trim();
+  if(!name||name===c.name)return;
+  await window._fbSet(`gestManage/nameOverrides/companies/${cid}`,name);
+  toast('Rinominata ✓');
+};
+window.toggleHideGestionale=async function(gid,hide){
+  if(!db)return;
+  const g=mergeGestionaliRaw().find(x=>x.id===gid); if(!g)return;
+  if(hide&&!confirm(`Rimuovere "${g.name}" dalla vista? Le task restano salvate, potrai ripristinarlo da qui.`))return;
+  await window._fbSet(`gestManage/hidden/gestionali/${gid}`,hide?true:null);
+  toast(hide?'Nascosto ✓':'Ripristinato ✓');
+};
+window.toggleHideCompany=async function(cid,hide){
+  if(!db)return;
+  const c=findRawCompany(cid); if(!c)return;
+  if(hide&&!confirm(`Rimuovere "${c.name}" dalla vista? Le task restano salvate, potrai ripristinarla da qui.`))return;
+  await window._fbSet(`gestManage/hidden/companies/${cid}`,hide?true:null);
+  toast(hide?'Nascosta ✓':'Ripristinata ✓');
+};
+window.moveGestionale=async function(gid,dir){
+  if(!db)return;
+  const raw=mergeGestionaliRaw();
+  const ids=raw.map(g=>g.id);
+  const i=ids.indexOf(gid), j=i+dir;
+  if(i===-1||j<0||j>=ids.length)return;
+  [ids[i],ids[j]]=[ids[j],ids[i]];
+  await window._fbSet('gestManage/order/gestionali',ids);
+};
+window.moveCompany=async function(gid,cid,dir){
+  if(!db)return;
+  const raw=mergeGestionaliRaw();
+  const g=raw.find(x=>x.id===gid); if(!g)return;
+  const ids=g.companies.map(c=>c.id);
+  const i=ids.indexOf(cid), j=i+dir;
+  if(i===-1||j<0||j>=ids.length)return;
+  [ids[i],ids[j]]=[ids[j],ids[i]];
+  await window._fbSet(`gestManage/order/companies/${gid}`,ids);
+};
+
+window.openManageGestModal=function(){
+  manageModalOpen=true;
+  renderManageGestModal();
+  document.getElementById('manage-gest-modal').classList.add('open');
+};
+window.closeManageGestModal=function(){
+  manageModalOpen=false;
+  document.getElementById('manage-gest-modal').classList.remove('open');
+};
+document.getElementById('manage-gest-modal').addEventListener('click',function(e){if(e.target===this)closeManageGestModal();});
+function renderManageGestModal(){
+  const body=document.getElementById('manage-gest-body');
+  if(!body)return;
+  const raw=mergeGestionaliRaw();
+  const hiddenG=(gestManageData.hidden||{}).gestionali||{};
+  const hiddenC=(gestManageData.hidden||{}).companies||{};
+  body.innerHTML=raw.map((g,gi)=>{
+    const isHiddenG=!!hiddenG[g.id];
+    return `<div class="mg-gest${isHiddenG?' mg-hidden':''}">
+      <div class="mg-gest-row">
+        <span class="tab-dot" style="background:${g.color}"></span>
+        <span class="mg-name" onclick="renameGestionale('${g.id}')" title="Rinomina">${esc(g.name)}</span>
+        <span class="mg-actions">
+          <button class="mg-btn" ${gi===0?'disabled':''} onclick="moveGestionale('${g.id}',-1)" title="Sposta su">▲</button>
+          <button class="mg-btn" ${gi===raw.length-1?'disabled':''} onclick="moveGestionale('${g.id}',1)" title="Sposta giù">▼</button>
+          <button class="mg-btn" onclick="renameGestionale('${g.id}')" title="Rinomina">✎</button>
+          <button class="mg-btn" onclick="toggleHideGestionale('${g.id}',${!isHiddenG})" title="${isHiddenG?'Ripristina':'Rimuovi'}">${isHiddenG?'↺':'🗑'}</button>
+        </span>
+      </div>
+      <div class="mg-companies">
+        ${g.companies.map((c,ci)=>{
+          const isHiddenC=!!hiddenC[c.id];
+          return `<div class="mg-comp-row${isHiddenC?' mg-hidden':''}">
+            <span class="tab-dot" style="background:${c.color}"></span>
+            <span class="mg-name" onclick="renameCompany('${c.id}')" title="Rinomina">${esc(c.name)}</span>
+            <span class="mg-actions">
+              <button class="mg-btn" ${ci===0?'disabled':''} onclick="moveCompany('${g.id}','${c.id}',-1)" title="Sposta su">▲</button>
+              <button class="mg-btn" ${ci===g.companies.length-1?'disabled':''} onclick="moveCompany('${g.id}','${c.id}',1)" title="Sposta giù">▼</button>
+              <button class="mg-btn" onclick="renameCompany('${c.id}')" title="Rinomina">✎</button>
+              <button class="mg-btn" onclick="toggleHideCompany('${c.id}',${!isHiddenC})" title="${isHiddenC?'Ripristina':'Rimuovi'}">${isHiddenC?'↺':'🗑'}</button>
+            </span>
+          </div>`;
+        }).join('')}
+        <button class="mg-add-comp" onclick="addNewCompany('${g.id}')">+ Azienda/persona</button>
+      </div>
+    </div>`;
+  }).join('')+`<button class="mg-add-gest" onclick="addNewGestionale()">+ Nuovo gestionale</button>`;
+}
 
 const SPLITS = [
   {id:'A',name:'Sessione A',muscles:'Gambe + Spalle',color:'#52b788',
@@ -894,7 +1112,7 @@ const COMPENSI_CATEGORIES = [
 ];
 
 // STATE
-let db, _ref, _get, allTasks={}, compensiData={}, trainLogs={};
+let db, _ref, _get, _onValue, allTasks={}, compensiData={}, trainLogs={};
 let activeG=GESTIONALI[0].id, activeC={}, openAcc=new Set(), editingId=null, isEdit=false;
 let compensiOpen=new Set();
 let obiettiviData={settimana:{},mese:{}};
@@ -922,7 +1140,7 @@ async function initFirebase() {
     projectId:'gestionale-gabriele',
   });
   db=getDatabase(app);
-  _ref=ref; _get=get;
+  _ref=ref; _get=get; _onValue=onValue;
 
   // Definisci helper PRIMA degli onValue
   window._fbSet    = (p,v) => set(ref(db,p),v);
@@ -932,9 +1150,7 @@ async function initFirebase() {
   document.getElementById('conn-dot').classList.add('live');
   document.getElementById('conn-text').textContent='Live';
 
-  GESTIONALI.flatMap(g=>g.companies).forEach(c=>{
-    onValue(ref(db,`tasks/${c.id}`),snap=>{allTasks[c.id]=snap.val()||{};refreshUI();});
-  });
+  GESTIONALI.flatMap(g=>g.companies).forEach(c=>ensureTaskListener(c.id));
 
   onValue(ref(db,'compensi'),snap=>{compensiData=snap.val()||{};renderCompensi();renderDashboard();});
 
@@ -942,11 +1158,30 @@ async function initFirebase() {
 
   onValue(ref(db,'obiettivi'),snap=>{obiettiviData=snap.val()||{settimana:{},mese:{}};renderObiettivi();});
 
+  // Gestionali/aziende extra aggiunti da UI (senza deploy separato) + rinomini/ordine/nascosti: si innestano su GESTIONALI via mergeGestionali()
+  const onGestChange=()=>{
+    mergeGestionali();
+    GESTIONALI.flatMap(g=>g.companies).forEach(c=>ensureTaskListener(c.id));
+    if(projUIReady){buildProjUI();renderDashboard();}
+    if(manageModalOpen)renderManageGestModal();
+  };
+  onValue(ref(db,'customGestionali'),snap=>{customGestionaliData=snap.val()||{};onGestChange();});
+  onValue(ref(db,'customCompanies'),snap=>{customCompaniesData=snap.val()||{};onGestChange();});
+  onValue(ref(db,'gestManage'),snap=>{gestManageData=snap.val()||{};onGestChange();});
+
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
   buildProjUI(); buildSplitCards(); setDate(); dashBuildSelectors(); renderDashboard();
+  projUIReady=true;
   applyProjColor(NEUTRAL_COLOR); // buildProjUI ha impostato il colore sull'ultimo progetto pre-renderizzato: si riparte neutri sulla Dashboard
   loadTrackerData(); // eager: serve al widget "Compenso Luigi" in dashboard
+}
+
+let taskListenersSet=new Set(), projUIReady=false;
+function ensureTaskListener(cid){
+  if(!db||taskListenersSet.has(cid))return;
+  taskListenersSet.add(cid);
+  _onValue(_ref(db,`tasks/${cid}`),snap=>{allTasks[cid]=snap.val()||{};refreshUI();});
 }
 
 function setDate(){
@@ -1321,7 +1556,7 @@ function buildProjUI(){
   document.getElementById('proj-tabs').innerHTML=GESTIONALI.map(g=>`
     <button class="tab" id="ptab-${g.id}" onclick="switchProjG('${g.id}')">
       <span class="tab-dot" style="background:${g.color}"></span>${g.name}
-    </button>`).join('');
+    </button>`).join('')+`<button class="tab tab-add" onclick="openManageGestModal()" title="Gestisci gestionali e aziende">⚙</button>`;
   document.getElementById('proj-panels').innerHTML=GESTIONALI.map(g=>`
     <div class="tab-panel" id="ppanel-${g.id}">
       ${g.url?`<a class="open-gestionale-btn" href="${g.url}" target="_blank" rel="noopener" style="--gbtn-color:${g.color}">
