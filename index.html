@@ -293,10 +293,19 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .cal-day-btn.selected{background:var(--company-dim);border-color:var(--company-color);color:var(--text)}
 .cal-day-name{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
 .cal-day-num{font-size:17px;font-weight:700}
+.cal-day-dots{display:flex;gap:3px;height:5px;align-items:center}
 .cal-day-dot{width:5px;height:5px;border-radius:50%;background:var(--company-color)}
 .cal-event-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px}
 .cal-event-time{font-family:var(--font-mono);font-size:11px;color:var(--text3);flex-shrink:0;width:56px}
 .cal-event-title{font-size:14px;overflow-wrap:anywhere}
+.cal-train-section{margin-top:18px}
+.cal-train-label{font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px}
+.cal-train-row{width:100%;display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;color:var(--text);text-align:left;transition:.15s}
+.cal-train-row:hover{border-color:var(--border2);background:var(--surface2)}
+.cal-train-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.cal-train-text{flex:1;font-size:13.5px}
+.cal-train-edit{opacity:.6;font-size:13px}
+.cal-train-add{width:100%}
 .cal-now-marker{display:flex;align-items:center;gap:8px;margin:10px 0;font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--company-color)}
 .cal-now-marker span{flex:1;height:1px;background:var(--company-color);opacity:.4}
 
@@ -660,7 +669,7 @@ header{
 <div id="toast"></div>
 
 <!-- BARRA DI CATTURA (testo o voce, smistamento AI) -->
-<div id="capture-bar" class="capture-bar edit-only">
+<div id="capture-bar" class="capture-bar">
   <button id="capture-mic" class="capture-mic-btn" onclick="captureVoiceToggle()" title="Detta">🎙️</button>
   <input type="text" id="capture-input" class="capture-input" placeholder="Scrivi o detta qualcosa…" onkeydown="if(event.key==='Enter')captureSubmit()"/>
   <button class="capture-send-btn" onclick="captureSubmit()" title="Invia">➤</button>
@@ -708,14 +717,6 @@ header{
     <button class="sb-item" onclick="showPage('progetti')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h4l2 2h6v8H2z"/></svg>
       Progetti <span class="sb-badge" id="badge-progetti">0</span>
-    </button>
-    <button class="sb-item" onclick="showPage('training')">
-      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
-      Training
-    </button>
-    <button class="sb-item" onclick="showPage('obiettivi')">
-      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
-      Obiettivi
     </button>
     <button class="sb-item" onclick="showPage('calendario')">
       <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/><path d="M1.5 6h13"/><path d="M4.5 1.5v2M11.5 1.5v2"/></svg>
@@ -767,28 +768,6 @@ header{
     <div id="proj-panels"></div>
   </div>
 
-  <!-- TRAINING -->
-  <div class="page" id="page-training">
-    <div class="ph"><h1>Training</h1><p>Split 3x/settimana · Knee-safe · Clicca un giorno per registrare</p></div>
-    <div class="train-cal-wrap">
-      <div class="cal-header">
-        <div class="cal-title" id="cal-month-title">—</div>
-        <div class="cal-nav"><button onclick="calPrev()">◀</button><button onclick="calNext()">▶</button></div>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
-      <div class="split-legend">
-        <div class="split-leg-item"><div class="split-leg-dot" style="background:#52b788"></div>A — Gambe + Spalle</div>
-        <div class="split-leg-item"><div class="split-leg-dot" style="background:#e9c46a"></div>B — Petto + Tricipiti</div>
-        <div class="split-leg-item"><div class="split-leg-dot" style="background:#457b9d"></div>C — Schiena + Bicipiti</div>
-      </div>
-    </div>
-    <div class="split-grid" id="split-cards"></div>
-    <div class="divider"></div>
-    <div class="sec-title" style="margin-bottom:0.8rem;">Streak ultimi 28 giorni</div>
-    <div class="streak-bar" id="streak-bar"></div>
-    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;">🟢 A · 🟡 B · 🔵 C · Grigio = riposo</div>
-  </div>
-
   <!-- COMPENSI -->
   <div class="page" id="page-compensi">
     <div class="ph"><h1>Compensi</h1><p>Guadagni per cliente, mese corrente e storico completo</p></div>
@@ -822,9 +801,24 @@ header{
 
   <!-- CALENDARIO -->
   <div class="page" id="page-calendario">
-    <div class="ph"><h1>Calendario</h1><p>Da Google Calendar, sincronizzato ogni 5 minuti</p></div>
+    <div class="ph"><h1>Calendario</h1><p>Google Calendar e allenamenti, sulla stessa settimana</p></div>
+    <div class="cal-header">
+      <button class="btn-ghost" style="height:36px;padding:0 14px;font-size:12px" onclick="calWeekToday()">Oggi</button>
+      <div class="cal-nav"><button onclick="calWeekPrev()">◀</button><button onclick="calWeekNext()">▶</button></div>
+    </div>
     <div class="cal-week-strip" id="cal-week-strip"></div>
     <div id="cal-day-events"></div>
+    <div class="divider"></div>
+    <div class="split-legend">
+      <div class="split-leg-item"><div class="split-leg-dot" style="background:#52b788"></div>A — Gambe + Spalle</div>
+      <div class="split-leg-item"><div class="split-leg-dot" style="background:#e9c46a"></div>B — Petto + Tricipiti</div>
+      <div class="split-leg-item"><div class="split-leg-dot" style="background:#457b9d"></div>C — Schiena + Bicipiti</div>
+    </div>
+    <div class="split-grid" id="split-cards"></div>
+    <div class="divider"></div>
+    <div class="sec-title" style="margin-bottom:0.8rem;">Streak ultimi 28 giorni</div>
+    <div class="streak-bar" id="streak-bar"></div>
+    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.4rem;">🟢 A · 🟡 B · 🔵 C · Grigio = riposo</div>
   </div>
 
 </div><!-- /main -->
@@ -842,14 +836,6 @@ header{
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h4l2 2h6v8H2z"/></svg>
       Progetti
       <span class="bn-badge" id="bn-badge-progetti">0</span>
-    </button>
-    <button class="bn-item" id="bn-training" onclick="showPage('training')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h2l1-2 1 4 1-2h1"/></svg>
-      Training
-    </button>
-    <button class="bn-item" id="bn-obiettivi" onclick="showPage('obiettivi')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.2"/><circle cx="8" cy="8" r=".6" fill="currentColor"/></svg>
-      Obiettivi
     </button>
     <button class="bn-item" id="bn-calendario" onclick="showPage('calendario')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="2.5" width="13" height="12" rx="1.5"/><path d="M1.5 6h13"/><path d="M4.5 1.5v2M11.5 1.5v2"/></svg>
@@ -912,8 +898,13 @@ let selectedTasks=new Set();
 let lastBulkUndo=null;
 GESTIONALI.forEach(g=>activeC[g.id]=g.companies[0].id);
 
+// Data di "oggi" nel fuso dell'utente, non in UTC — .toISOString() sposta indietro di un
+// giorno tra mezzanotte e le 1-2 di notte in Italia (CET/CEST). Unica funzione, usata ovunque.
+function localDateStr(d){
+  d=d||new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
 const today=new Date();
-let calYear=today.getFullYear(), calMonth=today.getMonth();
 let modalDate=null, modalSelectedSplit=null, modalExistingKey=null;
 
 // ── FIREBASE ──
@@ -949,7 +940,7 @@ async function initFirebase() {
 
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
-  buildProjUI(); buildSplitCards(); setDate(); dashBuildSelectors(); renderCalendar(); renderDashboard();
+  buildProjUI(); buildSplitCards(); setDate(); dashBuildSelectors(); renderDashboard();
   applyProjColor(NEUTRAL_COLOR); // buildProjUI ha impostato il colore sull'ultimo progetto pre-renderizzato: si riparte neutri sulla Dashboard
   loadTrackerData(); // eager: serve al widget "Compenso Luigi" in dashboard
 }
@@ -1201,42 +1192,11 @@ function renderDashTraining(){
 }
 
 // ── CALENDAR ──
-const MONTHS_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const DAYS_IT=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
-
 function getLogsByDate(){
   const map={};
   Object.entries(trainLogs||{}).forEach(([key,l])=>{map[l.date]={key,...l};});
   return map;
 }
-
-function renderCalendar(){
-  const logMap=getLogsByDate();
-  document.getElementById('cal-month-title').textContent=`${MONTHS_IT[calMonth]} ${calYear}`;
-  const grid=document.getElementById('cal-grid');
-  let html=DAYS_IT.map(d=>`<div class="cal-dow">${d}</div>`).join('');
-  const firstDay=new Date(calYear,calMonth,1).getDay();
-  const offset=(firstDay===0)?6:firstDay-1;
-  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
-  const todayStr=today.toISOString().split('T')[0];
-  for(let i=0;i<offset;i++)html+=`<div class="cal-day empty"></div>`;
-  for(let d=1;d<=daysInMonth;d++){
-    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const log=logMap[ds];
-    const isToday=ds===todayStr,isFuture=ds>todayStr;
-    let cls='cal-day';
-    if(isFuture)cls+=' future';
-    else if(isToday)cls+=' today';
-    if(log)cls+=` has-${log.split}`;
-    const da=log?`data-split="${log.split}"`:'';
-    const click=isFuture?'':` onclick="openTrainModal('${ds}')"`;
-    html+=`<div class="${cls}" ${da}${click} title="${log?`Sessione ${log.split}${log.note?' — '+log.note:''}`:ds}">${d}</div>`;
-  }
-  grid.innerHTML=html;
-}
-
-window.calPrev=function(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();};
-window.calNext=function(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();};
 
 // ── TRAINING MODAL — sempre accessibile, nessun lock richiesto ──
 window.openTrainModal=function(dateStr){
@@ -1298,12 +1258,12 @@ function renderTraining(){
   const days=[];
   for(let i=27;i>=0;i--){
     const d=new Date();d.setDate(d.getDate()-i);
-    const ds=d.toISOString().split('T')[0];
+    const ds=localDateStr(d);
     const log=logMap[ds];
     days.push(log?`<div class="streak-day done-${log.split}" title="${ds} — ${log.split}"></div>`:`<div class="streak-day rest" title="${ds}"></div>`);
   }
   document.getElementById('streak-bar').innerHTML=days.join('');
-  renderCalendar();
+  if(document.getElementById('page-calendario')?.classList.contains('active'))renderCalendarWeek();
 }
 
 // ── PROGETTI ──
@@ -1399,6 +1359,7 @@ function isArchivableTask(t){
   const threshold=new Date(d.getFullYear(),d.getMonth()+1,10);
   return Date.now()>=threshold.getTime();
 }
+const MONTHS_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 function archiveMonthKey(createdAt){
   const d=new Date(createdAt);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
@@ -1889,7 +1850,7 @@ function renderCompensi(){
 window.addCompEntry=async function(catId){
   if(!db)return;
   const descEl=document.getElementById(`comp-desc-${catId}`),noteEl=document.getElementById(`comp-note-${catId}`),amtEl=document.getElementById(`comp-amt-${catId}`),dateEl=document.getElementById(`comp-date-${catId}`);
-  const desc=descEl.value.trim(),note=noteEl.value.trim(),amt=amtEl.value.trim(),date=dateEl.value||new Date().toISOString().split('T')[0];
+  const desc=descEl.value.trim(),note=noteEl.value.trim(),amt=amtEl.value.trim(),date=dateEl.value||localDateStr();
   if(!desc||!amt)return;
   try{
     await window._fbPush(`compensi/${catId}`,{desc,note,amt:parseFloat(amt),date,createdAt:Date.now()});
@@ -2101,7 +2062,7 @@ window.commitCapture=async function(){
     }else if(result.type==='compenso'){
       const cat=document.getElementById('capture-compcat-select').value;
       const amt=parseFloat(document.getElementById('capture-amount-input').value)||0;
-      await window._fbPush(`compensi/${cat}`,{desc:title,note:'',amt,date:new Date().toISOString().split('T')[0],createdAt:Date.now()});
+      await window._fbPush(`compensi/${cat}`,{desc:title,note:'',amt,date:localDateStr(),createdAt:Date.now()});
       toast('Compenso aggiunto ✓');
     }
     closeCaptureConfirm();
@@ -2153,7 +2114,13 @@ window.removeObiettivo=async function(list,id){
 
 // ── CALENDARIO (Google Calendar via iCal, backend Vercel) ──
 const CALENDAR_API='https://dyrectio-api.vercel.app/api/calendar';
-let calendarEvents=null, calendarLoaded=false, calSelectedDate=null;
+let calendarEvents=null, calendarLoaded=false, calSelectedDate=null, calWeekAnchor=null;
+function getWeekMonday(base){
+  const d=new Date(base||new Date());
+  const dow=(d.getDay()+6)%7; // 0=lunedì
+  d.setDate(d.getDate()-dow); d.setHours(0,0,0,0);
+  return d;
+}
 async function loadCalendarPage(){
   if(!calendarLoaded){
     calendarLoaded=true;
@@ -2168,26 +2135,33 @@ async function loadCalendarPage(){
       toast('Errore nel caricare il calendario');
     }
   }
-  if(!calSelectedDate)calSelectedDate=new Date().toISOString().split('T')[0];
+  if(!calSelectedDate)calSelectedDate=localDateStr();
+  if(!calWeekAnchor)calWeekAnchor=getWeekMonday();
   renderCalendarWeek();
 }
+window.calWeekPrev=function(){calWeekAnchor.setDate(calWeekAnchor.getDate()-7);calSelectedDate=null;renderCalendarWeek();};
+window.calWeekNext=function(){calWeekAnchor.setDate(calWeekAnchor.getDate()+7);calSelectedDate=null;renderCalendarWeek();};
+window.calWeekToday=function(){calWeekAnchor=getWeekMonday();calSelectedDate=localDateStr();renderCalendarWeek();};
 function renderCalendarWeek(){
   const strip=document.getElementById('cal-week-strip');
-  const todayStr=new Date().toISOString().split('T')[0];
-  const now=new Date();
-  const dow=(now.getDay()+6)%7; // 0=lunedì
-  const monday=new Date(now); monday.setDate(now.getDate()-dow);
+  const todayStr=localDateStr();
+  const logMap=getLogsByDate();
   const dayNames=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
   const days=[];
-  for(let i=0;i<7;i++){const d=new Date(monday); d.setDate(monday.getDate()+i); days.push(d);}
+  for(let i=0;i<7;i++){const d=new Date(calWeekAnchor); d.setDate(calWeekAnchor.getDate()+i); days.push(d);}
+  if(!calSelectedDate)calSelectedDate=localDateStr(days[0]);
   strip.innerHTML=days.map((d,i)=>{
-    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const ds=localDateStr(d);
     const hasEvents=(calendarEvents||[]).some(e=>e.start.slice(0,10)===ds);
+    const trainLog=logMap[ds];
     const isToday=ds===todayStr, isSelected=ds===calSelectedDate;
     return `<button class="cal-day-btn${isToday?' today':''}${isSelected?' selected':''}" onclick="selectCalDay('${ds}')">
       <span class="cal-day-name">${dayNames[i]}</span>
       <span class="cal-day-num">${d.getDate()}</span>
-      ${hasEvents?'<span class="cal-day-dot"></span>':''}
+      <span class="cal-day-dots">
+        ${hasEvents?'<span class="cal-day-dot"></span>':''}
+        ${trainLog?`<span class="cal-day-dot cal-day-dot-train" style="background:${SPLITS.find(s=>s.id===trainLog.split)?.color||'#888'}"></span>`:''}
+      </span>
     </button>`;
   }).join('');
   renderCalDayEvents();
@@ -2195,24 +2169,44 @@ function renderCalendarWeek(){
 window.selectCalDay=function(ds){calSelectedDate=ds; renderCalendarWeek();};
 function renderCalDayEvents(){
   const el=document.getElementById('cal-day-events');
-  const todayStr=new Date().toISOString().split('T')[0];
+  const todayStr=localDateStr();
   const dayEvents=(calendarEvents||[]).filter(e=>e.start.slice(0,10)===calSelectedDate).sort((a,b)=>new Date(a.start)-new Date(b.start));
-  if(!dayEvents.length){el.innerHTML='<div class="empty">Nessun appuntamento.</div>';return;}
   const isToday=calSelectedDate===todayStr;
+  const isFuture=calSelectedDate>todayStr;
   const nowMs=Date.now();
   let nowMarkerInserted=false;
   const rows=[];
-  dayEvents.forEach(e=>{
-    if(isToday && !nowMarkerInserted && new Date(e.start).getTime()>nowMs){
-      rows.push('<div class="cal-now-marker"><span></span>adesso<span></span></div>');
-      nowMarkerInserted=true;
-    }
-    const start=new Date(e.start);
-    const timeStr=e.allDay?'Tutto il giorno':start.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-    rows.push(`<div class="cal-event-row"><span class="cal-event-time">${timeStr}</span><span class="cal-event-title">${esc(e.title)}</span></div>`);
-  });
-  if(isToday && !nowMarkerInserted)rows.push('<div class="cal-now-marker"><span></span>adesso<span></span></div>');
-  el.innerHTML=rows.join('');
+  if(!dayEvents.length){
+    rows.push('<div class="empty">Nessun appuntamento.</div>');
+  }else{
+    dayEvents.forEach(e=>{
+      if(isToday && !nowMarkerInserted && new Date(e.start).getTime()>nowMs){
+        rows.push('<div class="cal-now-marker"><span></span>adesso<span></span></div>');
+        nowMarkerInserted=true;
+      }
+      const start=new Date(e.start);
+      const timeStr=e.allDay?'Tutto il giorno':start.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+      rows.push(`<div class="cal-event-row"><span class="cal-event-time">${timeStr}</span><span class="cal-event-title">${esc(e.title)}</span></div>`);
+    });
+    if(isToday && !nowMarkerInserted)rows.push('<div class="cal-now-marker"><span></span>adesso<span></span></div>');
+  }
+  const logMap=getLogsByDate();
+  const log=logMap[calSelectedDate];
+  let trainHTML=`<div class="cal-train-section"><div class="cal-train-label">Allenamento</div>`;
+  if(log){
+    const sp=SPLITS.find(s=>s.id===log.split);
+    trainHTML+=`<button class="cal-train-row" onclick="openTrainModal('${calSelectedDate}')">
+      <span class="cal-train-dot" style="background:${sp?.color||'#888'}"></span>
+      <span class="cal-train-text">Sessione ${log.split}${log.note?' — '+esc(log.note):''}</span>
+      <span class="cal-train-edit">✏️</span>
+    </button>`;
+  }else if(!isFuture){
+    trainHTML+=`<button class="btn-ghost cal-train-add" onclick="openTrainModal('${calSelectedDate}')">+ Registra sessione</button>`;
+  }else{
+    trainHTML+=`<div class="empty" style="padding:14px">Giorno futuro — non ancora registrabile.</div>`;
+  }
+  trainHTML+='</div>';
+  el.innerHTML=rows.join('')+trainHTML;
 }
 
 
@@ -2297,7 +2291,7 @@ window.trackerNext=function(){trackerMonth++;if(trackerMonth>11){trackerMonth=0;
 function renderTracker(){
   const el=document.getElementById('luigi-tracker-content');
   if(!el)return;
-  const todayStr=new Date().toISOString().split('T')[0];
+  const todayStr=localDateStr();
   const tr=computeLuigiTrackerTotals(trackerYear,trackerMonth,trackerData);
   const daysInMonth=tr.daysInMonth;
   const MULT={reel:6};
