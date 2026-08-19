@@ -807,9 +807,9 @@ header{
       <h1 id="dash-greeting">Ciao, Gabriele 👋</h1>
       <p id="dash-date">—</p>
     </div></div></div>
+    <div class="today-section"><h3>Oggi</h3><div id="dash-oggi" class="task-list"></div></div>
     <div class="today-section"><h3>Le 3 cose che contano oggi</h3><div class="today3-grid" id="dash-today3"></div></div>
-    <div class="stats-grid" id="dash-stats"></div>
-    <div class="today-section"><h3>Compenso Luigi</h3><div class="comp-mini-grid" id="dash-compensi"></div></div>
+    <div class="today-section"><h3>Scadenze imminenti</h3><div id="dash-deadlines" class="task-list"></div></div>
     <div class="today-section edit-only">
       <h3>Aggiungi task rapida</h3>
       <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
@@ -821,9 +821,6 @@ header{
       </div>
     </div>
     <div class="today-section"><h3>Da fare — priorità</h3><div id="dash-urgent" class="task-list"></div></div>
-    <div class="today-section"><h3>In corso</h3><div id="dash-inprogress" class="task-list"></div></div>
-    <div class="today-section"><h3>Questa settimana — completate per cliente</h3><div id="dash-weekly" class="task-list"></div></div>
-    <div class="today-section"><h3>Training — prossima sessione</h3><div id="dash-training"></div></div>
   </div>
 
   <!-- PROGETTI -->
@@ -1314,7 +1311,7 @@ function updateProjBadge(){
 }
 
 // ── DASHBOARD ──
-function renderDashboard(){renderDashStats();renderDashCompensi();renderDashToday3();renderDashUrgent();renderDashWeekly();renderDashTraining();}
+function renderDashboard(){renderDashOggi();renderDashToday3();renderDashDeadlines();renderDashUrgent();}
 
 // ── 3 task di oggi: bloccate > in corso > da fare, poi temperatura, poi ordine kanban ──
 function computeTopTasks(n){
@@ -1372,58 +1369,71 @@ window.goToTask=function(gid,cid,tid){
   },80);
 };
 
-function renderDashStats(){
-  const all=GESTIONALI.flatMap(g=>g.companies).flatMap(c=>Object.values(allTasks[c.id]||{}));
-  const todo=all.filter(t=>t.status==='todo'||t.status==='inprogress').length;
-  const done=all.filter(t=>t.status==='done').length;
-  const pct=all.length>0?Math.round(done/all.length*100):0;
-  const thisWeek=Object.values(trainLogs||{}).filter(l=>{
-    const d=new Date(l.date),now=new Date(),start=new Date(now);
-    start.setDate(now.getDate()-now.getDay());return d>=start;
-  }).length;
-  document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Task attive</div><div class="stat-num" style="color:var(--accent)"><span id="sn-todo">0</span></div><div class="stat-sub">${done} completate</div><div class="progress-bar"><div class="progress-fill" id="sn-todo-bar" style="width:0%;background:var(--accent)"></div></div></div>
-    <div class="stat-card"><div class="stat-label">Sessioni sett.</div><div class="stat-num" style="color:var(--green)"><span id="sn-week">0</span><span style="font-size:0.9rem;color:var(--text2)">/3</span></div><div class="stat-sub">${thisWeek>=3?'Settimana completa ✓':3-thisWeek+' rimasti'}</div></div>`;
-  animateNumber(document.getElementById('sn-todo'),todo,{duration:600});
-  animateNumber(document.getElementById('sn-week'),thisWeek,{duration:500});
-  requestAnimationFrame(()=>{const bar=document.getElementById('sn-todo-bar');if(bar)bar.style.width=pct+'%';});
-}
-
-function renderDashCompensi(){
-  // Sezione compensi generale (Antonio/Altro) rimossa dalla dashboard per ora — resta solo Luigi.
-  const el=document.getElementById('dash-compensi');
-  if(!el)return;
-  const luigiTot=categoryTotal('luigi');
-  const luigiDays=daysUntilPayday(1);
-  const dayLabel=d=>d===null?'—':(d===0?'oggi':`tra ${d}g`);
-  el.innerHTML=`
-    <div class="comp-mini-card comp-mini-link" onclick="goToLuigiCompensi()" style="border-left:2px solid #d4a017">
-      <div class="comp-mini-label">Luigi →</div>
-      <div class="comp-mini-num" style="color:var(--yellow)">€${luigiTot.toFixed(0)}</div>
-      <div class="comp-mini-sub">${dayLabel(luigiDays)}</div>
-    </div>`;
-}
-
 function renderDashUrgent(){
-  function buildItems(sf){
-    const arr=[];
-    GESTIONALI.flatMap(g=>g.companies).forEach(c=>{
-      Object.entries(allTasks[c.id]||{}).forEach(([tid,t])=>{
-        if(t.status===sf)arr.push({name:t.name,project:c.name,tid,cid:c.id,type:'task'});
-        Object.entries(t.subtasks||{}).forEach(([sid,s])=>{if(s.status===sf)arr.push({name:s.name,project:c.name,parent:t.name,tid,sid,cid:c.id,type:'subtask'});});
-      });
+  const arr=[];
+  GESTIONALI.flatMap(g=>g.companies).forEach(c=>{
+    Object.entries(allTasks[c.id]||{}).forEach(([tid,t])=>{
+      if(t.status==='todo')arr.push({name:t.name,project:c.name,tid,cid:c.id,type:'task'});
+      Object.entries(t.subtasks||{}).forEach(([sid,s])=>{if(s.status==='todo')arr.push({name:s.name,project:c.name,parent:t.name,tid,sid,cid:c.id,type:'subtask'});});
     });
-    return arr.slice(0,8);
-  }
-  const allT=buildItems('todo'),inprog=buildItems('inprogress');
-  const mkRow=(t,s)=>`<div class="task-row s-${s}" style="${t.type==='subtask'?'padding-left:1.6rem;':''}">
+  });
+  const allT=arr.slice(0,8);
+  const mkRow=t=>`<div class="task-row" style="${t.type==='subtask'?'padding-left:1.6rem;':''}">
     ${t.type==='subtask'?`<span style="color:var(--text3);font-size:0.65rem;flex-shrink:0">↳</span>`:''}
     <span class="task-name">${esc(t.name)}${t.type==='subtask'?` <span style="font-size:0.65rem;color:var(--text3)">in ${esc(t.parent)}</span>`:''}</span>
     <span class="badge badge-project">${esc(t.project)}</span>
-    ${s==='inprogress'?'<span class="badge badge-inprogress">In corso</span>':''}
   </div>`;
-  document.getElementById('dash-urgent').innerHTML=allT.length?allT.map(t=>mkRow(t,'todo')).join(''):'<div class="empty">Nessuna task da fare 🎉</div>';
-  document.getElementById('dash-inprogress').innerHTML=inprog.length?inprog.map(t=>mkRow(t,'inprogress')).join(''):'<div class="empty">Nessuna task in corso</div>';
+  document.getElementById('dash-urgent').innerHTML=allT.length?allT.map(mkRow).join(''):'<div class="empty">Nessuna task da fare 🎉</div>';
+}
+
+// ── Scadenze imminenti: task con dueDate entro 7 giorni (o scadute), escluse le completate ──
+function renderDashDeadlines(){
+  const el=document.getElementById('dash-deadlines');
+  if(!el)return;
+  const todayStr=localDateStr();
+  const horizon=localDateStr(new Date(Date.now()+7*86400000));
+  const arr=[];
+  GESTIONALI.forEach(g=>{
+    g.companies.forEach(c=>{
+      Object.entries(allTasks[c.id]||{}).forEach(([tid,t])=>{
+        if(!t.dueDate||t.status==='done'||t.dueDate>horizon)return;
+        arr.push({tid,cid:c.id,gid:g.id,name:t.name,project:c.name,status:t.status,dueDate:t.dueDate});
+      });
+    });
+  });
+  arr.sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+  const top=arr.slice(0,6);
+  el.innerHTML=top.length?top.map(t=>`<div class="task-row" onclick="goToTask('${t.gid}','${t.cid}','${t.tid}')" style="cursor:pointer">
+    <span class="task-name">${esc(t.name)}</span>
+    <span class="badge badge-project">${esc(t.project)}</span>
+    ${dueDateBadgeHTML({dueDate:t.dueDate,status:t.status})}
+  </div>`).join(''):'<div class="empty">Nessuna scadenza nei prossimi 7 giorni</div>';
+}
+
+// ── Oggi: eventi calendario + stato allenamento del giorno ──
+async function renderDashOggi(){
+  const el=document.getElementById('dash-oggi');
+  if(!el)return;
+  el.innerHTML='<div class="empty">Caricamento…</div>';
+  await ensureCalendarEvents();
+  const todayStr=localDateStr();
+  const todayEvents=(calendarEvents||[]).filter(e=>e.start.slice(0,10)===todayStr).sort((a,b)=>new Date(a.start)-new Date(b.start));
+  const eventsHTML=todayEvents.map(e=>{
+    const t=e.allDay?'Tutto il giorno':new Date(e.start).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="task-row"><span class="task-date" style="width:52px;flex-shrink:0">${t}</span><span class="task-name">${esc(e.title)}</span></div>`;
+  }).join('');
+  const trainToday=getLogsByDate()[todayStr];
+  let trainHTML;
+  if(trainToday){
+    const sp=SPLITS.find(s=>s.id===trainToday.split);
+    trainHTML=`<div class="task-row" style="cursor:pointer" onclick="openTrainModal('${todayStr}')">
+      <span class="tab-dot" style="background:${sp?.color||'#888'}"></span>
+      <span class="task-name">Allenamento: Sessione ${trainToday.split}${trainToday.note?' — '+esc(trainToday.note):''}</span>
+    </div>`;
+  }else{
+    trainHTML=`<div class="task-row"><span class="task-name" style="color:var(--text3)">Nessun allenamento pianificato oggi</span><button class="btn-ghost" style="height:30px;font-size:11px;padding:0 12px" onclick="openTrainModal('${todayStr}')">+ Pianifica</button></div>`;
+  }
+  el.innerHTML=eventsHTML+trainHTML;
 }
 
 function dashBuildSelectors(){
@@ -1444,61 +1454,12 @@ window.dashQuickAdd=async function(){
   catch(e){toast('Errore: '+e.message);}
 };
 
-function renderDashWeekly(){
-  const el=document.getElementById('dash-weekly');
-  if(!el)return;
-  const now=new Date();
-  const dow=(now.getDay()+6)%7; // 0=lunedì
-  const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow,0,0,0,0);
-  const counts={};
-  let doneWithoutTimestamp=0;
-  GESTIONALI.forEach(g=>{
-    counts[g.id]=0;
-    g.companies.forEach(c=>{
-      Object.values(allTasks[c.id]||{}).forEach(t=>{
-        if(t.status!=='done')return;
-        if(!t.completedAt){doneWithoutTimestamp++;return;}
-        if(t.completedAt>=monday.getTime())counts[g.id]++;
-      });
-    });
-  });
-  const rows=GESTIONALI.filter(g=>counts[g.id]>0).sort((a,b)=>counts[b.id]-counts[a.id]);
-  if(rows.length){
-    el.innerHTML=rows.map(g=>`<div class="task-row">
-      <span class="tab-dot" style="background:${g.color}"></span>
-      <span class="task-name">${esc(g.name)}</span>
-      <span class="badge badge-project">${counts[g.id]} completate</span>
-    </div>`).join('');
-  }else if(doneWithoutTimestamp>0){
-    el.innerHTML=`<div class="empty">Nessuna task completata da quando è attivo il conteggio — le ${doneWithoutTimestamp} completate prima non avevano una data di completamento salvata. Da ora in poi il riepilogo si popola da solo.</div>`;
-  }else{
-    el.innerHTML='<div class="empty">Ancora nessuna task completata questa settimana</div>';
-  }
-}
-
 function daysUntilPayday(day){
   if(!day)return null;
   const today=new Date(); today.setHours(0,0,0,0);
   let target=new Date(today.getFullYear(),today.getMonth(),day);
   if(target<today)target=new Date(today.getFullYear(),today.getMonth()+1,day);
   return Math.round((target-today)/86400000);
-}
-
-function renderDashTraining(){
-  const el=document.getElementById('dash-training');
-  const logs=Object.values(trainLogs||{}).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const last=logs[0];
-  const splitOrder=['A','B','C'];
-  const nextSplit=last?splitOrder[(splitOrder.indexOf(last.split)+1)%3]:'A';
-  const sp=SPLITS.find(s=>s.id===nextSplit);
-  el.innerHTML=`<div class="card-sm" style="border-left:2px solid ${sp.color}">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.4rem;">
-      <div class="log-split-dot" style="background:${sp.color}"></div>
-      <span style="font-weight:600;font-size:0.88rem;">${sp.name} — ${sp.muscles}</span>
-    </div>
-    <div style="font-size:0.75rem;color:var(--text2);line-height:1.6">${sp.esercizi.join(' · ')}</div>
-    ${last?`<div style="font-size:0.65rem;color:var(--text3);margin-top:0.5rem;">Ultima: Sessione ${last.split} il ${last.date}</div>`:''}
-  </div>`;
 }
 
 // ── CALENDAR ──
@@ -1586,9 +1547,12 @@ function viewToggleHTML(cid){
 function companyPanelHTML(c){
   if(c.id==='luigi_luigi'){
     return '<div class="tab-panel" id="cpanel-luigi_luigi">'
-      +'<div class="tracker-tabs">'
+      +'<div class="tracker-tabs" style="display:flex;align-items:center;justify-content:space-between">'
+      +'<div style="display:flex">'
       +'<button class="tracker-tab active" id="ltab-tasks" onclick="luigiSwitchTab(\'tasks\',this)">'+ICONS.checklist+' Task</button>'
       +'<button class="tracker-tab" id="ltab-tracker" onclick="luigiSwitchTab(\'tracker\',this)">'+ICONS.calendar+' Pubblicazioni</button>'
+      +'</div>'
+      +'<button class="btn-ghost" style="height:32px;font-size:12px;padding:0 12px" onclick="goToLuigiCompensi()">Compensi →</button>'
       +'</div>'
       +'<div id="luigi-tasks-panel">'
       +'<div class="stats-grid" id="cstats-luigi_luigi"></div>'
@@ -2449,20 +2413,22 @@ function getWeekMonday(base){
   d.setDate(d.getDate()-dow); d.setHours(0,0,0,0);
   return d;
 }
-async function loadCalendarPage(){
-  if(!calendarLoaded){
-    calendarLoaded=true;
-    document.getElementById('cal-week-strip').innerHTML='<div class="empty">Caricamento…</div>';
-    try{
-      const resp=await fetch(CALENDAR_API);
-      const data=await resp.json();
-      calendarEvents=data.events||[];
-      if(data.error)toast(data.error);
-    }catch(e){
-      calendarEvents=[];
-      toast('Errore nel caricare il calendario');
-    }
+async function ensureCalendarEvents(){
+  if(calendarLoaded)return;
+  calendarLoaded=true;
+  try{
+    const resp=await fetch(CALENDAR_API);
+    const data=await resp.json();
+    calendarEvents=data.events||[];
+    if(data.error)toast(data.error);
+  }catch(e){
+    calendarEvents=[];
+    toast('Errore nel caricare il calendario');
   }
+}
+async function loadCalendarPage(){
+  if(!calendarLoaded)document.getElementById('cal-week-strip').innerHTML='<div class="empty">Caricamento…</div>';
+  await ensureCalendarEvents();
   if(!calSelectedDate)calSelectedDate=localDateStr();
   if(!calWeekAnchor)calWeekAnchor=getWeekMonday();
   renderCalendarWeek();
