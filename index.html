@@ -167,6 +167,20 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .mg-trigger-btn{flex-shrink:0;height:38px;padding:0 16px;border-radius:var(--radius-pill);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:13px;font-weight:600}
 .mg-trigger-btn:hover{background:var(--surface3);color:var(--text)}
 
+/* ── FC Talent: tracker collaborazioni società ── */
+.fc-group{margin-bottom:20px}
+.fc-group-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.fc-group-label{font-family:var(--font-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2)}
+.fc-group-rows{display:flex;flex-direction:column;gap:6px}
+.fc-row{display:flex;align-items:center;gap:14px;padding:12px 14px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.01)),rgba(23,22,29,.34);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-md)}
+.fc-row-name{flex:1;font-size:13.5px;font-weight:560;min-width:0}
+.fc-row-note{font-size:11px;color:var(--text3);margin-top:3px;font-weight:400}
+.fc-row-actions{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.fc-row-pills{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fc-pill-label{font-family:var(--font-mono);font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)}
+.fc-status-pill{height:26px;padding:0 12px;border-radius:999px;border:1px solid var(--border2);background:var(--surface3);color:var(--text2);font-family:var(--font-mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.fc-status-pill.fc-done{background:color-mix(in srgb,var(--green) 22%,transparent);border-color:color-mix(in srgb,var(--green) 55%,transparent);color:var(--green)}
+
 /* ── Modale gestisci gestionali ── */
 .modal-manage-gest{max-height:82vh;display:flex;flex-direction:column}
 .mg-hint{font-size:12px;color:var(--text3);margin-bottom:14px}
@@ -1243,6 +1257,7 @@ async function initFirebase() {
   onValue(ref(db,'customGestionali'),snap=>{customGestionaliData=snap.val()||{};onGestChange();});
   onValue(ref(db,'customCompanies'),snap=>{customCompaniesData=snap.val()||{};onGestChange();});
   onValue(ref(db,'gestManage'),snap=>{gestManageData=snap.val()||{};onGestChange();});
+  onValue(ref(db,'fcTalent/groups'),snap=>{fcTalentData=snap.val()||{};if(document.getElementById('futuri-talent-panel')&&document.getElementById('futuri-talent-panel').style.display!=='none')renderFcTalent();});
 
   document.getElementById('loading').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -1585,6 +1600,27 @@ function companyPanelHTML(c){
       +'<\/div>'
       +'<div id="luigi-tracker-panel" style="display:none;">'
       +'<div id="luigi-tracker-content"><\/div>'
+      +'<\/div>'
+      +'<\/div>';
+  }
+  if(c.id==='futuri'){
+    return '<div class="tab-panel" id="cpanel-futuri">'
+      +'<div class="tracker-tabs">'
+      +'<button class="tracker-tab active" id="ftab-tasks" onclick="futuriSwitchTab(\'tasks\',this)">'+ICONS.checklist+' Task</button>'
+      +'<button class="tracker-tab" id="ftab-talent" onclick="futuriSwitchTab(\'talent\',this)">'+ICONS.clapper+' FC Talent</button>'
+      +'</div>'
+      +'<div id="futuri-tasks-panel">'
+      +'<div class="stats-grid" id="cstats-futuri"></div>'
+      +'<div class="add-row edit-only">'
+      +'<input class="add-input" id="cinput-futuri" placeholder="Nuova task…" onkeydown="if(event.key===\'Enter\') addTask(\'futuri\')"\/>'
+      +'<button class="btn-primary" onclick="addTask(\'futuri\')">+ Aggiungi<\/button>'
+      +'<\/div>'
+      +viewToggleHTML('futuri')
+      +'<div class="task-list" id="clist-futuri"><\/div>'
+      +'<div class="kanban-board" id="kanban-futuri" style="display:none"><\/div>'
+      +'<\/div>'
+      +'<div id="futuri-talent-panel" style="display:none;">'
+      +'<div id="fc-talent-content"></div>'
       +'<\/div>'
       +'<\/div>';
   }
@@ -2554,6 +2590,96 @@ function computeLuigiTrackerTotals(year,month,data){
     compensoReel, compensoTot:compensoReel,
   };
 }
+
+// ── FC TALENT: tracker collaborazioni società (dentro Futuri Campioni) ──
+let fcTalentData={};
+window.futuriSwitchTab=function(tab, btn){
+  document.querySelectorAll('#cpanel-futuri .tracker-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const tasksPanel=document.getElementById('futuri-tasks-panel');
+  const talentPanel=document.getElementById('futuri-talent-panel');
+  if(tab==='tasks'){
+    if(tasksPanel)tasksPanel.style.display='';
+    if(talentPanel)talentPanel.style.display='none';
+  }else{
+    if(tasksPanel)tasksPanel.style.display='none';
+    if(talentPanel)talentPanel.style.display='';
+    renderFcTalent();
+  }
+};
+function fcStatusPillHTML(gid,cid,field,val){
+  const isDone=val==='fatto';
+  return `<button class="fc-status-pill${isDone?' fc-done':''} edit-only" onclick="toggleFcStatus('${gid}','${cid}','${field}')">${isDone?'✓ Fatto':'Da fare'}</button>`;
+}
+function renderFcTalent(){
+  const el=document.getElementById('fc-talent-content');
+  if(!el)return;
+  const groups=Object.entries(fcTalentData).sort((a,b)=>(a[1].order??0)-(b[1].order??0));
+  if(!groups.length){
+    el.innerHTML='<div class="empty">Nessuna area ancora. Aggiungine una per iniziare.</div><button class="btn-ghost edit-only" style="margin-top:10px" onclick="addFcGroup()">+ Nuova area</button>';
+    return;
+  }
+  el.innerHTML=groups.map(([gid,g])=>{
+    const companies=Object.entries(g.companies||{});
+    const doneCount=companies.filter(([,c])=>c.whatsapp==='fatto'&&c.instagram==='fatto').length;
+    return `<div class="fc-group">
+      <div class="fc-group-header">
+        <span class="fc-group-label">${esc(g.label||gid)}</span>
+        <span class="badge badge-project">${doneCount}/${companies.length} completate</span>
+      </div>
+      <div class="fc-group-rows">
+        ${companies.map(([cid,c])=>`<div class="fc-row">
+          <div class="fc-row-name">${esc(c.name)}${c.note?`<div class="fc-row-note">${esc(c.note)}</div>`:''}</div>
+          <div class="fc-row-actions">
+            <div class="fc-row-pills">
+              <div class="fc-pill-label">WhatsApp</div>
+              ${fcStatusPillHTML(gid,cid,'whatsapp',c.whatsapp)}
+            </div>
+            <div class="fc-row-pills">
+              <div class="fc-pill-label">Instagram</div>
+              ${fcStatusPillHTML(gid,cid,'instagram',c.instagram)}
+            </div>
+            <button class="ibtn del edit-only" onclick="deleteFcCompany('${gid}','${cid}')">${ICONS.trash}</button>
+          </div>
+        </div>`).join('')}
+        <button class="mg-add-comp edit-only" onclick="addFcCompany('${gid}')">+ Aggiungi società</button>
+      </div>
+    </div>`;
+  }).join('')+'<button class="mg-add-gest edit-only" onclick="addFcGroup()">+ Nuova area</button>';
+}
+window.toggleFcStatus=async function(gid,cid,field){
+  if(!db)return;
+  const cur=fcTalentData[gid]?.companies?.[cid]?.[field];
+  const next=cur==='fatto'?'dafare':'fatto';
+  try{await window._fbSet(`fcTalent/groups/${gid}/companies/${cid}/${field}`,next);}
+  catch(e){toast('Errore: '+e.message);}
+};
+window.addFcCompany=async function(gid){
+  if(!db)return;
+  const name=(prompt('Nome della nuova società:')||'').trim();
+  if(!name)return;
+  try{
+    await window._fbPush(`fcTalent/groups/${gid}/companies`,{name,whatsapp:'dafare',instagram:'dafare',note:''});
+    toast('Società aggiunta ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+window.addFcGroup=async function(){
+  if(!db)return;
+  const label=(prompt('Nome della nuova area (es. "AREA LOMBARDIA — Società confermate da…"):')||'').trim();
+  if(!label)return;
+  try{
+    const order=Object.keys(fcTalentData).length;
+    await window._fbPush('fcTalent/groups',{label,order,companies:{}});
+    toast('Area aggiunta ✓');
+  }catch(e){toast('Errore: '+e.message);}
+};
+window.deleteFcCompany=async function(gid,cid){
+  if(!db)return;
+  const name=fcTalentData[gid]?.companies?.[cid]?.name||'';
+  if(!confirm(`Rimuovere "${name}"?`))return;
+  try{await window._fbRemove(`fcTalent/groups/${gid}/companies/${cid}`);toast('Rimossa');}
+  catch(e){toast('Errore: '+e.message);}
+};
 
 window.luigiSwitchTab=function(tab, btn){
   document.querySelectorAll('.tracker-tab').forEach(b=>b.classList.remove('active'));
