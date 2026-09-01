@@ -974,7 +974,7 @@ const BASE_GESTIONALI = [
   {id:'antonio',name:'Antonio',color:'#c0392b',url:'https://gabriele-caroppo.github.io/gestionale-aziende/',companies:[
     {id:'focacciamo',name:'Focacciamo',color:'#c0392b'},
     {id:'lamancha',name:'Mancha',color:'#ff7b00'},
-    {id:'futuri',name:'Futuri Campioni',color:'#39d353'},
+    {id:'futuri',name:'FC Talent',color:'#39d353'},
   ]},
   {id:'slabhub',name:'SlabHub',color:'#2d6fa3',url:'https://gabriele-caroppo.github.io/gestionale-slabhub/',companies:[
     {id:'slabhub_gabriele',name:'Gabriele',color:'#2d6fa3'},
@@ -2591,7 +2591,7 @@ function computeLuigiTrackerTotals(year,month,data){
   };
 }
 
-// ── FC TALENT: tracker collaborazioni società (dentro Futuri Campioni) ──
+// ── FC TALENT: tracker collaborazioni società (dentro la scheda FC Talent, ex Futuri Campioni) ──
 let fcTalentData={};
 window.futuriSwitchTab=function(tab, btn){
   document.querySelectorAll('#cpanel-futuri .tracker-tab').forEach(b=>b.classList.remove('active'));
@@ -2609,7 +2609,7 @@ window.futuriSwitchTab=function(tab, btn){
 };
 function fcStatusPillHTML(gid,cid,field,val){
   const isDone=val==='fatto';
-  return `<button class="fc-status-pill${isDone?' fc-done':''} edit-only" onclick="toggleFcStatus('${gid}','${cid}','${field}')">${isDone?'✓ Fatto':'Da fare'}</button>`;
+  return `<button class="fc-status-pill${isDone?' fc-done':''}" onclick="toggleFcStatus('${gid}','${cid}','${field}')">${isDone?'✓ Fatto':'Da fare'}</button>`;
 }
 function renderFcTalent(){
   const el=document.getElementById('fc-talent-content');
